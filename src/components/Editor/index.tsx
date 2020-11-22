@@ -1,8 +1,11 @@
-// import * as monaco from "monaco-editor";
+import MonacoEditor from '@monaco-editor/react'
 import * as React from 'react'
 import { useEffect, useRef } from 'react'
 import './Editor.css'
-;(window as any).MonacoEnvironment = {
+
+const anyWindow = window as any
+
+anyWindow.MonacoEnvironment = {
   getWorkerUrl(moduleId: string, label: string) {
     if (label === 'json') {
       return './json.worker.bundle.js'
@@ -155,14 +158,23 @@ export const Editor: React.FC = () => {
   }, [])
 
   // todo one all elements mounted, run editor code
+  // return (
+  //   <div>
+  //     <div ref={outputElementRef} id="output">
+  //       Last 3 events:
+  //       <br />
+  //     </div>
+  //     <div id="middle-div"></div>
+  //     <div ref={containerElementRef} id="container"></div>
+  //   </div>
+  // )
+
   return (
-    <div>
-      <div ref={outputElementRef} id="output">
-        Last 3 events:
-        <br />
-      </div>
-      <div id="middle-div"></div>
-      <div ref={containerElementRef} id="container"></div>
-    </div>
+    <MonacoEditor
+      height="calc(100vh - 330px)"
+      language="typescript"
+      theme="dark"
+      options={{ fontSize: 18 }}
+    />
   )
 }

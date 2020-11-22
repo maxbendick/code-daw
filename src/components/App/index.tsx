@@ -1,5 +1,5 @@
-import Editor from '@monaco-editor/react'
 import React from 'react'
+import { Editor } from '../Editor'
 import './App.css'
 import logo from './logo.svg'
 
@@ -21,12 +21,7 @@ function App() {
         </a>
       </header>
 
-      <Editor
-        height="calc(100vh - 330px)"
-        language="typescript"
-        theme="dark"
-        options={{ fontSize: 18 }}
-      />
+      <Editor />
     </div>
   )
 }
