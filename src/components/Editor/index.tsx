@@ -2,7 +2,6 @@
 import * as React from 'react'
 import { useEffect, useRef } from 'react'
 import './Editor.css'
-
 ;(window as any).MonacoEnvironment = {
   getWorkerUrl(moduleId: string, label: string) {
     if (label === 'json') {
