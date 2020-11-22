@@ -3,16 +3,16 @@ export type _SubscriptionLike =
   | null
   | undefined
   | (() => void)
-  | _Subscription;
+  | _Subscription
 
 export class _Subscription {
   constructor(subscriptionLike?: _SubscriptionLike) {
     // TODO make this right
   }
 
-  unsubscribe = (): void => {};
+  unsubscribe = (): void => {}
 
   combine = (other: _Subscription): _Subscription => {
-    return null as any;
-  };
+    return null as any
+  }
 }

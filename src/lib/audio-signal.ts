@@ -1,7 +1,7 @@
-export type AudioSignal = { _audioSignal: true };
+export type AudioSignal = { _audioSignal: true }
 
 class _AudioSignalImpl implements AudioSignal {
-  _audioSignal = true as const;
+  _audioSignal = true as const
   // how do i do this lol?
   // compile at end?
   // tree?
@@ -9,4 +9,4 @@ class _AudioSignalImpl implements AudioSignal {
   // pass buffers?
 }
 
-export type AudioEffect = (input: AudioSignal) => AudioSignal;
+export type AudioEffect = (input: AudioSignal) => AudioSignal
