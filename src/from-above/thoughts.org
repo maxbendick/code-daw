@@ -1,0 +1,97 @@
+* TODO next
+** scaffold
+** hack monaco
+** support simple signals OR audio signals to make sounds
+** rename AudioSignal to Audio?
+
+// use view zone API
+https://github.com/microsoft/monaco-editor/issues/83
+
+https://gibber.cc/alpha/playground/
+
+
+More of a platform than a DAW? Faust plugin, VSTs, pluggable UIs (easy mode for react?), compose existing UIs with React?
+
+Try learning elixir/phoenix for ergonomics?
+
+Sampling? Synthesis? Sequencing? Arrangement?
+
+Code brings up inline UI elements (gain slider, dials, sequencers, arrangements, audio signal)
+
+Maybe later - MIDI input, Audio output, and recording for both
+
+Easy mode for getting started with chain, sequencer, etc?
+Easy mode can provide points for extension?
+TypeScript React as default. Support any compile-to-js language (probably without inline-UI)?
+
+Going from code-focused to balanced to UI-focused should be easy.
+Support creating arbitrary UIs (nerf for easy mode)
+
+Save destroyed code elements in recycle bin in left bar. Need to support copy paste.
+
+Creating UI primitives - React + WebGL?
+
+Synth library can be exposed in TypeScript
+
+Automation
+
+Drum rack
+
+Access to web-player?
+
+* packaging:
+** could be a VS code extension!
+** works on all myname.{product name}.ts files by default?
+** custom editor extension to use
+** updating
+*** must have acct to update?
+*** use vscode scaffold to do scaffold updates
+*** use http to load majority of code
+*** authenticate with patreon
+*** can give trial version
+*** disallow changing to new versions after old version expires
+*** allow switching to older versions?
+*** cta if not subscribed 
+
+
+* UI styles? subtle acii esque
+* Radians or degrees?
+
+* reactivity and automation? does the code change?
+
+* how does the code look raw on github?
+* free player for raw code?
+* protecting IP? compile? uglify?
+
+* graph with UI (alternative to `pipe`)
+
+* only one sine/triangle/square? error if signal is too fast and passed to a slow signal input?
+
+* transports? only one? many? programmable?
+
+* slow signals share same transport? if i stagger initiating 2 `sine(10, 2)` - should they stay in-sync forever?
+* phase - hz vs percentage of a cycle vs seconds
+
+* First features
+Can focus on MIDI with short samples first.
+Sequencer with simple UI
+Programmable sequencer
+
+No livecode first?
+No editor first?
+
+
+
+* Stretch
+** headless mode?
+** vst export?
+** audio export?
+** built-in video export?
+
+* NEXT
+** design how UI, code, signals update and interact. Especially behind the scenes
+** design transport? (just in IDE UI and shortcuts? interaction with sequencers?)
+
+* SOON
+** hack monaco
+** design UI component creation

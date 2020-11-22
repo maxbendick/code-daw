@@ -1,0 +1,20 @@
+.myGlyphMarginClass {
+  background: red;
+}
+.myContentClass {
+  background: lightblue;
+}
+
+#output {
+  height: 29%;
+  font-family: "Courier New", monospace;
+}
+
+#middle-div {
+  background: #ccc;
+  height: 1%;
+}
+
+#container {
+  height: 70%;
+}
