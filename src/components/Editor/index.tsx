@@ -1,51 +1,48 @@
-import MonacoEditor from '@monaco-editor/react'
+import MonacoEditor, { monaco as monacoReact } from '@monaco-editor/react'
+import * as monacoPackage from 'monaco-editor'
 import * as React from 'react'
-import { useEffect, useRef } from 'react'
+import ReactDOM from 'react-dom'
 import './Editor.css'
 
-const anyWindow = window as any
+const lineHeight = 23
 
-anyWindow.MonacoEnvironment = {
-  getWorkerUrl(moduleId: string, label: string) {
-    if (label === 'json') {
-      return './json.worker.bundle.js'
-    }
-    if (label === 'css') {
-      return './css.worker.bundle.js'
-    }
-    if (label === 'html') {
-      return './html.worker.bundle.js'
-    }
-    if (label === 'typescript' || label === 'javascript') {
-      return './ts.worker.bundle.js'
-    }
-    return './editor.worker.bundle.js'
-  },
+const ZoneContent: React.FC<{ numLines: number }> = props => {
+  console.log('ZoneContent props', props)
+  return (
+    <div
+      onClick={() => console.log('content clicck')}
+      style={{
+        height: lineHeight * props.numLines,
+        width: '200px',
+        cursor: 'help',
+        backgroundColor: 'hsla(320, 60%, 70%, 0.3)',
+      }}
+    >
+      ZoneContent!
+    </div>
+  )
 }
 
-const setupEditor = (
-  monaco: any,
-  editorContainerElement: HTMLElement,
-  outputElement: HTMLElement
-) => {
-  var jsCode = [
-    '"use strict";',
-    'function Person(age) {',
-    '	if (age) {',
-    '		this.age = age;',
-    '	}',
-    '}',
-    'Person.prototype.getAge = function () {',
-    '	return this.age;',
-    '};',
-  ].join('\n')
+/** Paler red background */
+const ZoneBg: React.FC = () => {
+  return (
+    <div
+      onClick={() => console.log('bg click ????? shouldnt happen')}
+      style={{
+        height: '100%',
+        backgroundColor: 'hsla(320, 60%, 70%, 0.13)',
+      }}
+    ></div>
+  )
+}
 
-  var editor = monaco.editor.create(editorContainerElement, {
-    value: jsCode,
-    language: 'javascript',
-    glyphMargin: true,
-    contextmenu: false,
-  })
+const setupEditor = async (
+  editor: monacoPackage.editor.IEditorOverrideServices,
+  showEvent: (s: string) => void,
+) => {
+  const monaco = await monacoReact.init()
+
+  console.log(editor)
 
   var decorations = editor.deltaDecorations(
     [],
@@ -58,14 +55,17 @@ const setupEditor = (
           glyphMarginClassName: 'myGlyphMarginClass',
         },
       },
-    ]
+    ],
   )
 
   // Add a zone to make hit testing more interesting
   var viewZoneId = null
   editor.changeViewZones(function (changeAccessor: any) {
     var domNode = document.createElement('div')
-    domNode.style.background = 'lightgreen'
+
+    ReactDOM.render(<ZoneBg />, domNode)
+
+    // domNode.style.background = 'hsla(320, 60%, 70%, 0.3)'
     viewZoneId = changeAccessor.addZone({
       afterLineNumber: 3,
       heightInLines: 3,
@@ -82,16 +82,17 @@ const setupEditor = (
     getDomNode: function (this: { domNode: HTMLElement }) {
       if (!this.domNode) {
         this.domNode = document.createElement('div')
-        this.domNode.innerHTML =
-          '<a target="_blank" href="https://www.microsoft.com/">Microsoft</a>'
-        this.domNode.style.background = 'grey'
+        // this.domNode.innerHTML =
+        //   '<a target="_blank" href="https://www.microsoft.com/">Microsoft</a>'
+        // this.domNode.style.background = 'grey'
+        ReactDOM.render(<ZoneContent numLines={3} />, this.domNode)
       }
       return this.domNode
     },
     getPosition: function () {
       return {
         position: {
-          lineNumber: 7,
+          lineNumber: 4,
           column: 8,
         },
         preference: [
@@ -102,38 +103,6 @@ const setupEditor = (
     },
   }
   editor.addContentWidget(contentWidget)
-
-  // Add an overlay widget
-  var overlayWidget = {
-    domNode: null,
-    getId: function () {
-      return 'my.overlay.widget'
-    },
-    getDomNode: function (this: { domNode: HTMLElement }) {
-      if (!this.domNode) {
-        this.domNode = document.createElement('div')
-        this.domNode.innerHTML = 'My overlay widget'
-        this.domNode.style.background = 'grey'
-        this.domNode.style.right = '30px'
-        this.domNode.style.top = '50px'
-      }
-      return this.domNode
-    },
-    getPosition: function () {
-      return null
-    },
-  }
-  editor.addOverlayWidget(overlayWidget)
-
-  function showEvent(str: string) {
-    while (outputElement.childNodes.length > 6) {
-      outputElement.removeChild(
-        outputElement?.firstChild?.nextSibling?.nextSibling!
-      )
-    }
-    outputElement.appendChild(document.createTextNode(str))
-    outputElement.appendChild(document.createElement('br'))
-  }
 
   editor.onMouseMove(function (e: Event) {
     showEvent('mousemove - ' + e.target?.toString())
@@ -149,32 +118,30 @@ const setupEditor = (
   })
 }
 
+var jsCode = [
+  'function Person(age) {',
+  '  if (age) {',
+  '    this.age = age;',
+  '  }',
+  '}',
+  'Person.prototype.getAge = function () {',
+  '  return this.age;',
+  '};\n',
+].join('\n')
+
 export const Editor: React.FC = () => {
-  const outputElementRef = useRef(null as any)
-  const containerElementRef = useRef(null as any)
-
-  useEffect(() => {
-    // setupEditor(null as any, outputElementRef.current, containerElementRef.current);
-  }, [])
-
-  // todo one all elements mounted, run editor code
-  // return (
-  //   <div>
-  //     <div ref={outputElementRef} id="output">
-  //       Last 3 events:
-  //       <br />
-  //     </div>
-  //     <div id="middle-div"></div>
-  //     <div ref={containerElementRef} id="container"></div>
-  //   </div>
-  // )
+  const handleEditorDidMount = (_: any, editor: any) => {
+    setupEditor(editor, () => {}) // s => console.log(s))
+  }
 
   return (
     <MonacoEditor
       height="calc(100vh - 330px)"
       language="typescript"
       theme="dark"
-      options={{ fontSize: 18 }}
+      options={{ fontSize: 18, lineHeight }}
+      value={jsCode}
+      editorDidMount={handleEditorDidMount}
     />
   )
 }

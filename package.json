@@ -46,6 +46,7 @@
     "tabWidth": 2,
     "arrowParens": "avoid",
     "singleQuote": true,
-    "semi": false
+    "semi": false,
+    "trailingComma": "all"
   }
 }

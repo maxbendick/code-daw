@@ -2,19 +2,6 @@
   background: red;
 }
 .myContentClass {
-  background: lightblue;
-}
-
-#output {
-  height: 29%;
-  font-family: 'Courier New', monospace;
-}
-
-#middle-div {
-  background: #ccc;
-  height: 1%;
-}
-
-#container {
-  height: 70%;
+  background: hsla(120, 60%, 70%, 0.3);
+  /* background: hsla(320, 60%, 70%, 0.3); */
 }
