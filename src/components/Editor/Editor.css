@@ -1,7 +1,9 @@
 .myGlyphMarginClass {
   background: red;
 }
+
+/* class for code line that starts the zone */
 .myContentClass {
-  background: hsla(120, 60%, 70%, 0.3);
-  /* background: hsla(320, 60%, 70%, 0.3); */
+  /* background: hsla(120, 60%, 70%, 0.3); */
+  background: hsla(320, 60%, 70%, 0.08);
 }

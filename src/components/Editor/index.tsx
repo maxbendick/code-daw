@@ -2,19 +2,35 @@ import MonacoEditor, { monaco as monacoReact } from '@monaco-editor/react'
 import * as monacoPackage from 'monaco-editor'
 import * as React from 'react'
 import ReactDOM from 'react-dom'
+import * as Config from '../../config'
 import './Editor.css'
 
-const lineHeight = 23
+type EditorT = monacoPackage.editor.IEditorOverrideServices
 
-const ZoneContent: React.FC<{ numLines: number }> = props => {
-  console.log('ZoneContent props', props)
+const ZoneContentContainer: React.FC<{ numLines: number }> = ({
+  numLines,
+  children,
+}) => {
+  return (
+    <div
+      style={{
+        height: Config.lineHeight * numLines,
+        width: Config.widgetZoneWidth, // full width ??
+      }}
+    >
+      {children}
+    </div>
+  )
+}
+
+const MyZoneContent: React.FC = () => {
   return (
     <div
       onClick={() => console.log('content clicck')}
       style={{
-        height: lineHeight * props.numLines,
-        width: '200px',
-        cursor: 'help',
+        height: '100%',
+        width: '100%',
+        cursor: 'crosshair',
         backgroundColor: 'hsla(320, 60%, 70%, 0.3)',
       }}
     >
@@ -36,10 +52,7 @@ const ZoneBg: React.FC = () => {
   )
 }
 
-const setupEditor = async (
-  editor: monacoPackage.editor.IEditorOverrideServices,
-  showEvent: (s: string) => void,
-) => {
+const setupEditor = async (editor: EditorT, showEvent: (s: string) => void) => {
   const monaco = await monacoReact.init()
 
   console.log(editor)
@@ -65,7 +78,6 @@ const setupEditor = async (
 
     ReactDOM.render(<ZoneBg />, domNode)
 
-    // domNode.style.background = 'hsla(320, 60%, 70%, 0.3)'
     viewZoneId = changeAccessor.addZone({
       afterLineNumber: 3,
       heightInLines: 3,
@@ -82,10 +94,12 @@ const setupEditor = async (
     getDomNode: function (this: { domNode: HTMLElement }) {
       if (!this.domNode) {
         this.domNode = document.createElement('div')
-        // this.domNode.innerHTML =
-        //   '<a target="_blank" href="https://www.microsoft.com/">Microsoft</a>'
-        // this.domNode.style.background = 'grey'
-        ReactDOM.render(<ZoneContent numLines={3} />, this.domNode)
+        ReactDOM.render(
+          <ZoneContentContainer numLines={3}>
+            <MyZoneContent />
+          </ZoneContentContainer>,
+          this.domNode,
+        )
       }
       return this.domNode
     },
@@ -93,7 +107,7 @@ const setupEditor = async (
       return {
         position: {
           lineNumber: 4,
-          column: 8,
+          column: 0,
         },
         preference: [
           monaco.editor.ContentWidgetPositionPreference.ABOVE,
@@ -103,19 +117,6 @@ const setupEditor = async (
     },
   }
   editor.addContentWidget(contentWidget)
-
-  editor.onMouseMove(function (e: Event) {
-    showEvent('mousemove - ' + e.target?.toString())
-  })
-  editor.onMouseDown(function (e: Event) {
-    showEvent('mousedown - ' + e.target?.toString())
-  })
-  editor.onContextMenu(function (e: Event) {
-    showEvent('contextmenu - ' + e.target?.toString())
-  })
-  editor.onMouseLeave(function (e: Event) {
-    showEvent('mouseleave')
-  })
 }
 
 var jsCode = [
@@ -139,7 +140,7 @@ export const Editor: React.FC = () => {
       height="calc(100vh - 330px)"
       language="typescript"
       theme="dark"
-      options={{ fontSize: 18, lineHeight }}
+      options={{ fontSize: Config.fontSize, lineHeight: Config.lineHeight }}
       value={jsCode}
       editorDidMount={handleEditorDidMount}
     />
