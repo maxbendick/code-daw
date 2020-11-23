@@ -8,7 +8,7 @@ import { EditorT, Monaco } from './types'
 const setupEditor = async (editor: EditorT) => {
   const monaco: Monaco = await monacoReact.init()
   console.log(editor)
-  const coolZone = new CoolZone(monaco, editor, 3, 3)
+  const coolZone = new CoolZone(monaco, editor, 3, 3, <div>hello</div>)
   ;(window as any).coolZone = coolZone
 }
 

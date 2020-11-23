@@ -16,6 +16,7 @@ export class CoolZone {
     editor: EditorT,
     initialLineNumber: number,
     initialNumLines: number,
+    content: ReturnType<React.FC>,
   ) {
     this._lineNumber = initialLineNumber
     this.numLines = initialNumLines
