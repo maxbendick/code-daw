@@ -26,20 +26,6 @@ export const addViewZone = (
     viewZoneId = changeAccessor.addZone(viewZone)
   })
 
-  var decorations = editor.deltaDecorations(
-    [],
-    [
-      {
-        range: new monaco.Range(3, 1, 3, 1),
-        options: {
-          isWholeLine: true,
-          className: 'myContentClass',
-          glyphMarginClassName: 'myGlyphMarginClass',
-        },
-      },
-    ],
-  )
-
   return {
     // probably won't be needed, doesn't touch decorations
     updateAfterLineNumber: (afterLineNumber: number) => {

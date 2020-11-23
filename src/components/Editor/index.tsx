@@ -1,16 +1,15 @@
 import MonacoEditor, { monaco as monacoReact } from '@monaco-editor/react'
 import * as React from 'react'
 import * as Config from '../../config'
-import { addContentWidget } from './add-content-widget'
-import { addViewZone } from './add-view-zone'
+import { CoolZone } from './cool-zone'
 import './Editor.css'
 import { EditorT, Monaco } from './types'
 
 const setupEditor = async (editor: EditorT) => {
   const monaco: Monaco = await monacoReact.init()
   console.log(editor)
-  ;(window as any).viewZoneResult = addViewZone(monaco, editor, 3, 3)
-  ;(window as any).contentWidgetResult = addContentWidget(editor, monaco, 4)
+  const coolZone = new CoolZone(monaco, editor, 3, 3)
+  ;(window as any).coolZone = coolZone
 }
 
 var jsCode = [
