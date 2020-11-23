@@ -7,14 +7,16 @@ import { EditorT, MonacoT } from '../../lib/editor/types'
 import { code } from './code'
 import './Editor.css'
 import { PlaceholderZoneContent } from './PlaceholderZoneContent'
+import { TextZone } from './TextZone'
 
 const setupEditor = async (editor: EditorT) => {
   const monaco: MonacoT = await monacoReact.init()
   setAllInstances({ editor, monaco })
 
   const coolZone = new CoolZone(6, 3, <PlaceholderZoneContent />)
-  const coolZone2 = new CoolZone(2, 3, <PlaceholderZoneContent />)
+  const coolZone2 = new CoolZone(2, 3, <TextZone label={'My text'} />)
   ;(window as any).coolZone = coolZone
+  ;(window as any).coolZone2 = coolZone2
 }
 
 export const Editor: React.FC = () => {
