@@ -8,13 +8,12 @@ import { code } from './code'
 import './Editor.css'
 import { PlaceholderZoneContent } from './PlaceholderZoneContent'
 
+// TODO: support multiple CoolZones
 const setupEditor = async (editor: EditorT) => {
   const monaco: MonacoT = await monacoReact.init()
   setAllInstances({ editor, monaco })
 
-  const coolZone = new CoolZone(3, 3, <PlaceholderZoneContent />)
-  const coolZone2 = new CoolZone(6, 6, <div>hello</div>)
-  // const coolZone2 = new CoolZone(6, 3, <PlaceholderZoneContent />)
+  const coolZone = new CoolZone(6, 3, <PlaceholderZoneContent />)
   ;(window as any).coolZone = coolZone
 }
 

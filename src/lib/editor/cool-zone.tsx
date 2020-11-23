@@ -1,7 +1,6 @@
 import { addContentWidget } from './add-content-widget'
 import { addDecorations } from './add-decorations'
 import { addViewZone } from './add-view-zone'
-import { Instances } from './instances'
 
 export class CoolZone {
   private _lineNumber: number
@@ -15,14 +14,16 @@ export class CoolZone {
     initialNumLines: number,
     content: ReturnType<React.FC>,
   ) {
-    const { monaco, editor } = Instances
-
     this._lineNumber = initialLineNumber
     this.numLines = initialNumLines
 
     this.viewZoneResult = addViewZone(this._lineNumber, this.numLines)
-    this.contentWidgetResult = addContentWidget(this._lineNumber + 1, content)
-    this.decorationResult = addDecorations(initialNumLines)
+    this.contentWidgetResult = addContentWidget(
+      this._lineNumber + 1,
+      this.numLines,
+      content,
+    )
+    this.decorationResult = addDecorations(this._lineNumber)
   }
 
   get lineNumber(): number {

@@ -6,6 +6,7 @@ import { ZoneContentContainer } from './ZoneContentContainer'
 
 export const addContentWidget = (
   initialLineNumber: number,
+  numLines: number,
   content: ReturnType<React.FC>,
 ) => {
   // Add a content widget (scrolls inline with text)
@@ -32,7 +33,9 @@ export const addContentWidget = (
       if (!domNode) {
         domNode = document.createElement('div')
         ReactDOM.render(
-          <ZoneContentContainer numLines={3}>{content}</ZoneContentContainer>,
+          <ZoneContentContainer numLines={numLines}>
+            {content}
+          </ZoneContentContainer>,
           domNode,
         )
       }
