@@ -1,14 +1,18 @@
 import MonacoEditor, { monaco as monacoReact } from '@monaco-editor/react'
 import * as React from 'react'
 import * as Config from '../../config'
-import { CoolZone } from './cool-zone'
+import { CoolZone } from '../../lib/editor/cool-zone'
+import { setAllInstances } from '../../lib/editor/instances'
+import { EditorT, MonacoT } from '../../lib/editor/types'
 import './Editor.css'
-import { EditorT, Monaco } from './types'
 
 const setupEditor = async (editor: EditorT) => {
-  const monaco: Monaco = await monacoReact.init()
+  const monaco: MonacoT = await monacoReact.init()
+
+  setAllInstances({ editor, monaco })
+
   console.log(editor)
-  const coolZone = new CoolZone(monaco, editor, 3, 3, <div>hello</div>)
+  const coolZone = new CoolZone(3, 3, <div>hello</div>)
   ;(window as any).coolZone = coolZone
 }
 

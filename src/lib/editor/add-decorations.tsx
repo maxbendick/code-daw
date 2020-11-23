@@ -1,11 +1,7 @@
-import './Editor.css'
-import { EditorT, Monaco } from './types'
+import { Instances } from './instances'
 
-export const addDecorations = (
-  monaco: Monaco,
-  editor: EditorT,
-  initialAfterLineNumber: number,
-) => {
+export const addDecorations = (initialAfterLineNumber: number) => {
+  const { monaco, editor } = Instances
   const makeDecorations = (afterLineNumber: number) => {
     return [
       {

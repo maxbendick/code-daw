@@ -1,21 +1,14 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { MyZoneContent as PlaceholderZoneContent } from './PlaceholderZoneContent'
-import {
-  EditorT,
-  IContentWidget,
-  IContentWidgetPosition,
-  Monaco,
-} from './types'
+import { MyZoneContent as PlaceholderZoneContent } from '../../components/Editor/PlaceholderZoneContent'
+import { Instances } from './instances'
+import { IContentWidget, IContentWidgetPosition } from './types'
 import { ZoneContentContainer } from './ZoneContentContainer'
 
-export const addContentWidget = (
-  editor: EditorT,
-  monaco: Monaco,
-  initialLineNumber: number,
-) => {
+export const addContentWidget = (initialLineNumber: number) => {
   // Add a content widget (scrolls inline with text)
   let domNode = null as any
+  const { monaco, editor } = Instances
 
   const position: IContentWidgetPosition = {
     position: {

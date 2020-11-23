@@ -1,8 +1,7 @@
 import { addContentWidget } from './add-content-widget'
 import { addDecorations } from './add-decorations'
 import { addViewZone } from './add-view-zone'
-import './Editor.css'
-import { EditorT, Monaco } from './types'
+import { Instances } from './instances'
 
 export class CoolZone {
   private _lineNumber: number
@@ -12,27 +11,18 @@ export class CoolZone {
   private decorationResult: ReturnType<typeof addDecorations>
 
   constructor(
-    monaco: Monaco,
-    editor: EditorT,
     initialLineNumber: number,
     initialNumLines: number,
     content: ReturnType<React.FC>,
   ) {
+    const { monaco, editor } = Instances
+
     this._lineNumber = initialLineNumber
     this.numLines = initialNumLines
-    this.viewZoneResult = addViewZone(
-      monaco,
-      editor,
-      this._lineNumber,
-      this.numLines,
-    )
-    this.contentWidgetResult = addContentWidget(
-      editor,
-      monaco,
-      this._lineNumber + 1,
-    )
 
-    this.decorationResult = addDecorations(monaco, editor, initialNumLines)
+    this.viewZoneResult = addViewZone(this._lineNumber, this.numLines)
+    this.contentWidgetResult = addContentWidget(this._lineNumber + 1)
+    this.decorationResult = addDecorations(initialNumLines)
   }
 
   get lineNumber(): number {
