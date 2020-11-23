@@ -9,7 +9,8 @@ export const addContentWidget = (
   numLines: number,
   content: ReturnType<React.FC>,
 ) => {
-  // Add a content widget (scrolls inline with text)
+  const id = Math.random().toString(36).substring(7)
+
   let domNode = null as any
   const { monaco, editor } = Instances
 
@@ -25,9 +26,8 @@ export const addContentWidget = (
   }
 
   var contentWidget: IContentWidget = {
-    // domNode: null as any,
     getId: function () {
-      return 'my.content.widget'
+      return id
     },
     getDomNode: function () {
       if (!domNode) {
