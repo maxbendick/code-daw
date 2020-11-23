@@ -1,80 +1,16 @@
 import MonacoEditor, { monaco as monacoReact } from '@monaco-editor/react'
-import * as monacoPackage from 'monaco-editor'
 import * as React from 'react'
-import ReactDOM from 'react-dom'
 import * as Config from '../../config'
+import { addContentWidget } from './add-content-widget'
+import { addViewZone } from './add-view-zone'
 import './Editor.css'
-import { MyZoneContent as PlaceholderZoneContent } from './PlaceholderZoneContent'
-import { ZoneBackground } from './ZoneBackground'
-import { ZoneContentContainer } from './ZoneContentContainer'
-
-type EditorT = monacoPackage.editor.IEditorOverrideServices
+import { EditorT, Monaco } from './types'
 
 const setupEditor = async (editor: EditorT) => {
-  const monaco = await monacoReact.init()
-
+  const monaco: Monaco = await monacoReact.init()
   console.log(editor)
-
-  var decorations = editor.deltaDecorations(
-    [],
-    [
-      {
-        range: new monaco.Range(3, 1, 3, 1),
-        options: {
-          isWholeLine: true,
-          className: 'myContentClass',
-          glyphMarginClassName: 'myGlyphMarginClass',
-        },
-      },
-    ],
-  )
-
-  // Add a zone to make hit testing more interesting
-  var viewZoneId = null
-  editor.changeViewZones(function (changeAccessor: any) {
-    var domNode = document.createElement('div')
-
-    ReactDOM.render(<ZoneBackground />, domNode)
-
-    viewZoneId = changeAccessor.addZone({
-      afterLineNumber: 3,
-      heightInLines: 3,
-      domNode: domNode,
-    })
-  })
-
-  // Add a content widget (scrolls inline with text)
-  var contentWidget = {
-    domNode: null,
-    getId: function () {
-      return 'my.content.widget'
-    },
-    getDomNode: function (this: { domNode: HTMLElement }) {
-      if (!this.domNode) {
-        this.domNode = document.createElement('div')
-        ReactDOM.render(
-          <ZoneContentContainer numLines={3}>
-            <PlaceholderZoneContent />
-          </ZoneContentContainer>,
-          this.domNode,
-        )
-      }
-      return this.domNode
-    },
-    getPosition: function () {
-      return {
-        position: {
-          lineNumber: 4,
-          column: 0,
-        },
-        preference: [
-          monaco.editor.ContentWidgetPositionPreference.ABOVE,
-          monaco.editor.ContentWidgetPositionPreference.BELOW,
-        ],
-      }
-    },
-  }
-  editor.addContentWidget(contentWidget)
+  ;(window as any).viewZoneResult = addViewZone(monaco, editor, 3, 3)
+  ;(window as any).contentWidgetResult = addContentWidget(editor, monaco, 4)
 }
 
 var jsCode = [
