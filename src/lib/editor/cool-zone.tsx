@@ -21,7 +21,7 @@ export class CoolZone {
     this.numLines = initialNumLines
 
     this.viewZoneResult = addViewZone(this._lineNumber, this.numLines)
-    this.contentWidgetResult = addContentWidget(this._lineNumber + 1)
+    this.contentWidgetResult = addContentWidget(this._lineNumber + 1, content)
     this.decorationResult = addDecorations(initialNumLines)
   }
 

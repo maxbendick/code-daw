@@ -1,6 +1,6 @@
 import * as React from 'react'
 
-export const MyZoneContent: React.FC = () => {
+export const PlaceholderZoneContent: React.FC = () => {
   return (
     <div
       onClick={() => console.log('content clicck')}

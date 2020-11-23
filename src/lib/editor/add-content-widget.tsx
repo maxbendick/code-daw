@@ -1,11 +1,13 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { MyZoneContent as PlaceholderZoneContent } from '../../components/Editor/PlaceholderZoneContent'
 import { Instances } from './instances'
 import { IContentWidget, IContentWidgetPosition } from './types'
 import { ZoneContentContainer } from './ZoneContentContainer'
 
-export const addContentWidget = (initialLineNumber: number) => {
+export const addContentWidget = (
+  initialLineNumber: number,
+  content: ReturnType<React.FC>,
+) => {
   // Add a content widget (scrolls inline with text)
   let domNode = null as any
   const { monaco, editor } = Instances
@@ -30,9 +32,7 @@ export const addContentWidget = (initialLineNumber: number) => {
       if (!domNode) {
         domNode = document.createElement('div')
         ReactDOM.render(
-          <ZoneContentContainer numLines={3}>
-            <PlaceholderZoneContent />
-          </ZoneContentContainer>,
+          <ZoneContentContainer numLines={3}>{content}</ZoneContentContainer>,
           domNode,
         )
       }
