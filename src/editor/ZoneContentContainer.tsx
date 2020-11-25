@@ -1,5 +1,5 @@
 import * as React from 'react'
-import * as Config from '../../config'
+import * as Config from '../config'
 
 export const ZoneContentContainer: React.FC<{ numLines: number }> = ({
   numLines,
