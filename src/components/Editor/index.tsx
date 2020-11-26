@@ -26,7 +26,7 @@ export const Editor: React.FC = () => {
 
   return (
     <MonacoEditor
-      height="calc(100vh - 330px)"
+      height="calc(100vh - 100px)"
       language="typescript"
       theme="dark"
       options={{ fontSize: Config.fontSize, lineHeight: Config.lineHeight }}
