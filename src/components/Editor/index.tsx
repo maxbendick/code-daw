@@ -4,7 +4,7 @@ import * as Config from '../../config'
 import { CoolZone } from '../../editor/cool-zone'
 import { setAllInstances } from '../../editor/instances'
 import { EditorT, MonacoT } from '../../editor/types'
-import { code } from './code'
+import { code2 } from './code'
 import './Editor.css'
 import { PlaceholderZoneContent } from './PlaceholderZoneContent'
 import { TextZone } from './TextZone'
@@ -30,7 +30,7 @@ export const Editor: React.FC = () => {
       language="typescript"
       theme="dark"
       options={{ fontSize: Config.fontSize, lineHeight: Config.lineHeight }}
-      value={code}
+      value={code2}
       editorDidMount={handleEditorDidMount}
     />
   )
