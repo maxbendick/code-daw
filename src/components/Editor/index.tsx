@@ -1,5 +1,4 @@
 import MonacoEditor, { monaco as monacoReact } from '@monaco-editor/react'
-import * as React from 'react'
 import * as Config from '../../config'
 import { CoolZone } from '../../editor/cool-zone'
 import { setAllInstances } from '../../editor/instances'
