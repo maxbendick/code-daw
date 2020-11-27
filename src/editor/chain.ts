@@ -23,3 +23,11 @@ export const chain = () => {
     },
   }
 }
+
+export const last = <A>(as?: A[]): A | undefined => {
+  const length = as?.length
+  if (typeof length === 'undefined' || length === 0) {
+    return undefined
+  }
+  return as?.[length - 1]
+}

@@ -5,16 +5,17 @@ import {
   addHighlighting,
   addHighlightingToEditor,
 } from '../../editor/add-highlighting'
+import { chain } from '../../editor/chain'
 import { CoolZone } from '../../editor/cool-zone'
 import { setAllInstances } from '../../editor/instances'
 import {
   loadFiles,
   setCompilerAndDiagnosticOptions,
 } from '../../editor/load-files'
+import { getAllTokens } from '../../editor/parsing/tokens'
 import { EditorT, MonacoT } from '../../editor/types'
 import { code3 } from './code'
 import './Editor.css'
-import { PlaceholderZoneContent } from './PlaceholderZoneContent'
 import { TextZone } from './TextZone'
 
 const setupEditor = async (editor: EditorT) => {
@@ -22,10 +23,32 @@ const setupEditor = async (editor: EditorT) => {
   setAllInstances({ editor, monaco })
   addHighlightingToEditor(editor)
 
-  const coolZone = new CoolZone(6, 3, <PlaceholderZoneContent />)
-  const coolZone2 = new CoolZone(2, 3, <TextZone label={'My text'} />)
-  ;(window as any).coolZone = coolZone
-  ;(window as any).coolZone2 = coolZone2
+  // const coolZone = new CoolZone(6, 3, <PlaceholderZoneContent />)
+  // const coolZone2 = new CoolZone(2, 3, <TextZone label={'My text'} />)
+  // ;(window as any).coolZone = coolZone
+  // ;(window as any).coolZone2 = coolZone2
+
+  chain()
+    .then(() => editor.getModel()?.getLinesContent()!)
+    .then(getAllTokens)
+    .then(tokens => {
+      return tokens
+        .map((token, index) => {
+          const prevLine = index > 0 ? tokens[index - 1].line : -1
+
+          if (token.line === prevLine) {
+            return undefined
+          }
+
+          return new CoolZone(
+            token.line + 1,
+            3,
+            <TextZone label={`My ${token.token}`} />,
+          )
+        })
+        .filter(a => a)
+    })
+    .tap(result => console.log('big tap', result))
 }
 
 const editorPreSetup = async () => {
