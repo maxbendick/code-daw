@@ -52,5 +52,8 @@ export const addContentWidget = (
       ;(position.position as any).lineNumber = lineNumber
       editor.layoutContentWidget(contentWidget)
     },
+    destroy: () => {
+      editor.removeContentWidget(contentWidget)
+    },
   }
 }

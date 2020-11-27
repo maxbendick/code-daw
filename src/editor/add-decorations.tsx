@@ -30,5 +30,8 @@ export const addDecorations = (initialAfterLineNumber: number) => {
     moveDecoration: (afterLineNumber: number) => {
       update(afterLineNumber)
     },
+    destroy: () => {
+      editor.deltaDecorations(decorations, [])
+    },
   }
 }

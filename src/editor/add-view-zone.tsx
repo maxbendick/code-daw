@@ -38,5 +38,13 @@ export const addViewZone = (
         changeAccessor.layoutZone(viewZoneId)
       })
     },
+
+    destroy: () => {
+      editor.changeViewZones(function (
+        changeAccessor: IViewZoneChangeAccessor,
+      ) {
+        changeAccessor.removeZone(viewZoneId)
+      })
+    },
   }
 }

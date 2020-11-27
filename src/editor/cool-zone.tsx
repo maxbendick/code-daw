@@ -37,4 +37,10 @@ export class CoolZone {
     this.contentWidgetResult.updateLineNumber(this._lineNumber + 1)
     this.decorationResult.moveDecoration(this._lineNumber)
   }
+
+  destroy() {
+    this.viewZoneResult.destroy()
+    this.contentWidgetResult.destroy()
+    this.decorationResult.destroy()
+  }
 }
