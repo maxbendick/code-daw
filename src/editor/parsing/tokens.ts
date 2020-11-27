@@ -78,9 +78,7 @@ const tokenMatchesToTokenPlaces = (tokenMatches: TokenMatch[]): TokenPlaces => {
   ).result
 }
 
-export const getAllTokens = (code: string): TokenPlaces => {
-  const lines = code.split('\n')
-
+export const getAllTokens = (lines: string[]): TokenPlaces => {
   let allTokenMatches: TokenMatch[] = []
 
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
@@ -95,3 +93,54 @@ export const getAllTokens = (code: string): TokenPlaces => {
 
   return tokenMatchesToTokenPlaces(allTokenMatches)
 }
+
+export interface SemanticToken {
+  deltaLine: number
+  deltaColumn: number
+  tokenLength: number
+  type: 0
+  modifier: 2
+}
+
+export const semanticTokensToData = (
+  semanticTokens: SemanticToken[],
+): number[] =>
+  semanticTokens.flatMap(
+    ({
+      deltaLine,
+      deltaColumn,
+      tokenLength,
+      type,
+      modifier,
+    }: SemanticToken): number[] => [
+      deltaLine,
+      deltaColumn,
+      tokenLength,
+      type,
+      modifier,
+    ],
+  )
+
+const tokenPlacesToSemanticTokens = (
+  tokenPlaces: TokenPlaces,
+): SemanticToken[] => {
+  return tokenPlaces.map(
+    (tokenPlace: TokenPlace): SemanticToken => {
+      return {
+        deltaLine: tokenPlace.deltaLine,
+        deltaColumn: tokenPlace.deltaColumn,
+        tokenLength: tokenPlace.token.length,
+        type: 0,
+        modifier: 2,
+      }
+    },
+  )
+}
+
+export const tokenPlacesToRawSemanticTokensData = (
+  tokenPlaces: TokenPlaces,
+): Uint32Array =>
+  chain(tokenPlaces)
+    .then(tokenPlacesToSemanticTokens)
+    .then(semanticTokensToData)
+    .then(data => new Uint32Array(data)).value

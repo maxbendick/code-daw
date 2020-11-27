@@ -1,3 +1,8 @@
+import { chain } from './chain'
+import {
+  getAllTokens,
+  tokenPlacesToRawSemanticTokensData,
+} from './parsing/tokens'
 import { EditorT, MonacoT } from './types'
 
 export const addHighlighting = (monaco: MonacoT) => {
@@ -9,40 +14,16 @@ export const addHighlighting = (monaco: MonacoT) => {
       }
     },
 
-    provideDocumentSemanticTokens: model => {
-      const lines = model.getLinesContent()
-      const data: any = []
-
-      let prevLine = 0
-      // let prevChar = 0
-
-      for (let i = 0; i < lines.length; i++) {
-        const line = lines[i]
-
-        const startIndex = line.indexOf('dial(')
-
-        if (startIndex > -1) {
-          let type = 0
-          let modifier = 2
-
-          data.push(
-            // translate line to deltaLine
-            i - prevLine,
-            // for the same line, translate start to deltaStart
-            startIndex, // prevLine === i ? match.index - prevChar : match.index,
-            'dial'.length, // match[0].length,
-            type,
-            modifier,
-          )
-
-          prevLine = i
-        }
-      }
-      return {
-        data: new Uint32Array(data),
-        resultId: null,
-      } as any
-    },
+    provideDocumentSemanticTokens: model =>
+      chain()
+        .then(() => model.getLinesContent())
+        .then(getAllTokens)
+        .then(tokenPlacesToRawSemanticTokensData)
+        .then(data => ({
+          data,
+          resultId: null,
+        }))
+        .value() as any,
 
     releaseDocumentSemanticTokens: () => {},
   })
