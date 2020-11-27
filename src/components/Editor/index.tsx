@@ -1,6 +1,10 @@
 import MonacoEditor, { monaco as monacoReact } from '@monaco-editor/react'
 import { useEffect, useState } from 'react'
 import * as Config from '../../config'
+import {
+  addHighlighting,
+  addHighlightingToEditor,
+} from '../../editor/add-highlighting'
 import { CoolZone } from '../../editor/cool-zone'
 import { setAllInstances } from '../../editor/instances'
 import {
@@ -16,6 +20,7 @@ import { TextZone } from './TextZone'
 const setupEditor = async (editor: EditorT) => {
   const monaco: MonacoT = await monacoReact.init()
   setAllInstances({ editor, monaco })
+  addHighlightingToEditor(editor)
 
   const coolZone = new CoolZone(6, 3, <PlaceholderZoneContent />)
   const coolZone2 = new CoolZone(2, 3, <TextZone label={'My text'} />)
@@ -26,6 +31,7 @@ const setupEditor = async (editor: EditorT) => {
 const editorPreSetup = async () => {
   const monaco: MonacoT = await monacoReact.init()
   setCompilerAndDiagnosticOptions(monaco)
+  addHighlighting(monaco)
   await loadFiles(monaco)
 }
 
@@ -55,12 +61,20 @@ export const Editor: React.FC = () => {
     return <div>loading...</div>
   }
 
+  const extraOptions: { [k: string]: boolean } = {
+    'semanticHighlighting.enabled': true,
+  }
+
   return (
     <MonacoEditor
       height="calc(100vh - 100px)"
       language="typescript"
       theme="dark"
-      options={{ fontSize: Config.fontSize, lineHeight: Config.lineHeight }}
+      options={{
+        fontSize: Config.fontSize,
+        lineHeight: Config.lineHeight,
+        ...extraOptions,
+      }}
       value={code3}
       editorDidMount={handleEditorDidMount}
     />

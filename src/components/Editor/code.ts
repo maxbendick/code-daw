@@ -87,6 +87,8 @@ const y = Signals.from(Signals.of(123))
 
 const droneToggle = toggle({ default: true })
 
+const firstDial = dial({ start: 200, end: 600, default: 400 }) // dial here?
+
 const superProcessedDrone = pipe(
   () => AudioSignals.sine(100),
   AudioEffects.reverb(),
