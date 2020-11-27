@@ -31,6 +31,12 @@ const getLibFile = async (filename: string): Promise<string> => {
   return response.text()
 }
 
+const getTotalityFile = async (): Promise<string> => {
+  const path = `${editorFilesPath}/totality.d.ts`
+  const response = await fetch(path)
+  return response.text()
+}
+
 const getAllLibFiles = async (): Promise<FilenameToFileContent> => {
   const fileDefinitions = await getFileDefinitions()
 
@@ -140,22 +146,17 @@ export const loadFiles = async (monaco: MonacoT) => {
 
   console.log('all files', files)
 
-  for (const [filename, fileContent] of Object.entries(files)) {
-    addDtsFile(monaco, filename, fileContent)
-  }
+  const totalityFile = await getTotalityFile()
+
+  monaco.languages.typescript.typescriptDefaults.addExtraLib(
+    totalityFile.replaceAll(`"lib/`, `"code-daw/`),
+    'file:///node_modules/@types/lib/lib.d.ts',
+  )
 
   monaco.languages.typescript.typescriptDefaults.addExtraLib(
     "declare module 'test/file2' { export interface Test<A>{ x: A } }",
     'file:///node_modules/@types/test/file2.d.ts',
   )
-
-  //   addDtsFile(
-  //     monaco,
-  //     'code-daw/krunk',
-  //     `
-  // export const posn: { x: number, y: 7 } = { x: 4, y: 7 as const }
-  // `,
-  //   )
 }
 
 export const setCompilerAndDiagnosticOptions = (monaco: MonacoT) => {
