@@ -24,8 +24,7 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "tsc-help": "tsc --project tsconfig.editor.json",
-    "tsc---help": "tsc --outDir ./helppp --emitDeclarationOnly --noEmit false --declaration --rootDir ./src/lib/"
+    "generate-editor-types": "tsc --project tsconfig.editor.json"
   },
   "eslintConfig": {
     "extends": [

@@ -5,7 +5,7 @@
     "emitDeclarationOnly": true,
     "noEmit": false,
     "declaration": true,
-    "outFile": "./helppp/krunk.d.ts",
+    "outFile": "./public/editor-files/totality.d.ts",
     "isolatedModules": false,
     "rootDir": "src/"
   },
