@@ -1,0 +1,18 @@
+{
+  "code": [],
+  "lib": [
+    "_subscription.d.ts",
+    "audio-signal.d.ts",
+    "io.d.ts",
+    "pipe.d.ts",
+    "signal-transport.d.ts",
+    "signals.d.ts",
+    "audio-effects.d.ts",
+    "audio-signals.d.ts",
+    "interactables.d.ts",
+    "midi-signal.d.ts",
+    "signal-effects.d.ts",
+    "signal.d.ts",
+    "utility-types.d.ts"
+  ]
+}

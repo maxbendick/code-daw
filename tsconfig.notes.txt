@@ -1,0 +1,12 @@
+{
+  "_tsc-help": "tsc --outDir ./helppp --emitDeclarationOnly --noEmit false --declaration --rootDir ./src/lib/",
+  "_rootDir": "./src/lib/",
+
+  "extends": "./tsconfig.json",
+  "outDir": "./helppp",
+  "emitDeclarationOnly": true,
+  "noEmit": "false",
+  "declaration": true,
+  "include": ["src/lib/**/*"],
+  "_asdfasdf": [{ "path": "src/lib/**/*" }]
+}

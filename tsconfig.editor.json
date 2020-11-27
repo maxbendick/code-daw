@@ -1,0 +1,13 @@
+{
+  "extends": "./tsconfig.json",
+  "compilerOptions": {
+    "outDir": "./helppp",
+    "emitDeclarationOnly": true,
+    "noEmit": false,
+    "declaration": true,
+    "outFile": "./helppp/krunk.d.ts",
+    "isolatedModules": false,
+    "rootDir": "src/"
+  },
+  "include": ["src/lib/**/*"]
+}

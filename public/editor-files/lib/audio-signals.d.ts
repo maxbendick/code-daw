@@ -1,0 +1,11 @@
+import { AudioSignal } from './audio-signal';
+import { Signal } from './signal';
+import { Hz_, Number_, Phase_ } from './utility-types';
+declare type OscillatorMaker = (freqHz: Hz_, phaseRadians?: Phase_) => AudioSignal;
+export declare const sine: OscillatorMaker;
+export declare const triangle: OscillatorMaker;
+export declare const square: OscillatorMaker;
+export declare const add: (a: Number_ | AudioSignal, b: Number_ | AudioSignal) => AudioSignal;
+export declare const mult: (a: Number_ | AudioSignal, b: Number_ | AudioSignal) => AudioSignal;
+export declare const sample: (signal: AudioSignal, sampleRateHz: Hz_) => Signal<number>;
+export {};
