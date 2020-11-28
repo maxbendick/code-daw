@@ -52,7 +52,17 @@ export const addContentWidget = (
       ;(position.position as any).lineNumber = lineNumber
       editor.layoutContentWidget(contentWidget)
     },
+    updateContent: (content: ReturnType<React.FC>) => {
+      ReactDOM.unmountComponentAtNode(domNode)
+      ReactDOM.render(
+        <ZoneContentContainer numLines={numLines}>
+          {content}
+        </ZoneContentContainer>,
+        domNode,
+      )
+    },
     destroy: () => {
+      ReactDOM.unmountComponentAtNode(domNode)
       editor.removeContentWidget(contentWidget)
     },
   }

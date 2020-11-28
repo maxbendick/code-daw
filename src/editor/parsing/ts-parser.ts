@@ -2,7 +2,7 @@ import { chain } from '../chain'
 import { constTokenAssignmentRegex } from './regex'
 import { Token } from './tokens'
 
-type TokenPlace = {
+export type TokenPlace = {
   token: Token
   line: number
   column: number

@@ -1,6 +1,13 @@
+import * as React from 'react'
+import {
+  ZoneComponent,
+  ZoneLoadingComponent,
+} from '../components/Editor/zone-component'
+import { TokenPlace } from '../editor/parsing/ts-parser'
 import { addContentWidget } from './add-content-widget'
 import { addDecorations } from './add-decorations'
 import { addViewZone } from './add-view-zone'
+import { registerFinishedLoadingListener } from './finished-loading-listeners'
 
 export class CoolZone {
   private _lineNumber: number
@@ -10,19 +17,32 @@ export class CoolZone {
   private decorationResult: ReturnType<typeof addDecorations>
 
   constructor(
-    initialLineNumber: number,
+    token: TokenPlace,
     initialNumLines: number,
-    content: ReturnType<React.FC>,
+    ZoneComponentArg: ZoneComponent,
+    ZoneLoadingComponentArg: ZoneLoadingComponent,
   ) {
-    this._lineNumber = initialLineNumber
+    this._lineNumber = token.line + 1
     this.numLines = initialNumLines
 
     this.viewZoneResult = addViewZone(this._lineNumber, this.numLines)
+
+    // TODO inject interactable on eval?
     this.contentWidgetResult = addContentWidget(
       this._lineNumber + 1,
       this.numLines,
-      content,
+      <ZoneLoadingComponentArg token={token} />,
     )
+
+    registerFinishedLoadingListener(() => {
+      const interactable = (window as any).codeDawVars[token.varName]
+        ._interactable
+
+      this.contentWidgetResult.updateContent(
+        <ZoneComponentArg token={token} interactable={interactable} />,
+      )
+    })
+
     this.decorationResult = addDecorations(this._lineNumber)
   }
 

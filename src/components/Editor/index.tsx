@@ -18,17 +18,12 @@ import { getAllTokens } from '../../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../../editor/types'
 import { code4 } from './code'
 import './Editor.css'
-import { TextZone } from './TextZone'
+import { TextZoneLoading, TextZoneZooone } from './TextZone'
 
 const setupEditor = async (editor: EditorT) => {
   const monaco: MonacoT = await monacoReact.init()
   setAllInstances({ editor, monaco })
   addHighlightingToEditor(editor)
-
-  // const coolZone = new CoolZone(6, 3, <PlaceholderZoneContent />)
-  // const coolZone2 = new CoolZone(2, 3, <TextZone label={'My text'} />)
-  // ;(window as any).coolZone = coolZone
-  // ;(window as any).coolZone2 = coolZone2
 
   chain()
     .then(() => editor.getModel()?.getLinesContent()!)
@@ -42,11 +37,7 @@ const setupEditor = async (editor: EditorT) => {
             return undefined
           }
 
-          return new CoolZone(
-            token.line + 1,
-            3,
-            <TextZone label={`My ${token.token}`} />,
-          )
+          return new CoolZone(token, 3, TextZoneZooone, TextZoneLoading)
         })
         .filter(a => a)
     })

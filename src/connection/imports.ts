@@ -1,6 +1,7 @@
 // where am I???
 // import from a honeypot?
 
+import { alertFinishedLoadingListeners } from '../editor/finished-loading-listeners'
 import { _interactables_exports } from '../lib/interactables'
 
 export const evalCompiledUserCode = (code: string) => {
@@ -12,6 +13,8 @@ export const evalCompiledUserCode = (code: string) => {
     'from window!',
     (window as any).codeDawVars.firstDial._interactable,
   )
+
+  alertFinishedLoadingListeners()
 }
 
 interface RegisterArgs {
