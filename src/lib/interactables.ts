@@ -64,6 +64,7 @@ export const dial: (config: DialConfig) => Signal<number> = config => {
     _type: 'dial' as const,
     _dial: true as const,
     _config: config,
+    _compiledLineNumber: (window as any).codeDawCurrentLineNumber,
   }
 
   return signal

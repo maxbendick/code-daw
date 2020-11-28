@@ -17,8 +17,25 @@ const mycoolerSIG = pipe(
 )(null)
 `
 
+const registerLineNumber = (e: Error) => {
+  const stack = new Error().stack!
+  // find first: <anonymous>:6:22)
+  //             <anonymous>:${lineNumber}:22)
+
+  const anonymousStr = '<anonymous>:'
+  const anonymousStart = stack.indexOf(anonymousStr)
+  const startingAtAnonymous = stack.substring(
+    anonymousStart,
+    anonymousStart + 100,
+  )
+  const lineNumberStr = startingAtAnonymous.split(':')[1]
+  const lineNumber = Number.parseInt(lineNumberStr)
+
+  ;(window as any).codeDawCurrentLineNumber = lineNumber
+}
+
 export const compileAndEval = (editor: EditorT) => {
-  // const codeFromEditor = editor.getModel()?.getLinesContent().join('\n')!
+  ;(window as any).codeDawRegisterLineNumber = registerLineNumber
 
   const code = chain()
     .then(() => editor.getModel()?.getLinesContent().join('\n')!)
@@ -32,9 +49,11 @@ export const compileAndEval = (editor: EditorT) => {
       ),
     )
     .then(code => code.replaceAll('require(', 'codeDawRequire('))
-    // .tap(code => console.log('compile result', code))
     .then(code => {
-      return `var exports = {};\nwindow.codeDawVars = {};\n${code}`
+      const exports = `var exports = {};`
+      const codeDawVars = `window.codeDawVars = {};`
+
+      return `${exports}\n${codeDawVars}\n${code}`
     })
     .then(code => {
       // add vars to window
@@ -43,19 +62,29 @@ export const compileAndEval = (editor: EditorT) => {
       return chain()
         .then(() => code.split('\n'))
         .then(lines => {
-          console.log('in var replacer!')
-          const replacer = (...args: any[]) => {
-            console.log('replacer args:', args)
+          const replacer = (onReplace: () => void) => (...args: any[]) => {
             const varName = args[0] as string
-            console.log('var name', varName)
+            onReplace()
             return `${varName} = window.codeDawVars.${varName}`
           }
 
           return lines.map(line => {
-            const replaced = line.replace(compiledTokenVarNameRegex, replacer)
-            if (line !== replaced) {
-              console.log('updated line', replaced)
+            let didReplace = false
+
+            const onReplace = () => {
+              didReplace = true
             }
+            let replaced = line.replace(
+              compiledTokenVarNameRegex,
+              replacer(onReplace),
+            )
+
+            if (didReplace) {
+              // register line numbers
+              const registerStatement = `codeDawRegisterLineNumber(new Error()); `
+              replaced = `${registerStatement} ${replaced}`
+            }
+
             return replaced
           })
         })

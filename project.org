@@ -1,3 +1,13 @@
+* next step ideas
+** dials update audio?
+** convert to graph based eval, with separate runtime
+** organize stuff better
+** rename Token to InteractableType
+** use sourcemap somehow
+** do some actual livecoding for fun
+** DONE use new Error().stack to get line number of dial call
+*** DONE line = getLineNumber(); var x = window.codeDawVars.x = .....
+
 * hot ideas
 ** dial can be referenced by variable name!
   const myDial = dial(...) registers a dial with ID 'myDial'?
@@ -49,12 +59,13 @@
 *** configure tsc? tslib? 
 
 ** steps
-*** TODO make runtime evaluate fine
-*** TODO remove types from input code
-*** TODO remove imports, add stuff to window based on imports
-*** TODO eval code in browser
-*** connect core buses
-*** inject dials into cool zones
+*** DONE make runtime evaluate fine
+*** DONE remove types from input code
+*** DONE remove imports, add stuff to window based on imports
+*** DONE eval code in browser
+*** TODO connect core buses
+*** DONE inject dials into cool zones
+
 
 * Future
 ** use ts language service for highlighting, binding

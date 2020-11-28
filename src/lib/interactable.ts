@@ -9,6 +9,7 @@ interface _BaseInteractable<Sends, Receives, Config> {
   _index: number
   _dial?: true
   _config: Config
+  _compiledLineNumber: number
 }
 
 type DialSends = number
