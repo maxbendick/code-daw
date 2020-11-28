@@ -1,0 +1,38 @@
+* Binding brainstorming
+** each interactable in runtime has an index
+** each coolzone instance knows it's own index?
+** need to crossreference coolzone instances with dial instances
+   component will get start/end/default
+** first, need a basic runtime
+** multiple dials on one line -> error in runtime?
+** need to error if in loop/function or multiple 
+   calls for one call expression 
+** can error if token doesn't match interactable runtime function
+
+* Runtime brainstorming
+** compile with tsc
+** run with eval
+** need to add runtime dependencies (audio-signals.js, etc.)
+** need to create runtime files
+** need cross-communication between evaled files and rest of program
+** send dial updates to runtime
+** consider messages sent from runtime, like for gain meters
+** buses are visible to runtime based off code analysis before eval
+
+** mvp:
+*** tsc to compile to JS
+*** remove types only?
+*** use global eval + window to communicate, share lib
+*** remove imports before compilation?
+*** configure tsc? tslib? 
+
+** steps
+*** make runtime evaluate fine
+*** remove types from input code
+*** remove imports, add stuff to window based on imports
+*** eval code in browser
+
+* Future
+** use ts language service for highlighting, binding
+** sanitize input code
+** convert imports to declaring from window?
