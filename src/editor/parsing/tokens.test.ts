@@ -1,5 +1,5 @@
 import { chain } from '../chain'
-import { getAllTokens } from './tokens'
+import { getAllTokens } from './ts-parser'
 
 test('renders learn react link', () => {
   const result = getAllTokens(

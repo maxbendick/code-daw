@@ -3,7 +3,7 @@ DualBus can be used for communication between
 one place and another
 */
 
-import { getAllTokens } from '../editor/parsing/tokens'
+import { getAllTokens } from '../editor/parsing/ts-parser'
 import { EditorT } from '../editor/types'
 
 export interface Bus<SendT, ReceiveT> {

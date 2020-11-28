@@ -2,7 +2,7 @@ import { chain } from './chain'
 import {
   getAllTokens,
   tokenPlacesToRawSemanticTokensData,
-} from './parsing/tokens'
+} from './parsing/ts-parser'
 import { EditorT, MonacoT } from './types'
 
 export const addHighlighting = (monaco: MonacoT) => {

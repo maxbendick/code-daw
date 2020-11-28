@@ -14,7 +14,7 @@ import {
   loadFiles,
   setCompilerAndDiagnosticOptions,
 } from '../../editor/load-files'
-import { getAllTokens } from '../../editor/parsing/tokens'
+import { getAllTokens } from '../../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../../editor/types'
 import { code4 } from './code'
 import './Editor.css'
