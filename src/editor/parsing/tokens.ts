@@ -16,6 +16,8 @@ type TokenPlace = {
   column: number
   deltaLine: number
   deltaColumn: number
+  lineContent: string
+  varName: string
 }
 
 type TokenPlaces = TokenPlace[]
@@ -23,7 +25,7 @@ type TokenPlaces = TokenPlace[]
 type GlobalMatchArray = [
   token: Token,
   a1: undefined,
-  a2: undefined,
+  varName: string,
   a3: undefined,
   a4: Token,
   a5: undefined,
@@ -35,6 +37,8 @@ const prettyMatch = (line: number, m: GlobalMatchArray) => {
     token: m[0] as Token,
     column: m.index,
     input: m.input,
+    lineContent: m.input,
+    varName: m[2],
   }
 }
 
@@ -49,25 +53,35 @@ interface ReducerState {
   }
 }
 
+const varNameGroup = `(\\w+)`
+
+const lookBehind = `(?<=(const ${varNameGroup} = ))`
+
 const tokenGroup = `(${tokens.map(t => `(${t})`).join('|')})`
 
-const regexp = new RegExp(`${tokenGroup}(?=\\()`, 'g')
+const lookAhead = `(?=\\()`
+
+const regexp = new RegExp(`${lookBehind}${tokenGroup}${lookAhead}`, 'g')
 
 const tokenMatchesToTokenPlaces = (tokenMatches: TokenMatch[]): TokenPlaces => {
   return tokenMatches.reduce(
-    (
-      { result, prev }: ReducerState,
-      { token, line, column }: TokenMatch,
-    ): ReducerState => {
+    ({ result, prev }: ReducerState, tokenMatch: TokenMatch): ReducerState => {
+      const { token, line, column, lineContent, varName } = tokenMatch
+
       if (line == prev.line) {
-        console.log('SSAME LINEEE', { prevColumn: prev.column, column: column })
+        console.error('received token on same line as previous token')
       }
-      const currTokenPlace = {
+      if (!lineContent.startsWith('const ')) {
+        console.error('token decl doesnt start with const', tokenMatch)
+      }
+      const currTokenPlace: TokenPlace = {
         token,
         line,
         column,
         deltaLine: line - prev.line,
         deltaColumn: line === prev.line ? column - prev.column : column,
+        lineContent,
+        varName,
       }
 
       return {

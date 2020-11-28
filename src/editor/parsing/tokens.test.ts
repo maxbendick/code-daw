@@ -9,6 +9,11 @@ somethin s
 asdfasdf
 asdsdf
 
+const VARNAME = dial(
+
+const mySecondDial = dial(
+
+
 dial({ hello: bob })
 
 polySine({ kaasdf: 2 }) dial()
@@ -20,6 +25,8 @@ polySine({ kaasdf: 2 }) dial()
 dddsa
   `.split('\n'),
   )
+
+  expect(result).toBeTruthy()
 
   console.log('result', result)
 })

@@ -11,6 +11,15 @@
 *** eval adds function to window to start runtime
 *** rest of program calls eval
 
+** add all vars to window?
+   replace "var myVar = dial(" 
+   with    "var myVar = window.codeDawVars.myVar = dial("
+*** have to error all dials without assigning to const
+*** DONE for all lines with a dial, and dialVarName
+    line must start with: `const ${dialVarName} = dial(`
+    could simply use this for all parsing with lookahead/lookbehind
+*** DONE add dialVarName to token parse result
+
 * Binding brainstorming
 ** each interactable in runtime has an index
 ** each coolzone instance knows it's own index?
