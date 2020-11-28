@@ -54,6 +54,7 @@
 *** TODO remove imports, add stuff to window based on imports
 *** TODO eval code in browser
 *** connect core buses
+*** inject dials into cool zones
 
 * Future
 ** use ts language service for highlighting, binding

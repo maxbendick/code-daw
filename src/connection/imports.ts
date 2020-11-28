@@ -7,6 +7,11 @@ export const evalCompiledUserCode = (code: string) => {
   ;(window as any).codeDawInEval = true
   eval(code)
   ;(window as any).codeDawInEval = false
+
+  console.log(
+    'from window!',
+    (window as any).codeDawVars.firstDial._interactable,
+  )
 }
 
 interface RegisterArgs {

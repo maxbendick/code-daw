@@ -1,3 +1,4 @@
+import { _Interactable } from './interactable'
 import { _Subscription, _SubscriptionLike } from './_subscription'
 
 type SetupFn<A> = (set: (a: A) => void) => _SubscriptionLike
@@ -8,6 +9,7 @@ export class Signal<A> {
 
   _signal = true as const
   _curr: A = null as any
+  _interactable?: _Interactable
 
   constructor(setupFn: SetupFn<A>) {
     setupFn((a: A) => this._set(a))
