@@ -49,7 +49,9 @@ interface ReducerState {
   }
 }
 
-const regexp = new RegExp(tokens.map(t => `(${t})`).join('|'), 'g')
+const tokenGroup = `(${tokens.map(t => `(${t})`).join('|')})`
+
+const regexp = new RegExp(`${tokenGroup}(?=\\()`, 'g')
 
 const tokenMatchesToTokenPlaces = (tokenMatches: TokenMatch[]): TokenPlaces => {
   return tokenMatches.reduce(
@@ -65,8 +67,7 @@ const tokenMatchesToTokenPlaces = (tokenMatches: TokenMatch[]): TokenPlaces => {
         line,
         column,
         deltaLine: line - prev.line,
-        deltaColumn:
-          line === prev.line ? column - prev.column - prev.token.length : 0,
+        deltaColumn: line === prev.line ? column - prev.column : column,
       }
 
       return {
