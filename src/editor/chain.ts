@@ -7,13 +7,16 @@
 
 const _chain = <A>(f: () => A) => {
   const value = f()
-  return {
+  const self = {
     value: () => value,
     then: <B>(f: (a: A) => B) => _chain(() => f(value)),
     tap: (f: (a: A) => void) => {
       f(value)
+      return self
     },
   }
+
+  return self
 }
 
 export const chain = () => {

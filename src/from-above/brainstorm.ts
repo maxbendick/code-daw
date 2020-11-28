@@ -1,6 +1,6 @@
 import * as AudioEffects from '../lib/audio-effects'
 import * as AudioSignals from '../lib/audio-signals'
-import { dial, mixer, polySine, switcher, toggle } from '../lib/interactables'
+import { polySine, switcher, toggle } from '../lib/interactables'
 import * as IO from '../lib/io'
 import { pipe } from '../lib/pipe'
 import * as SignalEffects from '../lib/signal-effects'
@@ -70,10 +70,10 @@ const mycoolerSIG = pipe(
 
 const slowFm = AudioSignals.sine(Signals.sine(100), 2)
 
-const pitchHz = dial({ start: 200, end: 600, default: 400 }) // dial here?
+// const pitchHz = dial({ start: 200, end: 600, default: 400 }) // dial here?
 // automation? maybe a button that records to a new Automation variable above
 
-const dialedUp = AudioSignals.sine(pitchHz) // dial here?
+// const dialedUp = AudioSignals.sine(pitchHz) // dial here?
 
 const piano = pipe(
   () => IO.midiIn('keyboard'),
@@ -82,16 +82,16 @@ const piano = pipe(
 )(null)
 
 // need to order somehow? UI here?
-const master = mixer({
-  alice: AudioSignals.sine(100),
-  bob: AudioSignals.sine(100),
-  charl: polySine(IO.midiIn('keyboard')),
-  piano,
-  superProcessedDrone,
-  dialedUp,
-})
+// const master = mixer({
+//   alice: AudioSignals.sine(100),
+//   bob: AudioSignals.sine(100),
+//   charl: polySine(IO.midiIn('keyboard')),
+//   piano,
+//   superProcessedDrone,
+//   dialedUp,
+// })
 
-export const masterOut = IO.audioOut(master)
+// export const masterOut = IO.audioOut(master)
 
 const myXwitcherrr = switcher([
   { label: 'first choice', type: 'xander', hype: 3 },

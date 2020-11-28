@@ -7,3 +7,5 @@ export const midiOut = (midiSignal: MidiSignal, ...x: any[]): void =>
 export const audioIn = (...x: any[]): AudioSignal => null as any
 export const audioOut = (audioSignal: AudioSignal, ...x: any[]): void =>
   null as any
+
+export const sendMaster = (signal: AudioSignal) => {}

@@ -6,6 +6,7 @@ import {
   addHighlightingToEditor,
 } from '../../editor/add-highlighting'
 import { chain } from '../../editor/chain'
+import { doCompile } from '../../editor/compilation/compilation'
 import { CoolZone } from '../../editor/cool-zone'
 import { setAllInstances } from '../../editor/instances'
 import {
@@ -49,6 +50,8 @@ const setupEditor = async (editor: EditorT) => {
         .filter(a => a)
     })
     .tap(result => console.log('big tap', result))
+
+  doCompile(editor)
 }
 
 const editorPreSetup = async () => {

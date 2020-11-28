@@ -87,6 +87,8 @@ const y = Signals.from(Signals.of(123))
 
 const droneToggle = toggle({ default: true })
 
+reverb()
+
 const firstDial = dial({ start: 200, end: 600, default: 400 }) // dial here?
 
 const superProcessedDrone = pipe(
@@ -132,7 +134,8 @@ const master = mixer({
   dialedUp,
 })
 
-export const masterOut = IO.audioOut(master)
+// use thing from IO instead
+// export const masterOut = IO.audioOut(master)
 
 const myXwitcherrr = switcher([
   { label: 'first choice', type: 'xander', hype: 3 },
