@@ -16,7 +16,7 @@ import {
 } from '../../editor/load-files'
 import { getAllTokens } from '../../editor/parsing/tokens'
 import { EditorT, MonacoT } from '../../editor/types'
-import { code3 } from './code'
+import { code4 } from './code'
 import './Editor.css'
 import { TextZone } from './TextZone'
 
@@ -103,7 +103,7 @@ export const Editor: React.FC = () => {
         lineHeight: Config.lineHeight,
         ...extraOptions,
       }}
-      value={code3}
+      value={code4}
       editorDidMount={handleEditorDidMount}
     />
   )

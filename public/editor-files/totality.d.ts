@@ -87,23 +87,50 @@ declare module "lib/interactables" {
     import { MidiSignal } from "lib/midi-signal";
     import { Signal } from "lib/signal";
     import { Number_ } from "lib/utility-types";
+    interface Bus<SendT, ReceiveT> {
+        send: (message: SendT) => void;
+        receive: (f: (message: ReceiveT) => void) => void;
+        destroy: () => void;
+        destroyed: boolean;
+    }
+    type InteractableType = 'dial' | 'mixer';
+    type DialSends = number;
+    type DialReceives = number;
+    interface _Interactable<Sends, Receives> {
+        _bus: Bus<Sends, Receives>;
+        _type: InteractableType;
+        _index: number;
+    }
+    type _DialSignal<A> = Signal<A> & _Interactable<DialSends, DialReceives>;
+    type _InteractableSignal<A> = Signal<A> & _Interactable<any, any>;
+    type _InteractableAudioSignal = AudioSignal & _Interactable<any, any>;
     export const dial: (config: {
         start: Number_;
         end: Number_;
-        default: Number_;
-    }) => Signal<number>;
-    export const polySine: (midiSignal: MidiSignal) => AudioSignal;
+        defaultValue: number;
+    }) => _DialSignal<number>;
+    export const polySine: (midiSignal: MidiSignal) => _InteractableAudioSignal;
     export const toggle: (config: {
         default: boolean;
-    }) => Signal<boolean>;
+    }) => _InteractableSignal<boolean>;
     type MixerInputConfig = unknown;
     interface MixerInputs {
         [name: string]: AudioSignal | MixerInputConfig;
     }
-    export const mixer: (inputs: MixerInputs) => AudioSignal;
+    export const mixer: (inputs: MixerInputs) => _InteractableAudioSignal;
     export const switcher: <A extends string | number | {
         label: string | number;
-    }>(options: Iterable<A>) => Signal<A>;
+    }>(options: Iterable<A>) => _InteractableSignal<A>;
+    export const _interactables_exports: {
+        packageName: "code-daw/interactables";
+        content: {
+            dial: (config: {
+                start: Number_;
+                end: Number_;
+                defaultValue: number;
+            }) => _DialSignal<number>;
+        };
+    };
 }
 declare module "lib/io" {
     import { AudioSignal } from "lib/audio-signal";
@@ -112,6 +139,7 @@ declare module "lib/io" {
     export const midiOut: (midiSignal: MidiSignal, ...x: any[]) => void;
     export const audioIn: (...x: any[]) => AudioSignal;
     export const audioOut: (audioSignal: AudioSignal, ...x: any[]) => void;
+    export const sendMaster: (signal: AudioSignal) => void;
 }
 declare module "lib/pipe" {
     type UnaryFunction<A, B> = (a: A) => B;
