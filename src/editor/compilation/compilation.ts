@@ -1,4 +1,5 @@
 import { transpile } from 'typescript'
+import { addBusesToWindow } from '../../connection/bus'
 import { evalCompiledUserCode } from '../../connection/imports'
 import { chain } from '../chain'
 import { EditorT } from '../types'
@@ -33,6 +34,9 @@ export const compileAndEval = (editor: EditorT) => {
     // .tap(code => console.log('compile result', code))
     .then(code => {
       return `var exports = {};\n${code}`
+    })
+    .tap(code => {
+      addBusesToWindow(editor)
     })
     .then(code => {
       console.log('code to eval', code)

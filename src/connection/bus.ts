@@ -3,6 +3,9 @@ DualBus can be used for communication between
 one place and another
 */
 
+import { getAllTokens } from '../editor/parsing/tokens'
+import { EditorT } from '../editor/types'
+
 export interface Bus<SendT, ReceiveT> {
   send: (message: SendT) => void
   receive: (f: (message: ReceiveT) => void) => void
@@ -96,4 +99,44 @@ export class DualBus<ASends, BSends> {
       }
     },
   })
+}
+
+type DialEvalSend = number
+type DialEvalReceive = number
+
+type EvalBuses = {
+  dials: {
+    [index: number]: Bus<DialEvalSend, DialEvalReceive>
+  }
+  // TODO add destroyAll
+}
+type CoreBuses = {
+  dials: {
+    [index: number]: Bus<DialEvalReceive, DialEvalSend>
+  }
+  // TODO add destroyAll
+}
+
+// TODO dynamically register for all types
+// too much repetition when adding a type
+export const addBusesToWindow = (editor: EditorT): CoreBuses => {
+  const w = window as any
+  w.buses = {
+    dials: {},
+  } as EvalBuses
+  const evalBuses: EvalBuses = w.buses
+  const coreBuses: CoreBuses = { dials: {} }
+
+  const tokens = getAllTokens(editor.getModel()?.getLinesContent()!)
+
+  console.log('adding buses!!!', tokens)
+
+  const dials = tokens.filter(token => token.token === 'dial')
+  for (let dialIndex = 0; dialIndex < dials.length; dialIndex++) {
+    const dualBus = new DualBus<any, any>()
+    evalBuses.dials[dialIndex] = dualBus.busA
+    coreBuses.dials[dialIndex] = dualBus.busB
+  }
+
+  return coreBuses
 }

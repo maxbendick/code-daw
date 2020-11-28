@@ -1,3 +1,16 @@
+* hot ideas
+** dial can be referenced by variable name!
+  const myDial = dial(...) registers a dial with ID 'myDial'?
+** dial instances can add themselves to window
+** dial zones can add themselves to window through an OO facade
+** buses can be added to dials through window
+** should be able to keep code for a zone + instance all together
+
+** step eval doesn't start runtime
+*** add step for connecting buses, after eval
+*** eval adds function to window to start runtime
+*** rest of program calls eval
+
 * Binding brainstorming
 ** each interactable in runtime has an index
 ** each coolzone instance knows it's own index?
