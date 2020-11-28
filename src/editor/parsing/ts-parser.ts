@@ -1,12 +1,6 @@
+import { chain } from '../chain'
 import { constTokenAssignmentRegex } from './regex'
 import { Token } from './tokens'
-
-const chain = <A>(value: A) => {
-  return {
-    value,
-    then: <B>(f: (a: A) => B) => chain(f(value)),
-  }
-}
 
 type TokenPlace = {
   token: Token
@@ -143,7 +137,9 @@ const tokenPlacesToSemanticTokens = (
 export const tokenPlacesToRawSemanticTokensData = (
   tokenPlaces: TokenPlaces,
 ): Uint32Array =>
-  chain(tokenPlaces)
+  chain()
+    .then(() => tokenPlaces)
     .then(tokenPlacesToSemanticTokens)
     .then(semanticTokensToData)
-    .then(data => new Uint32Array(data)).value
+    .then(data => new Uint32Array(data))
+    .value()

@@ -2,6 +2,7 @@ import { transpile } from 'typescript'
 import { addBusesToWindow } from '../../connection/bus'
 import { evalCompiledUserCode } from '../../connection/imports'
 import { chain } from '../chain'
+import { compiledTokenVarNameRegex } from '../parsing/regex'
 import { EditorT } from '../types'
 
 const testCode = `
@@ -33,50 +34,33 @@ export const compileAndEval = (editor: EditorT) => {
     .then(code => code.replaceAll('require(', 'codeDawRequire('))
     // .tap(code => console.log('compile result', code))
     .then(code => {
-      return `var exports = {};\n${code}`
+      return `var exports = {};\nwindow.codeDawVars = {};\n${code}`
     })
     .then(code => {
       // add vars to window
-      //
-      // replace "var myVar = dial("
-      // with    "var myVar = window.codeDawVars.myVar = dial("
-
-      // use https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/String/replace
-
-      // function replacer(match, p1, p2, p3, offset, string) {
-      //   // p1 is nondigits, p2 digits, and p3 non-alphanumerics
-      //   return [p1, p2, p3].join(' - ');
-      // }
-      // let newString = 'abc12345#$*%'.replace(/([^\d]*)(\d*)([^\w]*)/, replacer);
-      // console.log(newString);  // abc - 12345 - #$*%
-
-      // or use replaceall?
-
-      chain()
+      // replace "var myVar = interactables_1.dial("
+      // with    "var myVar = window.codeDawVars.myVar = interactables_1.dial("
+      return chain()
         .then(() => code.split('\n'))
         .then(lines => {
-          const regexp = new RegExp('asdf', 'g') // TODO import
-
-          const replacer = (
-            match: string,
-            p1: string,
-            p2: string,
-            p3: string,
-            offset: string,
-            fullString: string,
-          ) => {
-            //   // p1 is nondigits, p2 digits, and p3 non-alphanumerics
-            //   return [p1, p2, p3].join(' - ');
-            // }
-            return match
+          console.log('in var replacer!')
+          const replacer = (...args: any[]) => {
+            console.log('replacer args:', args)
+            const varName = args[0] as string
+            console.log('var name', varName)
+            return `${varName} = window.codeDawVars.${varName}`
           }
 
           return lines.map(line => {
-            line.replace(regexp, replacer)
+            const replaced = line.replace(compiledTokenVarNameRegex, replacer)
+            if (line !== replaced) {
+              console.log('updated line', replaced)
+            }
+            return replaced
           })
         })
-
-      return code
+        .then(lines => lines.join('\n'))
+        .value()
     })
     .tap(code => {
       addBusesToWindow(editor)

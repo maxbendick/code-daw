@@ -21,7 +21,21 @@ export const constTokenAssignmentRegex = new RegExp(
   'g',
 )
 
-export const varTokenAssignmentRegex = new RegExp(
-  `${lookBehindVarAssignment}${tokenGroup}${lookAheadFnCall}`,
+// TODO brittle
+const varTokenAssignmentRegex = new RegExp(
+  `${lookBehindVarAssignment}(interactables_1\\.)${tokenGroup}${lookAheadFnCall}`,
   'g',
 )
+
+// export const compiledTokenVarNameRegex = new RegExp(
+//   `(?<=(var ))\\w+(?=( = (interactables_1\\.)))`,
+//   'g',
+// )
+
+// TODO brittle
+export const compiledTokenVarNameRegex = new RegExp(
+  `(?<=(var ))\\w+(?=( = (interactables_1\\.${tokenGroup}\\()))`,
+  'g',
+)
+
+// (?<=(\nvar ))(\w+)(?=( = interactables_1.))

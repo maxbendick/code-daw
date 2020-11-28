@@ -147,19 +147,19 @@ const myXwitcherrr = switcher([
 export const code4 = `
 import { dial } from 'code-daw/interactables'
 
-const dial1 = dial({
+const firstDial = dial({
   start: 100,
   end: 561,
   defaultValue: 107,
 })
 
-const dial2 = dial({
+const secondDial = dial({
   start: 50,
   end: 150,
   defaultValue: 100,
 })
 
-console.log('dial1', dial1)
-console.log('dial2', dial2)
+console.log('dial1', firstDial)
+console.log('dial2', secondDial)
 
 `
