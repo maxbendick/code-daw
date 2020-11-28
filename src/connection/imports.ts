@@ -3,7 +3,7 @@
 
 import { _interactables_exports } from '../lib/interactables'
 
-const myEval = (code: string) => {
+export const evalCompiledUserCode = (code: string) => {
   ;(window as any).codeDawInEval = true
   eval(code)
   ;(window as any).codeDawInEval = false

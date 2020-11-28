@@ -1,4 +1,5 @@
 import { transpile } from 'typescript'
+import { evalCompiledUserCode } from '../../connection/imports'
 import { chain } from '../chain'
 import { EditorT } from '../types'
 
@@ -12,10 +13,9 @@ const mycoolerSIG = pipe(
   (a: any) => Signals.pair(a, Signals.sine(10)),
   SignalEffects.map(([fast, slow]: [any, any]) => (fast + slow) / 2),
 )(null)
-
 `
 
-export const doCompile = (editor: EditorT) => {
+export const compileAndEval = (editor: EditorT) => {
   // const codeFromEditor = editor.getModel()?.getLinesContent().join('\n')!
 
   const code = chain()
@@ -30,13 +30,17 @@ export const doCompile = (editor: EditorT) => {
       ),
     )
     .then(code => code.replaceAll('require(', 'codeDawRequire('))
-    .tap(code => console.log('compile result', code))
-    .tap(code => {
-      // implement codeDawRequire
-      // add libs to window
+    // .tap(code => console.log('compile result', code))
+    .then(code => {
+      return `var exports = {};\n${code}`
     })
     .then(code => {
-      // eval code
+      console.log('code to eval', code)
+      try {
+        evalCompiledUserCode(code)
+      } catch (e) {
+        console.warn('from eval', e)
+      }
     })
     .value()
 }
