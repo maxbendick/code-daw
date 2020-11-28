@@ -103,3 +103,10 @@ export const switcher = <
 }
 
 // const dropdown = switcher; // could include another style
+
+export const _interactables_exports = {
+  packageName: 'code-daw/interactables' as const,
+  content: {
+    dial,
+  },
+}

@@ -1,6 +1,7 @@
 import MonacoEditor, { monaco as monacoReact } from '@monaco-editor/react'
 import { useEffect, useState } from 'react'
 import * as Config from '../../config'
+import { registerAllExports } from '../../connection/imports'
 import {
   addHighlighting,
   addHighlightingToEditor,
@@ -59,6 +60,7 @@ const editorPreSetup = async () => {
   setCompilerAndDiagnosticOptions(monaco)
   addHighlighting(monaco)
   await loadFiles(monaco)
+  registerAllExports()
 }
 
 interface InitialData {

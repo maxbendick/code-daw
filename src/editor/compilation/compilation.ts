@@ -31,5 +31,12 @@ export const doCompile = (editor: EditorT) => {
     )
     .then(code => code.replaceAll('require(', 'codeDawRequire('))
     .tap(code => console.log('compile result', code))
+    .tap(code => {
+      // implement codeDawRequire
+      // add libs to window
+    })
+    .then(code => {
+      // eval code
+    })
     .value()
 }
