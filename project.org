@@ -40,12 +40,14 @@
 *** configure tsc? tslib? 
 
 ** steps
-*** make runtime evaluate fine
-*** remove types from input code
-*** remove imports, add stuff to window based on imports
-*** eval code in browser
+*** TODO make runtime evaluate fine
+*** TODO remove types from input code
+*** TODO remove imports, add stuff to window based on imports
+*** TODO eval code in browser
+*** connect core buses
 
 * Future
 ** use ts language service for highlighting, binding
 ** sanitize input code
 ** convert imports to declaring from window?
+** cache parsing results

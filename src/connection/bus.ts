@@ -121,15 +121,12 @@ type CoreBuses = {
 // too much repetition when adding a type
 export const addBusesToWindow = (editor: EditorT): CoreBuses => {
   const w = window as any
-  w.buses = {
+  const evalBuses: EvalBuses = {
     dials: {},
-  } as EvalBuses
-  const evalBuses: EvalBuses = w.buses
+  }
   const coreBuses: CoreBuses = { dials: {} }
 
   const tokens = getAllTokens(editor.getModel()?.getLinesContent()!)
-
-  console.log('adding buses!!!', tokens)
 
   const dials = tokens.filter(token => token.token === 'dial')
   for (let dialIndex = 0; dialIndex < dials.length; dialIndex++) {
@@ -138,5 +135,6 @@ export const addBusesToWindow = (editor: EditorT): CoreBuses => {
     coreBuses.dials[dialIndex] = dualBus.busB
   }
 
+  w.buses = evalBuses
   return coreBuses
 }
