@@ -1,6 +1,7 @@
 import { AudioSignal } from './audio-signal'
 import { DialConfig, _DialInteractable, _Interactable } from './interactable'
 import { MidiSignal } from './midi-signal'
+import { DialNode, NodeType, SignalGraph } from './node2'
 import { Signal } from './signal'
 import * as Signals from './signals'
 
@@ -43,6 +44,37 @@ const assignInto = <
 
 let nextDialIndex = 0
 
+const graph = new SignalGraph()
+
+const exampleSignalConsumer = (source: Signal<number>): Signal<number> => {
+  const self = {
+    ...source,
+  }
+
+  const node: DialNode = {
+    nodeType: NodeType.Dial,
+    inputs: {},
+    output: source,
+    config: { start: 0, end: 100, defaultValue: 50 },
+  }
+
+  graph.addNode({
+    nodeType: NodeType.Dial,
+    inputs: {},
+    output: source,
+    config: { start: 0, end: 100, defaultValue: 50 },
+  })
+
+  // graph.addEdge({
+  //   input
+  // })
+
+  return source
+}
+
+/**
+ * dial doesn't reference graph because it has no inputs
+ */
 export const dial: (config: DialConfig) => Signal<number> = config => {
   const { defaultValue } = config
   const dialIndex = nextDialIndex++

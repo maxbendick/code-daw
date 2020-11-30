@@ -1,6 +1,15 @@
+* graph advantages
+** can use generic algorithms
+** UI shouldn't do much
+** need a graph anyway
+** deserted branches can be found through vars
+** can detect cycles (and sometimes allow?)
+* graph disadvantages
+** dial updates?
+
 * next step ideas
 ** dials update audio?
-** convert to graph based eval, with separate runtime
+** TODO convert to graph based eval, with separate runtime
 ** organize stuff better
 ** rename Token to InteractableType
 ** use sourcemap somehow
