@@ -1,4 +1,3 @@
-import { Bus } from '../../connection/bus'
 import { GraphNodeEphemeral } from './all-nodes'
 import { ConfigOf, NodeTypeOf } from './graph-node-ephemeral-utils'
 import { StringKeys } from './string-keys'
@@ -21,9 +20,6 @@ export type Node<G extends GraphNodeEphemeral> = {
   type: NodeTypeOf<G>
   inputIds: StringKeys<string>
   config: ConfigOf<G>
-  interactable?: {
-    index: number
-    compiledLineNumber: number
-    bus?: Bus<any, any>
-  }
+  index: number
+  lastObservedCompiledLineNumber: number
 }

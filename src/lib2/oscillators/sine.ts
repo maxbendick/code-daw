@@ -1,30 +1,24 @@
 import { EdgeType } from '../priv/edge-and-node-types'
-import { GraphNodeInteractableBaseType } from '../priv/graph-node-base-type'
+import { GraphNodeBaseType } from '../priv/graph-node-base-type'
 import { GraphNodeDefinition } from '../priv/graph-node-definition'
 import { makeNodeMaker } from '../priv/makeNodeMaker'
 import { Signal } from '../sigs'
 
 export const sineNodeType = 'oscillators/sine' as const
 
-type SineSends = number
-type SineReceives = number
-
 export type SineConfig = {}
 
-export type SineNodeEphemeral = GraphNodeInteractableBaseType<
+export type SineNodeEphemeral = GraphNodeBaseType<
   typeof sineNodeType,
   {},
-  Signal<number>,
-  SineConfig,
-  SineSends,
-  SineReceives
+  Signal<any>,
+  SineConfig
 >
 
 export const SineGraphNodeDefinition: GraphNodeDefinition<SineNodeEphemeral> = {
   nodeType: sineNodeType,
   inputs: {},
   output: EdgeType.Signal,
-  interactable: true,
 }
 
 const SineRaw = makeNodeMaker<SineNodeEphemeral, [config: SineConfig]>(

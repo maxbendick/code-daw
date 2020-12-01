@@ -1,21 +1,16 @@
-import { Bus } from '../../connection/bus'
-import {
-  getGraphNodeDefinition,
-  GraphNodeEphemeral,
-  NodeType,
-} from './all-nodes'
+import { GraphNodeEphemeral, NodeType } from './all-nodes'
 import { ConfigOf, InputsOf, NodeTypeOf } from './graph-node-ephemeral-utils'
 import { Node, SignalGraph } from './signal-graph'
 import { StringKeys } from './string-keys'
 
 // TODO
-const isInteractable = (t: NodeType) => getGraphNodeDefinition(t).interactable
+// const isInteractable = (t: NodeType) => getGraphNodeDefinition(t).interactable
 
 // TODO
-const getBusFromWindow = (t: NodeType, index: number): Bus<any, any> => {
-  //  const bus: Bus<any, any> = (window as any).buses?.dials?.[index]
-  return null as any
-}
+// const getBusFromWindow = (t: NodeType, index: number): Bus<any, any> => {
+//   //  const bus: Bus<any, any> = (window as any).buses?.dials?.[index]
+//   return null as any
+// }
 
 export type NodeConstructor<G extends GraphNodeEphemeral> = {
   type: NodeTypeOf<G>
@@ -46,7 +41,7 @@ export const makeNodeMaker = <G extends GraphNodeEphemeral, Args extends any[]>(
 
     const { type, inputs, config } = f(injected, ...args)
 
-    const index = incrGetIndex(type)
+    const index = incrGetIndex(type as NodeType)
 
     const inputIds: StringKeys<string> = {}
     for (const [k, v] of Object.entries(inputs)) {
@@ -58,28 +53,8 @@ export const makeNodeMaker = <G extends GraphNodeEphemeral, Args extends any[]>(
       type,
       inputIds,
       config,
-    }
-
-    // add interactable based on node type
-    if (isInteractable(type)) {
-      const bus = getBusFromWindow(type, index)
-
-      if (!bus) {
-        console.warn('no bus registered for interactable', result)
-      } else {
-        bus.receive(message => {
-          console.log('interactable received bus message', message)
-        })
-      }
-
-      result = {
-        ...result,
-        interactable: {
-          index: index,
-          compiledLineNumber: (window as any).codeDawCurrentLineNumber,
-          bus: null as any,
-        },
-      }
+      index,
+      lastObservedCompiledLineNumber: (window as any).codeDawCurrentLineNumber,
     }
 
     graph.addNode(result)

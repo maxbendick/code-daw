@@ -1,6 +1,4 @@
-import { AudioSignal } from '../audio-signal'
-import { MidiSignal } from '../midi-signal'
-import { Signal } from '../signal'
+import { AudioSignal, MidiSignal, Signal } from '../sigs'
 
 export type EdgeType = 'signal' | 'audioSignal' | 'midiSignal'
 export const EdgeType = {

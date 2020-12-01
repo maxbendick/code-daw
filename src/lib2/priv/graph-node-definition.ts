@@ -10,5 +10,4 @@ export type GraphNodeDefinition<G extends GraphNodeEphemeral> = {
   nodeType: NodeTypeOf<G>
   inputs: InputEdgeTypesOf<G>
   output: SigToEdgeType<OutputOf<G>>
-  interactable: boolean
 }

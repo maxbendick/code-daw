@@ -1,13 +1,9 @@
 import { EdgeType } from '../priv/edge-and-node-types'
-import { GraphNodeInteractableBaseType } from '../priv/graph-node-base-type'
 import { GraphNodeDefinition } from '../priv/graph-node-definition'
 import { makeNodeMaker } from '../priv/makeNodeMaker'
 import { Signal } from '../sigs'
 
 export const dialNodeType = 'dial' as const
-
-type DialSends = number
-type DialReceives = number
 
 export type DialConfig = {
   start: number
@@ -15,20 +11,17 @@ export type DialConfig = {
   defaultValue: number
 }
 
-export type DialNodeEphemeral = GraphNodeInteractableBaseType<
-  typeof dialNodeType,
-  {},
-  Signal<number>,
-  DialConfig,
-  DialSends,
-  DialReceives
->
+export type DialNodeEphemeral = {
+  nodeType: typeof dialNodeType
+  inputs: {}
+  output: Signal<number> // usually a new empty signal?
+  config: DialConfig
+}
 
 export const dialGraphNodeDefinition: GraphNodeDefinition<DialNodeEphemeral> = {
   nodeType: dialNodeType,
   inputs: {},
   output: EdgeType.Signal,
-  interactable: true,
 }
 
 const dialRaw = makeNodeMaker<DialNodeEphemeral, [config: DialConfig]>(
