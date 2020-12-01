@@ -5,14 +5,14 @@
 // }
 
 export type AudioSignal = {
-  _audioSignal: true
+  output: 'audioSignal'
 } // GraphNodeBaseType<any, any, any, any>
 
 export interface Signal<A> {
-  _signal: true
+  output: 'signal'
 }
 export interface MidiSignal {
-  _midiSignal: true
+  output: 'midiSignal'
 }
 
 export type AnySig = AudioSignal | Signal<any> | MidiSignal

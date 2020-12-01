@@ -8,8 +8,7 @@ import {
   SineNodeEphemeral,
   sineNodeType,
 } from '../oscillators/sine'
-import { GraphNodeBaseType } from './graph-node-base-type'
-import { GraphNodeDefinition } from './graph-node-definition'
+import { GraphNodeBaseType } from './no-sig-types/graph-node-base-type'
 
 export type GraphNodeEphemeral = DialNodeEphemeral | SineNodeEphemeral
 
@@ -21,7 +20,7 @@ const testValue: GraphNodeBaseType<
   any
 > = (null as any) as GraphNodeEphemeral
 
-export const nodeDefinitions: GraphNodeDefinition<any>[] = [
+export const nodeDefinitions: GraphNodeBaseType<any, any, any, any>[] = [
   dialGraphNodeDefinition,
   SineGraphNodeDefinition,
 ]
@@ -34,7 +33,7 @@ export const NodeType = {
 
 export const getGraphNodeDefinition = (
   nodeType: NodeType,
-): GraphNodeDefinition<any> => {
+): GraphNodeBaseType<any, any, any, any> => {
   const result = nodeDefinitions.find(d => d.nodeType === nodeType)
 
   if (!result) {

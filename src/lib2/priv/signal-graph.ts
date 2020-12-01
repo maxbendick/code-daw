@@ -1,6 +1,6 @@
 import { GraphNodeEphemeral } from './all-nodes'
-import { ConfigOf, NodeTypeOf } from './graph-node-ephemeral-utils'
-import { StringKeys } from './string-keys'
+import { ConfigOf, NodeTypeOf } from './no-sig-types/graph-node-ephemeral-utils'
+import { StringKeys } from './no-sig-types/string-keys'
 
 export class SignalGraph {
   private nodes = new Set<any>()

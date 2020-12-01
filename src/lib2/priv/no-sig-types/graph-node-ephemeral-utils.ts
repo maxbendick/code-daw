@@ -1,5 +1,5 @@
-import { GraphNodeEphemeral } from './all-nodes'
-import { SigToEdgeType } from './edge-and-node-types'
+import { GraphNodeEphemeral } from '../all-nodes'
+// import { SigToEdgeType } from './edge-types'
 import { GraphNodeBaseType } from './graph-node-base-type'
 
 export type ConfigOf<
@@ -10,10 +10,6 @@ export type InputsOf<
   G extends GraphNodeEphemeral
 > = G extends GraphNodeBaseType<any, infer Inputs, any, any> ? Inputs : never
 
-export type InputEdgeTypesOf<G extends GraphNodeEphemeral> = {
-  [k in keyof InputsOf<G>]: SigToEdgeType<InputsOf<G>[k]>
-}
-
 export type OutputOf<
   G extends GraphNodeEphemeral
 > = G extends GraphNodeBaseType<any, any, infer Output, any> ? Output : never
@@ -21,3 +17,7 @@ export type OutputOf<
 export type NodeTypeOf<
   G extends GraphNodeEphemeral
 > = G extends GraphNodeBaseType<infer NodeT, any, any, any> ? NodeT : never
+
+// export type InputEdgeTypesOf<G extends GraphNodeEphemeral> = {
+//   [k in keyof InputsOf<G>]: SigTypeToEdgeType<InputsOf<G>[k]>
+// }

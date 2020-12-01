@@ -1,7 +1,12 @@
+import { AudioSignal, MidiSignal, Signal } from '../sigs'
 import { GraphNodeEphemeral, NodeType } from './all-nodes'
-import { ConfigOf, InputsOf, NodeTypeOf } from './graph-node-ephemeral-utils'
+import {
+  ConfigOf,
+  InputsOf,
+  NodeTypeOf,
+} from './no-sig-types/graph-node-ephemeral-utils'
+import { StringKeys } from './no-sig-types/string-keys'
 import { Node, SignalGraph } from './signal-graph'
-import { StringKeys } from './string-keys'
 
 // TODO
 // const isInteractable = (t: NodeType) => getGraphNodeDefinition(t).interactable
@@ -12,9 +17,19 @@ import { StringKeys } from './string-keys'
 //   return null as any
 // }
 
+type SigTypeInputsOf<G extends GraphNodeEphemeral> = {
+  [k in keyof InputsOf<G>]: InputsOf<G>[k] extends 'signal'
+    ? Signal<any>
+    : InputsOf<G>[k] extends 'audioSignal'
+    ? AudioSignal
+    : InputsOf<G>[k] extends 'midiSignal'
+    ? MidiSignal
+    : never
+}
+
 export type NodeConstructor<G extends GraphNodeEphemeral> = {
   type: NodeTypeOf<G>
-  inputs: InputsOf<G>
+  inputs: SigTypeInputsOf<G> // InputsOf<G> //
   config: ConfigOf<G>
 }
 
