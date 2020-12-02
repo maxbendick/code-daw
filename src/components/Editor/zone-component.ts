@@ -12,6 +12,7 @@ import { TokenPlace } from '../../editor/parsing/ts-parser'
 export type ZoneComponentProps = {
   token: TokenPlace
   codeDawVar: any
+  send: (a: any) => void
 }
 
 export type ZoneComponent = React.FC<ZoneComponentProps>

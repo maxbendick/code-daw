@@ -4,7 +4,10 @@ import { useEffect } from 'react'
 import './Editor.css'
 import { ZoneComponent, ZoneLoadingComponent } from './zone-component'
 
-const TextZone: React.FC<{ label: string }> = ({ label }) => {
+const TextZone: React.FC<{ label: string; onChange: (a: string) => void }> = ({
+  label,
+  onChange,
+}) => {
   return (
     <div
       style={{
@@ -26,34 +29,27 @@ const TextZone: React.FC<{ label: string }> = ({ label }) => {
             color: 'white',
             marginTop: '5px',
           }}
+          onChange={e => onChange((e as any).nativeEvent.data)}
         />
       </label>
     </div>
   )
 }
 
-export const TextZoneZooone: ZoneComponent = ({ token, codeDawVar }) => {
+export const TextZoneZooone: ZoneComponent = ({ token, codeDawVar, send }) => {
   const config = codeDawVar.config
   useEffect(() => {
     console.log('TextZoneZooone', token, codeDawVar)
-  }, [])
+
+    send('sendingg from the textt zone')
+  }, [send])
   return (
     <TextZone
       label={`${token.varName}: { ${config.start} ${config.end} ${config.defaultValue} }`}
+      onChange={send}
     ></TextZone>
   )
 }
-
-// export const TextZoneZooone: ZoneComponent<_DialInteractable> = ({ token, interactable }) => {
-//   console.log('text zooon')
-//   console.log('interactable from component', interactable)
-//   const config = interactable._config
-//   return (
-//     <TextZone
-//       label={`${token.varName}: { ${config.start} ${config.end} ${config.defaultValue} }`}
-//     ></TextZone>
-//   )
-// }
 
 export const TextZoneLoading: ZoneLoadingComponent = ({ token }) => {
   return <div>loading {token.varName}</div>

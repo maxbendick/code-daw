@@ -9,7 +9,7 @@ import { code4 } from './code'
 import './Editor.css'
 
 const configgedMachine = machine.withConfig({
-  services: lifecycleServices as any,
+  services: lifecycleServices,
 })
 
 export const Editor: React.FC = () => {

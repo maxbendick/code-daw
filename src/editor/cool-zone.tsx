@@ -21,14 +21,21 @@ export const makeCoolZoneFactory = (
 ) => {
   console.log('found var', { token: token, var: codeDawVars?.[token.varName] })
 
+  const codeDawVar = codeDawVars?.[token.varName]
+
+  if (!codeDawVar) {
+    throw new Error('no code daw var!!!')
+  }
+
   return new CoolZone(
     monaco,
     editor,
-    codeDawVars?.[token.varName],
+    codeDawVar,
     token,
     initialNumLines,
     ZoneComponentArg,
     ZoneLoadingComponentArg,
+    a => console.log('sent from', token.varName, a),
   )
 }
 
@@ -42,11 +49,12 @@ export class CoolZone {
   constructor(
     monaco: MonacoT,
     editor: EditorT,
-    codeDawVar: any,
-    token: TokenPlace,
+    public codeDawVar: any,
+    public token: TokenPlace,
     initialNumLines: number,
     ZoneComponentArg: ZoneComponent,
     ZoneLoadingComponentArg: ZoneLoadingComponent,
+    send: (a: any) => void,
   ) {
     this._lineNumber = token.line + 1
     this.numLines = initialNumLines
@@ -64,7 +72,7 @@ export class CoolZone {
       editor,
       this._lineNumber + 1,
       this.numLines,
-      <ZoneComponentArg token={token} codeDawVar={codeDawVar} />,
+      <ZoneComponentArg token={token} codeDawVar={codeDawVar} send={send} />,
     )
 
     this.decorationResult = addDecorations(monaco, editor, this._lineNumber)
@@ -82,7 +90,7 @@ export class CoolZone {
     this.decorationResult.moveDecoration(this._lineNumber)
   }
 
-  destroy() {
+  destroy = () => {
     this.viewZoneResult.destroy()
     this.contentWidgetResult.destroy()
     this.decorationResult.destroy()

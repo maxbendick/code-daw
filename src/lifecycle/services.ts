@@ -10,7 +10,7 @@ import {
 } from '../editor/add-highlighting'
 import { chain } from '../editor/chain'
 import { compileAndEval as _compileAndEval } from '../editor/compilation/compilation'
-import { makeCoolZoneFactory } from '../editor/cool-zone'
+import { CoolZone, makeCoolZoneFactory } from '../editor/cool-zone'
 import {
   loadFiles,
   setCompilerAndDiagnosticOptions,
@@ -40,7 +40,7 @@ export const attachCoolZones = async (
 
   const coolZoneFactory = makeCoolZoneFactory(monaco, editor, codeDawVars)
 
-  chain()
+  return chain()
     .then(() => {
       return tokens
         .map((token, index) => {
@@ -52,9 +52,10 @@ export const attachCoolZones = async (
 
           return coolZoneFactory(token, 3, TextZoneZooone, TextZoneLoading)
         })
-        .filter(a => a)
+        .filter(a => a) as CoolZone[]
     })
     .tap(result => console.log('big tap', result))
+    .value()
 }
 
 export const compileAndEval = async (editor: EditorT, tokens: TokenPlaces) => {
@@ -75,9 +76,9 @@ const getTokensFromEditor = (editor: EditorT) => {
 export const lifecycleServices: LifecycleServices = {
   preEditorSetup: (context, ...args) => {
     console.log('preeditor setup args', context, ...args)
-    return preEditorSetup(() => (context as any).tokens)
+    return preEditorSetup(() => context.tokens!)
   },
-  compileCode: context => compileAndEval(context.editor, context.tokens),
+  compileCode: context => compileAndEval(context.editor!, context.tokens!),
   evalCompiledUserCode: context => evalCompiledUserCode(context.compiledCode!),
   attachCoolZones: context =>
     attachCoolZones(
@@ -88,5 +89,9 @@ export const lifecycleServices: LifecycleServices = {
     ),
   parseTokens: async context => {
     return getTokensFromEditor(context.editor!)
+  },
+  doRuntime: context => {
+    console.log('starting runtime!', context)
+    return new Promise(resolve => {})
   },
 }

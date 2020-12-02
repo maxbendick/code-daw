@@ -20,7 +20,7 @@ const defaultServices: LifecycleServices = {
     }),
   attachCoolZones: () =>
     new Promise(resolve => {
-      setTimeout(() => resolve(), 1000)
+      setTimeout(() => resolve(['fake cool zone' as any]), 1000)
     }),
   compileCode: () =>
     new Promise(resolve => {
@@ -37,6 +37,10 @@ const defaultServices: LifecycleServices = {
         1000,
       )
     }),
+  doRuntime: context => {
+    console.log('starting fake runtime!', context)
+    return new Promise(resolve => {})
+  },
 }
 
 export const machine = Machine<
@@ -62,6 +66,7 @@ export const machine = Machine<
             target: 'creatingEditor',
             actions: assign({
               monaco: (context, event) => {
+                console.log('pre editor event', event)
                 return event.data.monaco
               },
             }),
@@ -135,14 +140,23 @@ export const machine = Machine<
           id: 'attachingCoolZonesInvoke',
           src: 'attachCoolZones',
           onDone: {
-            target: 'waiting',
+            target: 'runtime',
             actions: assign({
-              compiledCode: (context, event) => {
+              coolZones: (context, event) => {
                 return event.data
               },
             }),
           },
           onError: 'failure',
+        },
+      },
+      runtime: {
+        entry: (context, event) => {
+          console.log('runtime!!!', context, event)
+        },
+        invoke: {
+          id: 'doRuntimeInvoke',
+          src: 'doRuntime',
         },
       },
       waiting: {
@@ -154,6 +168,6 @@ export const machine = Machine<
     },
   },
   {
-    services: defaultServices as any,
+    services: defaultServices,
   },
 )

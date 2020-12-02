@@ -1,9 +1,11 @@
+import { CoolZone } from '../editor/cool-zone'
 import { TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
 
 export type LifecycleEvent =
   | { type: 'REACT_MOUNTED' }
   | { type: 'EDITOR_CREATED'; editor: EditorT }
+  | { type: '__nil'; data: any }
 
 export interface LifecycleStateSchema {
   states: {
@@ -14,6 +16,7 @@ export interface LifecycleStateSchema {
     attachingCoolZones: {}
     compilingCode: {}
     evalingCode: {}
+    runtime: {}
     waiting: {}
     failure: {}
   }
@@ -25,6 +28,7 @@ export interface LifecycleContext {
   compiledCode?: string
   tokens?: TokenPlaces
   codeDawVars?: any
+  coolZones?: CoolZone[]
 }
 
 export interface LifecycleContextWithMonaco {
@@ -47,12 +51,13 @@ export type LifecycleServices = {
   ) => Promise<{
     monaco: MonacoT
   }>
-  compileCode: (context: LifecycleContextWithTokens) => Promise<string>
+  parseTokens: (context: LifecycleContext) => Promise<TokenPlaces>
+  compileCode: (context: LifecycleContext) => Promise<string>
   evalCompiledUserCode: (
-    context: LifecycleContextWithCompiledCode,
+    context: LifecycleContext,
   ) => Promise<{ codeDawVars: any }>
-  attachCoolZones: (context: LifecycleContext) => Promise<void>
-  parseTokens: (context: LifecycleContextWithEditor) => Promise<TokenPlaces>
+  attachCoolZones: (context: LifecycleContext) => Promise<CoolZone[]>
+  doRuntime: (context: LifecycleContext) => Promise<void>
 }
 
 // export type LifecycleState =
