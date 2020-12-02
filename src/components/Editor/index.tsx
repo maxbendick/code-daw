@@ -4,24 +4,12 @@ import { useEffect } from 'react'
 import * as Config from '../../config'
 import { EditorT } from '../../editor/types'
 import { machine } from '../../lifecycle/machine'
+import { lifecycleServices } from '../../lifecycle/services'
 import { code4 } from './code'
 import './Editor.css'
-import {
-  compileAndEval,
-  evalCompiledUserCode,
-  postEditorSetup,
-  preEditorSetup,
-} from './setuppers'
 
 const configgedMachine = machine.withConfig({
-  services: {
-    preEditorSetup: () => preEditorSetup(),
-    postEditorSetup: context =>
-      postEditorSetup(context.monaco!, context.editor!),
-    compileAndEval: context => compileAndEval(context.editor!),
-    evalCompiledUserCode: context =>
-      evalCompiledUserCode(context.compiledCode!),
-  },
+  services: lifecycleServices,
 })
 
 export const Editor: React.FC = () => {

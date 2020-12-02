@@ -1,24 +1,23 @@
-// export const zzzdfdsdfsdf = 'asdfsadf'
 import { monaco as monacoReact } from '@monaco-editor/react'
+import { TextZoneLoading, TextZoneZooone } from '../components/Editor/TextZone'
 import {
   evalCompiledUserCode as _evalCompiledUserCode,
   registerAllExports,
-} from '../../connection/imports'
+} from '../connection/imports'
 import {
   addHighlighting,
   addHighlightingToEditor,
-} from '../../editor/add-highlighting'
-import { chain } from '../../editor/chain'
-import { compileAndEval as _compileAndEval } from '../../editor/compilation/compilation'
-import { CoolZone } from '../../editor/cool-zone'
+} from '../editor/add-highlighting'
+import { chain } from '../editor/chain'
+import { compileAndEval as _compileAndEval } from '../editor/compilation/compilation'
+import { CoolZone } from '../editor/cool-zone'
 import {
   loadFiles,
   setCompilerAndDiagnosticOptions,
-} from '../../editor/load-files'
-import { getAllTokens } from '../../editor/parsing/ts-parser'
-import { EditorT, MonacoT } from '../../editor/types'
-import './Editor.css'
-import { TextZoneLoading, TextZoneZooone } from './TextZone'
+} from '../editor/load-files'
+import { getAllTokens } from '../editor/parsing/ts-parser'
+import { EditorT, MonacoT } from '../editor/types'
+import { LifecycleContext } from './machine'
 
 export const preEditorSetup = async () => {
   const monaco: MonacoT = await monacoReact.init()
@@ -31,7 +30,6 @@ export const preEditorSetup = async () => {
 }
 
 export const postEditorSetup = async (monaco: MonacoT, editor: EditorT) => {
-  // setAllInstances({ editor, monaco })
   addHighlightingToEditor(editor)
 
   chain()
@@ -66,4 +64,14 @@ export const compileAndEval = async (editor: EditorT) => {
 
 export const evalCompiledUserCode = async (code: string) => {
   return _evalCompiledUserCode(code)
+}
+
+export const lifecycleServices = {
+  preEditorSetup: () => preEditorSetup(),
+  postEditorSetup: (context: LifecycleContext) =>
+    postEditorSetup(context.monaco!, context.editor!),
+  compileAndEval: (context: LifecycleContext) =>
+    compileAndEval(context.editor!),
+  evalCompiledUserCode: (context: LifecycleContext) =>
+    evalCompiledUserCode(context.compiledCode!),
 }
