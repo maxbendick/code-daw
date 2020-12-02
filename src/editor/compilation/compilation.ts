@@ -2,6 +2,7 @@ import { transpile } from 'typescript'
 import { addBusesToWindow } from '../../connection/bus'
 import { chain } from '../chain'
 import { compiledTokenVarNameRegex } from '../parsing/regex'
+import { TokenPlaces } from '../parsing/ts-parser'
 import { EditorT } from '../types'
 
 const testCode = `
@@ -33,7 +34,10 @@ const registerLineNumber = (e: Error) => {
   ;(window as any).codeDawCurrentLineNumber = lineNumber
 }
 
-export const compileAndEval = async (editor: EditorT): Promise<string> => {
+export const compileAndEval = async (
+  editor: EditorT,
+  tokens: TokenPlaces,
+): Promise<string> => {
   ;(window as any).codeDawRegisterLineNumber = registerLineNumber
 
   const result = chain()
@@ -91,7 +95,7 @@ export const compileAndEval = async (editor: EditorT): Promise<string> => {
         .value()
     })
     .tap(code => {
-      addBusesToWindow(editor)
+      addBusesToWindow(tokens)
     })
     .value()
 

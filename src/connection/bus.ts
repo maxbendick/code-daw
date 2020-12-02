@@ -3,8 +3,7 @@ DualBus can be used for communication between
 one place and another
 */
 
-import { getAllTokens } from '../editor/parsing/ts-parser'
-import { EditorT } from '../editor/types'
+import { TokenPlaces } from '../editor/parsing/ts-parser'
 
 export interface Bus<SendT, ReceiveT> {
   send: (message: SendT) => void
@@ -119,14 +118,12 @@ type CoreBuses = {
 
 // TODO dynamically register for all types
 // too much repetition when adding a type
-export const addBusesToWindow = (editor: EditorT): CoreBuses => {
+export const addBusesToWindow = (tokens: TokenPlaces): CoreBuses => {
   const w = window as any
   const evalBuses: EvalBuses = {
     dials: {},
   }
   const coreBuses: CoreBuses = { dials: {} }
-
-  const tokens = getAllTokens(editor.getModel()?.getLinesContent()!)
 
   const dials = tokens.filter(token => token.token === 'dial')
   for (let dialIndex = 0; dialIndex < dials.length; dialIndex++) {

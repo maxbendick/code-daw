@@ -1,11 +1,13 @@
 // import { assign as _assign, Machine } from 'xstate'
 import { assign, Machine } from 'xstate'
+import { TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
 
 export interface LifecycleContext {
   monaco?: MonacoT
   editor?: EditorT
   compiledCode?: string
+  tokens?: TokenPlaces
 }
 
 type LifecycleEvent =
@@ -17,6 +19,7 @@ interface LifecycleStateSchema {
     preMount: {}
     preEditorSetup: {}
     creatingEditor: {}
+    parsingTokens: {}
     postEditorSetup: {}
     compilingCode: {}
     evalingCode: {}
@@ -58,10 +61,25 @@ export const machine = Machine<
       creatingEditor: {
         on: {
           EDITOR_CREATED: {
-            target: 'postEditorSetup',
+            target: 'parsingTokens',
             actions: assign({
               editor: (context, event) => {
                 return event.editor
+              },
+            }),
+          },
+        },
+      },
+      parsingTokens: {
+        invoke: {
+          id: 'parsingTokensInvoke',
+          src: 'parseTokens',
+          onDone: {
+            target: 'postEditorSetup',
+            actions: assign({
+              tokens: (context, event) => {
+                console.log('invoke!!', event.data)
+                return event.data
               },
             }),
           },
@@ -133,6 +151,10 @@ export const machine = Machine<
       evalCompiledUserCode: () =>
         new Promise(resolve => {
           setTimeout(() => resolve('whatever'), 1000)
+        }),
+      parseTokens: () =>
+        new Promise(resolve => {
+          setTimeout(() => resolve('whataever tokens....'), 1000)
         }),
     },
   },

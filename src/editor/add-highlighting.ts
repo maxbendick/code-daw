@@ -1,11 +1,15 @@
 import { chain } from './chain'
 import {
   getAllTokens,
+  TokenPlaces,
   tokenPlacesToRawSemanticTokensData,
 } from './parsing/ts-parser'
 import { EditorT, MonacoT } from './types'
 
-export const addHighlighting = (monaco: MonacoT) => {
+export const addHighlighting = (
+  monaco: MonacoT,
+  getTokens: () => TokenPlaces,
+) => {
   monaco.languages.registerDocumentSemanticTokensProvider('typescript', {
     getLegend: () => {
       return {
@@ -14,10 +18,10 @@ export const addHighlighting = (monaco: MonacoT) => {
       }
     },
 
+    // TODO how to do caching right here?
     provideDocumentSemanticTokens: model =>
       chain()
-        .then(() => model.getLinesContent())
-        .then(getAllTokens)
+        .then(() => getTokens() ?? getAllTokens(model.getLinesContent()))
         .then(tokenPlacesToRawSemanticTokensData)
         .then(data => ({
           data,

@@ -12,7 +12,7 @@ export type TokenPlace = {
   varName: string
 }
 
-type TokenPlaces = TokenPlace[]
+export type TokenPlaces = TokenPlace[]
 
 type GlobalMatchArray = [
   token: Token,

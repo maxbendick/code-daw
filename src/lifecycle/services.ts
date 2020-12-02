@@ -15,27 +15,29 @@ import {
   loadFiles,
   setCompilerAndDiagnosticOptions,
 } from '../editor/load-files'
-import { getAllTokens } from '../editor/parsing/ts-parser'
+import { getAllTokens, TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
 import { LifecycleContext } from './machine'
 
-export const preEditorSetup = async () => {
+export const preEditorSetup = async (getTokens: () => TokenPlaces) => {
   const monaco: MonacoT = await monacoReact.init()
   setCompilerAndDiagnosticOptions(monaco)
-  addHighlighting(monaco)
+  addHighlighting(monaco, getTokens)
   await loadFiles(monaco)
   registerAllExports()
 
   return { monaco }
 }
 
-export const postEditorSetup = async (monaco: MonacoT, editor: EditorT) => {
+export const postEditorSetup = async (
+  monaco: MonacoT,
+  editor: EditorT,
+  tokens: TokenPlaces,
+) => {
   addHighlightingToEditor(editor)
 
   chain()
-    .then(() => editor.getModel()?.getLinesContent()!)
-    .then(getAllTokens)
-    .then(tokens => {
+    .then(() => {
       return tokens
         .map((token, index) => {
           const prevLine = index > 0 ? tokens[index - 1].line : -1
@@ -58,19 +60,29 @@ export const postEditorSetup = async (monaco: MonacoT, editor: EditorT) => {
     .tap(result => console.log('big tap', result))
 }
 
-export const compileAndEval = async (editor: EditorT) => {
-  return await _compileAndEval(editor)
+export const compileAndEval = async (editor: EditorT, tokens: TokenPlaces) => {
+  return await _compileAndEval(editor, tokens)
 }
 
 export const evalCompiledUserCode = async (code: string) => {
   return _evalCompiledUserCode(code)
 }
 
+const getTokensFromEditor = (editor: EditorT) => {
+  const lines = editor.getModel()?.getLinesContent()!
+  return getAllTokens(lines)
+}
+
 export const lifecycleServices = {
-  preEditorSetup: () => preEditorSetup(),
+  preEditorSetup: (context: LifecycleContext) =>
+    preEditorSetup(() => context.tokens!),
   postEditorSetup: (context: LifecycleContext) =>
-    postEditorSetup(context.monaco!, context.editor!),
-  compileCode: (context: LifecycleContext) => compileAndEval(context.editor!),
+    postEditorSetup(context.monaco!, context.editor!, context.tokens!),
+  compileCode: (context: LifecycleContext) =>
+    compileAndEval(context.editor!, context.tokens!),
   evalCompiledUserCode: (context: LifecycleContext) =>
     evalCompiledUserCode(context.compiledCode!),
+  parseTokens: async (context: LifecycleContext) => {
+    return getTokensFromEditor(context.editor!)
+  },
 }
