@@ -1,6 +1,6 @@
-import { Observable, of } from 'rxjs'
+import { of } from 'rxjs'
 import { LifecycleContext } from '../lifecycle/types'
-import { easyConnect } from './easy-connect'
+import { makeGain, makeOscillator } from './utils'
 /*
 Could try:
 components/coolzones are in loading state until runtime started
@@ -23,10 +23,10 @@ export const startRuntime = async (context: LifecycleContext) => {
 
   const osc = makeOscillator(audioContext, of(300))
 
-  const outputGain = audioContext.createGain()
-  outputGain.gain.value = OUTPUT_GAIN
+  const outputGain = makeGain(audioContext, of(OUTPUT_GAIN))
 
   osc.connect(outputGain)
+
   outputGain.connect(audioContext.destination)
 
   // STARTS IT!!!
@@ -43,16 +43,6 @@ const assembleAudioGraph = (context: LifecycleContext) => {
 
 // note: AudioNode can be AudioScheduledSourceNode. which can be AudioBufferSourceNode,
 // OscillatorNode, ConstantSourceNode, or others?
-
-const makeOscillator = (
-  audioContext: AudioContext,
-  frequency: AudioNode | Observable<number>,
-): OscillatorNode => {
-  const oscillator = audioContext.createOscillator()
-  oscillator.type = 'sine'
-  easyConnect(audioContext, frequency, oscillator.frequency)
-  return oscillator
-}
 
 const testttt = () => {
   // create web audio api context
