@@ -70,8 +70,7 @@ export const lifecycleServices = {
   preEditorSetup: () => preEditorSetup(),
   postEditorSetup: (context: LifecycleContext) =>
     postEditorSetup(context.monaco!, context.editor!),
-  compileAndEval: (context: LifecycleContext) =>
-    compileAndEval(context.editor!),
+  compileCode: (context: LifecycleContext) => compileAndEval(context.editor!),
   evalCompiledUserCode: (context: LifecycleContext) =>
     evalCompiledUserCode(context.compiledCode!),
 }

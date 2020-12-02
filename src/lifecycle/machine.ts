@@ -18,8 +18,8 @@ interface LifecycleStateSchema {
     preEditorSetup: {}
     creatingEditor: {}
     postEditorSetup: {}
-    compileAndEval: {}
-    evalCompiledUserCode: {}
+    compilingCode: {}
+    evalingCode: {}
     waiting: {}
     failure: {}
   }
@@ -72,7 +72,7 @@ export const machine = Machine<
           id: 'postEditorSetupInvoke',
           src: 'postEditorSetup',
           onDone: {
-            target: 'compileAndEval',
+            target: 'compilingCode',
             actions: assign({
               compiledCode: (context, event) => {
                 return event.data
@@ -82,12 +82,12 @@ export const machine = Machine<
           onError: 'failure',
         },
       },
-      compileAndEval: {
+      compilingCode: {
         invoke: {
-          id: 'compileAndEvalInvoke',
-          src: 'compileAndEval',
+          id: 'compileCodeInvoke',
+          src: 'compileCode',
           onDone: {
-            target: 'evalCompiledUserCode',
+            target: 'evalingCode',
             actions: assign({
               compiledCode: (context, event) => event.data,
             }),
@@ -95,9 +95,9 @@ export const machine = Machine<
           onError: 'failure',
         },
       },
-      evalCompiledUserCode: {
+      evalingCode: {
         invoke: {
-          id: 'evalCompiledUserCode',
+          id: 'evalingCodeInvoke',
           src: 'evalCompiledUserCode',
           onDone: 'waiting',
         },
@@ -126,7 +126,7 @@ export const machine = Machine<
         new Promise(resolve => {
           setTimeout(() => resolve('whatever'), 1000)
         }),
-      compileAndEval: () =>
+      compileCode: () =>
         new Promise(resolve => {
           setTimeout(() => resolve('whatever'), 1000)
         }),
