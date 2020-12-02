@@ -1,37 +1,48 @@
 // import { assign as _assign, Machine } from 'xstate'
-import { assign, Machine } from 'xstate'
-import { TokenPlaces } from '../editor/parsing/ts-parser'
-import { EditorT, MonacoT } from '../editor/types'
-
-export interface LifecycleContext {
-  monaco?: MonacoT
-  editor?: EditorT
-  compiledCode?: string
-  tokens?: TokenPlaces
-}
-
-type LifecycleEvent =
-  | { type: 'REACT_MOUNTED' }
-  | { type: 'EDITOR_CREATED'; editor: EditorT }
-
-interface LifecycleStateSchema {
-  states: {
-    preMount: {}
-    preEditorSetup: {}
-    creatingEditor: {}
-    parsingTokens: {}
-    postEditorSetup: {}
-    compilingCode: {}
-    evalingCode: {}
-    waiting: {}
-    failure: {}
-  }
-}
-
-export const machine = Machine<
+import { assign, createMachine } from 'xstate'
+import {
   LifecycleContext,
-  LifecycleStateSchema,
-  LifecycleEvent
+  LifecycleEvent,
+  LifecycleServices,
+  LifecycleState,
+} from './types'
+
+const defaultServices: LifecycleServices = {
+  preEditorSetup: () =>
+    new Promise(resolve => {
+      setTimeout(
+        () =>
+          resolve({
+            monaco: 'maocnaooooo' as any,
+          }),
+        1000,
+      )
+    }),
+  postEditorSetup: () =>
+    new Promise(resolve => {
+      setTimeout(() => resolve(), 1000)
+    }),
+  compileCode: () =>
+    new Promise(resolve => {
+      setTimeout(() => resolve('compiled code'), 1000)
+    }),
+  evalCompiledUserCode: () =>
+    new Promise(resolve => {
+      setTimeout(() => resolve(), 1000)
+    }),
+  parseTokens: () =>
+    new Promise(resolve => {
+      setTimeout(
+        () => resolve([{ fake: 'this is a fake tokenplace' } as any]),
+        1000,
+      )
+    }),
+}
+
+export const machine = createMachine<
+  LifecycleContext,
+  LifecycleEvent,
+  LifecycleState
 >(
   {
     id: 'lifecycle',
@@ -129,33 +140,6 @@ export const machine = Machine<
     },
   },
   {
-    services: {
-      preEditorSetup: () =>
-        new Promise(resolve => {
-          setTimeout(
-            () =>
-              resolve({
-                monaco: 'maocnaooooo',
-              }),
-            1000,
-          )
-        }),
-      postEditorSetup: () =>
-        new Promise(resolve => {
-          setTimeout(() => resolve('whatever'), 1000)
-        }),
-      compileCode: () =>
-        new Promise(resolve => {
-          setTimeout(() => resolve('whatever'), 1000)
-        }),
-      evalCompiledUserCode: () =>
-        new Promise(resolve => {
-          setTimeout(() => resolve('whatever'), 1000)
-        }),
-      parseTokens: () =>
-        new Promise(resolve => {
-          setTimeout(() => resolve('whataever tokens....'), 1000)
-        }),
-    },
+    services: defaultServices as any,
   },
 )

@@ -17,7 +17,7 @@ import {
 } from '../editor/load-files'
 import { getAllTokens, TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
-import { LifecycleContext } from './machine'
+import { LifecycleServices } from './types'
 
 export const preEditorSetup = async (getTokens: () => TokenPlaces) => {
   const monaco: MonacoT = await monacoReact.init()
@@ -73,16 +73,18 @@ const getTokensFromEditor = (editor: EditorT) => {
   return getAllTokens(lines)
 }
 
-export const lifecycleServices = {
-  preEditorSetup: (context: LifecycleContext) =>
-    preEditorSetup(() => context.tokens!),
-  postEditorSetup: (context: LifecycleContext) =>
-    postEditorSetup(context.monaco!, context.editor!, context.tokens!),
-  compileCode: (context: LifecycleContext) =>
-    compileAndEval(context.editor!, context.tokens!),
-  evalCompiledUserCode: (context: LifecycleContext) =>
-    evalCompiledUserCode(context.compiledCode!),
-  parseTokens: async (context: LifecycleContext) => {
+// export type LifecycleServices = typeof lifecycleServices
+
+export const lifecycleServices: LifecycleServices = {
+  preEditorSetup: (context, ...args) => {
+    console.log('preeditor setup args', context, ...args)
+    return preEditorSetup(() => (context as any).tokens)
+  },
+  postEditorSetup: context =>
+    postEditorSetup(context.monaco, context.editor, context.tokens),
+  compileCode: context => compileAndEval(context.editor, context.tokens),
+  evalCompiledUserCode: context => evalCompiledUserCode(context.compiledCode),
+  parseTokens: async context => {
     return getTokensFromEditor(context.editor!)
   },
 }
