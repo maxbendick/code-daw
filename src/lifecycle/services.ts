@@ -17,6 +17,7 @@ import {
 } from '../editor/load-files'
 import { getAllTokens, TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
+import { startRuntime } from '../runtime/runtime'
 import { LifecycleServices } from './types'
 
 export const preEditorSetup = async (getTokens: () => TokenPlaces) => {
@@ -90,8 +91,5 @@ export const lifecycleServices: LifecycleServices = {
   parseTokens: async context => {
     return getTokensFromEditor(context.editor!)
   },
-  doRuntime: context => {
-    console.log('starting runtime!', context)
-    return new Promise(resolve => {})
-  },
+  doRuntime: startRuntime,
 }

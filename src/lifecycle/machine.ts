@@ -1,5 +1,6 @@
 // import { assign as _assign, Machine } from 'xstate'
 import { assign, Machine } from 'xstate'
+import { globalSignalGraph } from '../lib2/priv/signal-graph'
 import {
   LifecycleContext,
   LifecycleEvent,
@@ -51,7 +52,9 @@ export const machine = Machine<
   {
     id: 'lifecycle',
     initial: 'preMount',
-    context: {},
+    context: {
+      signalGraph: globalSignalGraph,
+    },
     states: {
       preMount: {
         on: {

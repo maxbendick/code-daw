@@ -1,6 +1,7 @@
 import { CoolZone } from '../editor/cool-zone'
 import { TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
+import { SignalGraph } from '../lib2/priv/signal-graph'
 
 export type LifecycleEvent =
   | { type: 'REACT_MOUNTED' }
@@ -29,6 +30,7 @@ export interface LifecycleContext {
   tokens?: TokenPlaces
   codeDawVars?: any
   coolZones?: CoolZone[]
+  signalGraph: SignalGraph
 }
 
 export interface LifecycleContextWithMonaco {
