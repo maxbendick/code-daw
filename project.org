@@ -1,8 +1,10 @@
 * next graph steps
+** create graph in eval
+
 get rid of outputs. the node is the output
 output is necessary to differentiate types for the users editing experience
 
-convert the base to use EdgeTypes instead of Signal|AudioSignal|MidiSignal
+* DONE convert the base to use EdgeTypes instead of Signal|AudioSignal|MidiSignal
 
 
 * graph advantages

@@ -25,7 +25,6 @@ export const dialGraphNodeDefinition: GraphNodeBaseType<
 export type DialNodeEphemeral = typeof dialGraphNodeDefinition
 
 const dialRaw = makeNodeMaker<DialNodeEphemeral, [config: DialConfig]>(
-  null as any,
   ({ id }, config) => {
     return {
       type: dialNodeType,

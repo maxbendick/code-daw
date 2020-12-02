@@ -30,7 +30,6 @@ export const SineGraphNodeDefinition: GraphNodeBaseType<
 export type SineNodeEphemeral = typeof SineGraphNodeDefinition
 
 const SineRaw = makeNodeMaker<SineNodeEphemeral, [phase: Signal<any>]>(
-  null as any,
   ({ id }, phase) => {
     return {
       type: sineNodeType,

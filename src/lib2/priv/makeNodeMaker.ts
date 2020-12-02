@@ -45,8 +45,9 @@ const incrGetIndex = (t: NodeType) => {
   return currIndex
 }
 
+const globalSignalGraph = new SignalGraph()
+
 export const makeNodeMaker = <G extends GraphNodeEphemeral, Args extends any[]>(
-  graph: SignalGraph,
   f: (injected: SignalMakerInjected, ...args: Args) => NodeConstructor<G>,
 ) => {
   return (...args: Args): Node<G> => {
@@ -72,7 +73,7 @@ export const makeNodeMaker = <G extends GraphNodeEphemeral, Args extends any[]>(
       lastObservedCompiledLineNumber: (window as any).codeDawCurrentLineNumber,
     }
 
-    graph.addNode(result)
+    globalSignalGraph.addNode(result)
 
     return result
   }
