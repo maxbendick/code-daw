@@ -6,7 +6,7 @@ import {
   NodeTypeOf,
 } from './no-sig-types/graph-node-ephemeral-utils'
 import { StringKeys } from './no-sig-types/string-keys'
-import { Node, SignalGraph } from './signal-graph'
+import { globalSignalGraph, Node } from './signal-graph'
 
 // TODO
 // const isInteractable = (t: NodeType) => getGraphNodeDefinition(t).interactable
@@ -44,8 +44,6 @@ const incrGetIndex = (t: NodeType) => {
   nodeTypeToNextIndex.set(t, currIndex + 1)
   return currIndex
 }
-
-const globalSignalGraph = new SignalGraph()
 
 export const makeNodeMaker = <G extends GraphNodeEphemeral, Args extends any[]>(
   f: (injected: SignalMakerInjected, ...args: Args) => NodeConstructor<G>,

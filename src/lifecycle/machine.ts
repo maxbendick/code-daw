@@ -1,10 +1,10 @@
 // import { assign as _assign, Machine } from 'xstate'
-import { assign, createMachine } from 'xstate'
+import { assign, Machine } from 'xstate'
 import {
   LifecycleContext,
   LifecycleEvent,
   LifecycleServices,
-  LifecycleState,
+  LifecycleStateSchema,
 } from './types'
 
 const defaultServices: LifecycleServices = {
@@ -18,7 +18,7 @@ const defaultServices: LifecycleServices = {
         1000,
       )
     }),
-  postEditorSetup: () =>
+  attachCoolZones: () =>
     new Promise(resolve => {
       setTimeout(() => resolve(), 1000)
     }),
@@ -28,7 +28,7 @@ const defaultServices: LifecycleServices = {
     }),
   evalCompiledUserCode: () =>
     new Promise(resolve => {
-      setTimeout(() => resolve(), 1000)
+      setTimeout(() => resolve({ codeDawVars: 'fake vars' }), 1000)
     }),
   parseTokens: () =>
     new Promise(resolve => {
@@ -39,10 +39,10 @@ const defaultServices: LifecycleServices = {
     }),
 }
 
-export const machine = createMachine<
+export const machine = Machine<
   LifecycleContext,
-  LifecycleEvent,
-  LifecycleState
+  LifecycleStateSchema,
+  LifecycleEvent
 >(
   {
     id: 'lifecycle',
@@ -86,7 +86,7 @@ export const machine = createMachine<
           id: 'parsingTokensInvoke',
           src: 'parseTokens',
           onDone: {
-            target: 'postEditorSetup',
+            target: 'compilingCode',
             actions: assign({
               tokens: (context, event) => {
                 console.log('invoke!!', event.data)
@@ -96,22 +96,10 @@ export const machine = createMachine<
           },
         },
       },
-      postEditorSetup: {
-        invoke: {
-          id: 'postEditorSetupInvoke',
-          src: 'postEditorSetup',
-          onDone: {
-            target: 'compilingCode',
-            actions: assign({
-              compiledCode: (context, event) => {
-                return event.data
-              },
-            }),
-          },
-          onError: 'failure',
-        },
-      },
       compilingCode: {
+        onEntry: (...args) => {
+          console.log('on compile code entry', ...args)
+        },
         invoke: {
           id: 'compileCodeInvoke',
           src: 'compileCode',
@@ -125,10 +113,36 @@ export const machine = createMachine<
         },
       },
       evalingCode: {
+        onEntry: context => {
+          console.log('compiled code', context.compiledCode!)
+        },
         invoke: {
           id: 'evalingCodeInvoke',
           src: 'evalCompiledUserCode',
-          onDone: 'waiting',
+          onDone: {
+            target: 'attachingCoolZones',
+            actions: assign({
+              codeDawVars: (context, event) => {
+                console.log('assigning codeDawVars', context, event)
+                return event.data.codeDawVars
+              },
+            }),
+          },
+        },
+      },
+      attachingCoolZones: {
+        invoke: {
+          id: 'attachingCoolZonesInvoke',
+          src: 'attachCoolZones',
+          onDone: {
+            target: 'waiting',
+            actions: assign({
+              compiledCode: (context, event) => {
+                return event.data
+              },
+            }),
+          },
+          onError: 'failure',
         },
       },
       waiting: {

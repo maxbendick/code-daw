@@ -10,7 +10,7 @@ import {
 } from '../editor/add-highlighting'
 import { chain } from '../editor/chain'
 import { compileAndEval as _compileAndEval } from '../editor/compilation/compilation'
-import { CoolZone } from '../editor/cool-zone'
+import { makeCoolZoneFactory } from '../editor/cool-zone'
 import {
   loadFiles,
   setCompilerAndDiagnosticOptions,
@@ -29,12 +29,16 @@ export const preEditorSetup = async (getTokens: () => TokenPlaces) => {
   return { monaco }
 }
 
-export const postEditorSetup = async (
+// rename to attach cool zones
+export const attachCoolZones = async (
   monaco: MonacoT,
   editor: EditorT,
   tokens: TokenPlaces,
+  codeDawVars: any,
 ) => {
   addHighlightingToEditor(editor)
+
+  const coolZoneFactory = makeCoolZoneFactory(monaco, editor, codeDawVars)
 
   chain()
     .then(() => {
@@ -46,14 +50,7 @@ export const postEditorSetup = async (
             return undefined
           }
 
-          return new CoolZone(
-            monaco,
-            editor,
-            token,
-            3,
-            TextZoneZooone,
-            TextZoneLoading,
-          )
+          return coolZoneFactory(token, 3, TextZoneZooone, TextZoneLoading)
         })
         .filter(a => a)
     })
@@ -65,7 +62,9 @@ export const compileAndEval = async (editor: EditorT, tokens: TokenPlaces) => {
 }
 
 export const evalCompiledUserCode = async (code: string) => {
-  return _evalCompiledUserCode(code)
+  _evalCompiledUserCode(code)
+  const codeDawVars = (window as any).codeDawVars
+  return { codeDawVars }
 }
 
 const getTokensFromEditor = (editor: EditorT) => {
@@ -73,17 +72,20 @@ const getTokensFromEditor = (editor: EditorT) => {
   return getAllTokens(lines)
 }
 
-// export type LifecycleServices = typeof lifecycleServices
-
 export const lifecycleServices: LifecycleServices = {
   preEditorSetup: (context, ...args) => {
     console.log('preeditor setup args', context, ...args)
     return preEditorSetup(() => (context as any).tokens)
   },
-  postEditorSetup: context =>
-    postEditorSetup(context.monaco, context.editor, context.tokens),
   compileCode: context => compileAndEval(context.editor, context.tokens),
-  evalCompiledUserCode: context => evalCompiledUserCode(context.compiledCode),
+  evalCompiledUserCode: context => evalCompiledUserCode(context.compiledCode!),
+  attachCoolZones: context =>
+    attachCoolZones(
+      context.monaco!,
+      context.editor!,
+      context.tokens!,
+      context.codeDawVars!,
+    ),
   parseTokens: async context => {
     return getTokensFromEditor(context.editor!)
   },

@@ -2,7 +2,7 @@
 // import from a honeypot?
 
 import { alertFinishedLoadingListeners } from '../editor/finished-loading-listeners'
-import { _interactables_exports } from '../lib/interactables'
+import { _interactables_exports } from '../lib2/interactables/dial'
 
 export const evalCompiledUserCode = (code: string) => {
   ;(window as any).codeDawInEval = true

@@ -7,8 +7,30 @@ import { TokenPlace } from '../editor/parsing/ts-parser'
 import { addContentWidget } from './add-content-widget'
 import { addDecorations } from './add-decorations'
 import { addViewZone } from './add-view-zone'
-import { registerFinishedLoadingListener } from './finished-loading-listeners'
 import { EditorT, MonacoT } from './types'
+
+export const makeCoolZoneFactory = (
+  monaco: MonacoT,
+  editor: EditorT,
+  codeDawVars: any,
+) => (
+  token: TokenPlace,
+  initialNumLines: number,
+  ZoneComponentArg: ZoneComponent,
+  ZoneLoadingComponentArg: ZoneLoadingComponent,
+) => {
+  console.log('found var', { token: token, var: codeDawVars?.[token.varName] })
+
+  return new CoolZone(
+    monaco,
+    editor,
+    codeDawVars?.[token.varName],
+    token,
+    initialNumLines,
+    ZoneComponentArg,
+    ZoneLoadingComponentArg,
+  )
+}
 
 export class CoolZone {
   private _lineNumber: number
@@ -20,6 +42,7 @@ export class CoolZone {
   constructor(
     monaco: MonacoT,
     editor: EditorT,
+    codeDawVar: any,
     token: TokenPlace,
     initialNumLines: number,
     ZoneComponentArg: ZoneComponent,
@@ -41,17 +64,8 @@ export class CoolZone {
       editor,
       this._lineNumber + 1,
       this.numLines,
-      <ZoneLoadingComponentArg token={token} />,
+      <ZoneComponentArg token={token} codeDawVar={codeDawVar} />,
     )
-
-    registerFinishedLoadingListener(() => {
-      const interactable = (window as any).codeDawVars[token.varName]
-        ._interactable
-
-      this.contentWidgetResult.updateContent(
-        <ZoneComponentArg token={token} interactable={interactable} />,
-      )
-    })
 
     this.decorationResult = addDecorations(monaco, editor, this._lineNumber)
   }

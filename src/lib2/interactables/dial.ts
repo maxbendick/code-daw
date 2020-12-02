@@ -28,7 +28,7 @@ const dialRaw = makeNodeMaker<DialNodeEphemeral, [config: DialConfig]>(
   ({ id }, config) => {
     return {
       type: dialNodeType,
-      inputs: {},
+      inputs: { something: { id: 'or other' } },
       config,
     }
   },
@@ -36,3 +36,10 @@ const dialRaw = makeNodeMaker<DialNodeEphemeral, [config: DialConfig]>(
 
 // TODO better typing
 export const dial: (config: DialConfig) => Signal<number> = dialRaw as any
+
+export const _interactables_exports = {
+  packageName: 'code-daw/interactables' as const,
+  content: {
+    dial,
+  },
+}

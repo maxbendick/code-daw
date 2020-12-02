@@ -23,3 +23,6 @@ export type Node<G extends GraphNodeEphemeral> = {
   index: number
   lastObservedCompiledLineNumber: number
 }
+
+export const globalSignalGraph = new SignalGraph()
+;(window as any).globalSignalGraph = globalSignalGraph

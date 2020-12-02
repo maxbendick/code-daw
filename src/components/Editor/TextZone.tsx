@@ -1,5 +1,6 @@
 import * as React from 'react'
-import { _DialInteractable } from '../../lib/interactable'
+import { useEffect } from 'react'
+// import { _DialInteractable } from '../../lib/interactable'
 import './Editor.css'
 import { ZoneComponent, ZoneLoadingComponent } from './zone-component'
 
@@ -31,18 +32,28 @@ const TextZone: React.FC<{ label: string }> = ({ label }) => {
   )
 }
 
-export const TextZoneZooone: ZoneComponent<_DialInteractable> = ({
-  token,
-  interactable,
-}) => {
-  console.log('interactable from component', interactable)
-  const config = interactable._config
+export const TextZoneZooone: ZoneComponent = ({ token, codeDawVar }) => {
+  const config = codeDawVar.config
+  useEffect(() => {
+    console.log('TextZoneZooone', token, codeDawVar)
+  }, [])
   return (
     <TextZone
       label={`${token.varName}: { ${config.start} ${config.end} ${config.defaultValue} }`}
     ></TextZone>
   )
 }
+
+// export const TextZoneZooone: ZoneComponent<_DialInteractable> = ({ token, interactable }) => {
+//   console.log('text zooon')
+//   console.log('interactable from component', interactable)
+//   const config = interactable._config
+//   return (
+//     <TextZone
+//       label={`${token.varName}: { ${config.start} ${config.end} ${config.defaultValue} }`}
+//     ></TextZone>
+//   )
+// }
 
 export const TextZoneLoading: ZoneLoadingComponent = ({ token }) => {
   return <div>loading {token.varName}</div>

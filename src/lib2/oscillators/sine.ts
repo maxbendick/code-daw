@@ -1,7 +1,8 @@
-import { Signal } from '../../lib/signal'
+// import { Signal } from '../lib/signal'
 import { makeNodeMaker } from '../priv/makeNodeMaker'
 import { EdgeType } from '../priv/no-sig-types/edge-types'
 import { GraphNodeBaseType } from '../priv/no-sig-types/graph-node-base-type'
+import { Signal } from '../sigs'
 // import { GraphNodeDefinition } from '../priv/no-sig-types/graph-node-definition'
 
 export const sineNodeType = 'oscillators/sine' as const
