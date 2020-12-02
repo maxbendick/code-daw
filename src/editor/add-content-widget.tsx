@@ -1,10 +1,16 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
-import { Instances } from './instances'
-import { IContentWidget, IContentWidgetPosition } from './types'
+import {
+  EditorT,
+  IContentWidget,
+  IContentWidgetPosition,
+  MonacoT,
+} from './types'
 import { ZoneContentContainer } from './ZoneContentContainer'
 
 export const addContentWidget = (
+  monaco: MonacoT,
+  editor: EditorT,
   initialLineNumber: number,
   numLines: number,
   content: ReturnType<React.FC>,
@@ -12,7 +18,6 @@ export const addContentWidget = (
   const id = Math.random().toString(36).substring(7)
 
   let domNode = null as any
-  const { monaco, editor } = Instances
 
   const position: IContentWidgetPosition = {
     position: {

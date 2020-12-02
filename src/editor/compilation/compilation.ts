@@ -1,6 +1,5 @@
 import { transpile } from 'typescript'
 import { addBusesToWindow } from '../../connection/bus'
-import { evalCompiledUserCode } from '../../connection/imports'
 import { chain } from '../chain'
 import { compiledTokenVarNameRegex } from '../parsing/regex'
 import { EditorT } from '../types'
@@ -34,10 +33,10 @@ const registerLineNumber = (e: Error) => {
   ;(window as any).codeDawCurrentLineNumber = lineNumber
 }
 
-export const compileAndEval = (editor: EditorT) => {
+export const compileAndEval = async (editor: EditorT): Promise<string> => {
   ;(window as any).codeDawRegisterLineNumber = registerLineNumber
 
-  const code = chain()
+  const result = chain()
     .then(() => editor.getModel()?.getLinesContent().join('\n')!)
     .then(code =>
       transpile(
@@ -94,13 +93,7 @@ export const compileAndEval = (editor: EditorT) => {
     .tap(code => {
       addBusesToWindow(editor)
     })
-    .then(code => {
-      console.log('code to eval', code)
-      try {
-        evalCompiledUserCode(code)
-      } catch (e) {
-        console.warn('from eval', e)
-      }
-    })
     .value()
+
+  return result
 }

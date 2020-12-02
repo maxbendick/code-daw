@@ -1,80 +1,45 @@
-import MonacoEditor, { monaco as monacoReact } from '@monaco-editor/react'
-import { useEffect, useState } from 'react'
+import MonacoEditor from '@monaco-editor/react'
+import { useMachine } from '@xstate/react'
+import { useEffect } from 'react'
 import * as Config from '../../config'
-import { registerAllExports } from '../../connection/imports'
-import {
-  addHighlighting,
-  addHighlightingToEditor,
-} from '../../editor/add-highlighting'
-import { chain } from '../../editor/chain'
-import { compileAndEval } from '../../editor/compilation/compilation'
-import { CoolZone } from '../../editor/cool-zone'
-import { setAllInstances } from '../../editor/instances'
-import {
-  loadFiles,
-  setCompilerAndDiagnosticOptions,
-} from '../../editor/load-files'
-import { getAllTokens } from '../../editor/parsing/ts-parser'
-import { EditorT, MonacoT } from '../../editor/types'
+import { EditorT } from '../../editor/types'
+import { machine } from '../../lifecycle/machine'
 import { code4 } from './code'
 import './Editor.css'
-import { TextZoneLoading, TextZoneZooone } from './TextZone'
+import {
+  compileAndEval,
+  evalCompiledUserCode,
+  postEditorSetup,
+  preEditorSetup,
+} from './setuppers'
 
-const setupEditor = async (editor: EditorT) => {
-  const monaco: MonacoT = await monacoReact.init()
-  setAllInstances({ editor, monaco })
-  addHighlightingToEditor(editor)
-
-  chain()
-    .then(() => editor.getModel()?.getLinesContent()!)
-    .then(getAllTokens)
-    .then(tokens => {
-      return tokens
-        .map((token, index) => {
-          const prevLine = index > 0 ? tokens[index - 1].line : -1
-
-          if (token.line === prevLine) {
-            return undefined
-          }
-
-          return new CoolZone(token, 3, TextZoneZooone, TextZoneLoading)
-        })
-        .filter(a => a)
-    })
-    .tap(result => console.log('big tap', result))
-
-  compileAndEval(editor)
-}
-
-const editorPreSetup = async () => {
-  const monaco: MonacoT = await monacoReact.init()
-  setCompilerAndDiagnosticOptions(monaco)
-  addHighlighting(monaco)
-  await loadFiles(monaco)
-  registerAllExports()
-}
-
-interface InitialData {
-  monaco: MonacoT
-}
+const configgedMachine = machine.withConfig({
+  services: {
+    preEditorSetup: () => preEditorSetup(),
+    postEditorSetup: context =>
+      postEditorSetup(context.monaco!, context.editor!),
+    compileAndEval: context => compileAndEval(context.editor!),
+    evalCompiledUserCode: context =>
+      evalCompiledUserCode(context.compiledCode!),
+  },
+})
 
 export const Editor: React.FC = () => {
-  const [editorPreSetupFinished, setEditorPreSetupFinished] = useState<boolean>(
-    false,
-  )
+  const [state, send] = useMachine(configgedMachine, { devTools: true })
 
-  const handleEditorDidMount = (_: any, editor: EditorT) => {
-    console.log('completing setup now')
-    setupEditor(editor)
-  }
+  const editorPreSetupFinished =
+    !state.matches('preMount') && !state.matches('preEditorSetup')
 
   useEffect(() => {
-    console.warn('use effect called!')
-    ;(async () => {
-      await editorPreSetup()
-      setEditorPreSetupFinished(true)
-    })()
-  }, [])
+    send('REACT_MOUNTED')
+  }, [send])
+
+  const handleEditorDidMount = (_: any, editor: EditorT) => {
+    send({
+      type: 'EDITOR_CREATED',
+      editor,
+    })
+  }
 
   if (!editorPreSetupFinished) {
     return <div>loading...</div>

@@ -1,16 +1,15 @@
 import * as React from 'react'
 import ReactDOM from 'react-dom'
-import { Instances } from './instances'
-import { IViewZone, IViewZoneChangeAccessor } from './types'
+import { EditorT, IViewZone, IViewZoneChangeAccessor, MonacoT } from './types'
 import { ZoneBackground } from './ZoneBackground'
 
 // note: also adds decorations
 export const addViewZone = (
+  monaco: MonacoT,
+  editor: EditorT,
   initialAfterLineNumber: number,
   initialHeightInLines: number,
 ) => {
-  const { monaco, editor } = Instances
-
   // Add a zone to make hit testing more interesting
   let viewZoneId: string = null as any
 

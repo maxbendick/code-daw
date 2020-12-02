@@ -8,6 +8,7 @@ import { addContentWidget } from './add-content-widget'
 import { addDecorations } from './add-decorations'
 import { addViewZone } from './add-view-zone'
 import { registerFinishedLoadingListener } from './finished-loading-listeners'
+import { EditorT, MonacoT } from './types'
 
 export class CoolZone {
   private _lineNumber: number
@@ -17,6 +18,8 @@ export class CoolZone {
   private decorationResult: ReturnType<typeof addDecorations>
 
   constructor(
+    monaco: MonacoT,
+    editor: EditorT,
     token: TokenPlace,
     initialNumLines: number,
     ZoneComponentArg: ZoneComponent,
@@ -25,10 +28,17 @@ export class CoolZone {
     this._lineNumber = token.line + 1
     this.numLines = initialNumLines
 
-    this.viewZoneResult = addViewZone(this._lineNumber, this.numLines)
+    this.viewZoneResult = addViewZone(
+      monaco,
+      editor,
+      this._lineNumber,
+      this.numLines,
+    )
 
     // TODO inject interactable on eval?
     this.contentWidgetResult = addContentWidget(
+      monaco,
+      editor,
       this._lineNumber + 1,
       this.numLines,
       <ZoneLoadingComponentArg token={token} />,
@@ -43,7 +53,7 @@ export class CoolZone {
       )
     })
 
-    this.decorationResult = addDecorations(this._lineNumber)
+    this.decorationResult = addDecorations(monaco, editor, this._lineNumber)
   }
 
   get lineNumber(): number {
