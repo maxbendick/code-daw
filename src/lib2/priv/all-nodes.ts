@@ -4,7 +4,7 @@ import {
   dialNodeType,
 } from '../interactables/dial'
 import {
-  SineGraphNodeDefinition,
+  sineGraphNodeDefinition,
   SineNodeEphemeral,
   sineNodeType,
 } from '../oscillators/sine'
@@ -22,7 +22,7 @@ const testValue: GraphNodeBaseType<
 
 export const nodeDefinitions: GraphNodeBaseType<any, any, any, any>[] = [
   dialGraphNodeDefinition,
-  SineGraphNodeDefinition,
+  sineGraphNodeDefinition,
 ]
 
 export type NodeType = typeof dialNodeType

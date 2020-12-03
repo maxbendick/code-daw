@@ -1,5 +1,4 @@
 import { transpile } from 'typescript'
-import { addBusesToWindow } from '../../connection/bus'
 import { chain } from '../chain'
 import { compiledTokenVarNameRegex } from '../parsing/regex'
 import { TokenPlaces } from '../parsing/ts-parser'
@@ -94,9 +93,10 @@ export const compileAndEval = async (
         .then(lines => lines.join('\n'))
         .value()
     })
-    .tap(code => {
-      addBusesToWindow(tokens)
-    })
+    // TODO are buses necessary at all?
+    // .tap(code => {
+    //   addBusesToWindow(tokens)
+    // })
     .value()
 
   return result
