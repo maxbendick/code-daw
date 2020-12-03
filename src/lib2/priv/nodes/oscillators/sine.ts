@@ -1,3 +1,4 @@
+import { injectAudioContext } from '../../../../runtime/utils'
 import { Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
@@ -43,4 +44,14 @@ export const _oscillators_exports = {
   content: {
     sine,
   },
+}
+
+export const resolveSineOutput = (
+  audioContext: AudioContext,
+  config: any,
+  { frequency }: any,
+) => {
+  const { makeOscillator } = injectAudioContext(audioContext)
+  const osc = makeOscillator(frequency)
+  return osc
 }

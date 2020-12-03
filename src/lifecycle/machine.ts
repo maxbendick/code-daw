@@ -158,7 +158,15 @@ export const machine = Machine<
           console.log('waiting!!!', context, event)
         },
       },
-      failure: {},
+      failure: {
+        entry: (context, event) => {
+          console.error(
+            'sadly, the state machine has entered the failure machine state',
+            context,
+            event,
+          )
+        },
+      },
     },
   },
   {
