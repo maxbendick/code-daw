@@ -75,16 +75,16 @@ export const superSineDef = {
     return osc
   },
 
-  get publicName() {
+  get publicName(): string {
     const result = this.nodeType.split('/')[1]
     if (!result) {
       throw new Error('could not get publicName')
     }
     return result
   },
-  get packageName() {
+  get packageName(): `code-daw/${string}` {
     const split = this.nodeType.split('/')
-    const result = `code-daw/${split[0]}`
+    const result = `code-daw/${split[0]}` as const
     if (!result) {
       throw new Error('could not get publicName')
     }

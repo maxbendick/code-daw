@@ -1,9 +1,9 @@
 import { EdgeType } from './edge-types'
 
 export interface SuperDef {
-  nodeType: string
+  nodeType: `${string}/${string}`
   publicName: string
-  packageName: string
+  packageName: `code-daw/${string}`
   publicFunction: any
   inputs: { [k: string]: EdgeType }
   output: EdgeType

@@ -2,9 +2,10 @@
 // import from a honeypot?
 
 import { alertFinishedLoadingListeners } from '../editor/finished-loading-listeners'
+import { SuperDef } from '../lib2/priv/no-sig-types/super-def'
 import { _interactables_exports } from '../lib2/priv/nodes/interactables/dial'
 import { _io_exports } from '../lib2/priv/nodes/io/master-out'
-import { _oscillators_exports } from '../lib2/priv/nodes/oscillators/sine'
+import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
 
 export const evalCompiledUserCode = (code: string) => {
   ;(window as any).codeDawInEval = true
@@ -25,6 +26,7 @@ interface RegisterArgs {
 }
 
 const registerExports = ({ packageName, content }: RegisterArgs) => {
+  // Don't do in eval
   if ((window as any).codeDawInEval) {
     return
   }
@@ -33,18 +35,28 @@ const registerExports = ({ packageName, content }: RegisterArgs) => {
   if (!w.codeDawPackages) {
     w.codeDawPackages = {}
   }
+  if (!w.codeDawPackages[packageName]) {
+    w.codeDawPackages[packageName] = {}
+  }
 
-  // bad for dev server:
-  // if (w.codeDawPackages[packageName]) {
-  //   throw new Error(`tried to re-inject package: ${packageName}`)
-  // }
+  w.codeDawPackages[packageName] = {
+    ...w.codeDawPackages[packageName],
+    ...content,
+  }
+}
 
-  w.codeDawPackages[packageName] = content
+const registerSuperDef = (superDef: SuperDef) => {
+  registerExports({
+    packageName: superDef.packageName,
+    content: {
+      [superDef.publicName]: superDef.publicFunction,
+    },
+  })
 }
 
 export const registerAllExports = () => {
   registerExports(_interactables_exports)
-  registerExports(_oscillators_exports)
+  registerSuperDef(superSineDef)
   registerExports(_io_exports)
 }
 
