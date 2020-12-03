@@ -19,8 +19,6 @@ export const easyConnect = (
       throw new Error('easy connect missing initial value!')
     }
 
-    // output.value = initialValue
-
     output.setValueAtTime(initialValue, audioContext.currentTime)
 
     input

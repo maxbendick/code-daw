@@ -61,32 +61,3 @@ export type LifecycleServices = {
   attachCoolZones: (context: LifecycleContext) => Promise<CoolZone[]>
   doRuntime: (context: LifecycleContext) => Promise<void>
 }
-
-// export type LifecycleState =
-//   | { value: 'preMount'; context: LifecycleContext }
-//   | { value: 'preEditorSetup'; context: LifecycleContext }
-//   | {
-//       value: 'creatingEditor'
-//       context: LifecycleContext & LifecycleContextWithMonaco
-//     }
-//   | {
-//       value: 'parsingTokens'
-//       context: LifecycleContext & LifecycleContextWithEditor
-//     }
-//   | {
-//       value: 'attachingCoolZones'
-//       context: LifecycleContext & LifecycleContextWithTokens
-//     }
-//   | {
-//       value: 'compilingCode'
-//       context: LifecycleContext & LifecycleContextWithTokens
-//     }
-//   | {
-//       value: 'evalingCode'
-//       context: LifecycleContext & LifecycleContextWithCompiledCode
-//     }
-//   | {
-//       value: 'waiting'
-//       context: LifecycleContext & LifecycleContextWithCompiledCode
-//     }
-//   | { value: 'failure'; context: LifecycleContext }

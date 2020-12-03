@@ -143,19 +143,6 @@ const evalateGraph = (
 // note: AudioNode can be AudioScheduledSourceNode. which can be AudioBufferSourceNode,
 // OscillatorNode, ConstantSourceNode, or others?
 
-const testttt = () => {
-  // create web audio api context
-  const audioCtx = new (window.AudioContext ||
-    ((window as any).webkitAudioContext as AudioContext))()
-
-  // create Oscillator node
-  const oscillator = audioCtx.createOscillator()
-  oscillator.type = 'square'
-  oscillator.frequency.setValueAtTime(440, audioCtx.currentTime) // value in hertz
-  oscillator.connect(audioCtx.destination)
-  oscillator.start()
-}
-
 // TODO test because it's worth it
 const verifyInputs = (node: NN, inputs: any) => {
   const inputConfig = getGraphNodeDefinition(node.type as any).inputs

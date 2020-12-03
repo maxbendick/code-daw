@@ -12,12 +12,6 @@ import { globalSignalGraph, Node } from './signal-graph'
 // TODO
 // const isInteractable = (t: NodeType) => getGraphNodeDefinition(t).interactable
 
-// TODO
-// const getBusFromWindow = (t: NodeType, index: number): Bus<any, any> => {
-//   //  const bus: Bus<any, any> = (window as any).buses?.dials?.[index]
-//   return null as any
-// }
-
 type SigTypeInputsOf<G extends GraphNodeEphemeral> = {
   [k in keyof InputsOf<G>]: InputsOf<G>[k] extends 'signal'
     ? Signal<any>
