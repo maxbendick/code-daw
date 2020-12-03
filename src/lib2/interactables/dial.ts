@@ -28,7 +28,8 @@ const dialRaw = makeNodeMaker<DialNodeEphemeral, [config: DialConfig]>(
   ({ id }, config) => {
     return {
       type: dialNodeType,
-      inputs: { something: { id: 'or other' } },
+      // inputs: { something: { id: 'or other' } },
+      inputs: {},
       config,
     }
   },

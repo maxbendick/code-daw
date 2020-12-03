@@ -1,5 +1,10 @@
-* next graph steps
-** create graph in eval
+* next steps
+** create actual dial component
+** create sine
+** create masterOut
+
+* TODO next graph steps
+** TODO create graph in eval
 
 get rid of outputs. the node is the output
 output is necessary to differentiate types for the users editing experience
