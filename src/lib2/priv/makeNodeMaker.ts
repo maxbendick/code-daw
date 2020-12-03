@@ -1,5 +1,6 @@
 import { AudioSignal, MidiSignal, Signal } from '../sigs'
 import { GraphNodeEphemeral, NodeType } from './all-nodes'
+import { GraphNodeBaseType } from './no-sig-types/graph-node-base-type'
 import {
   ConfigOf,
   InputsOf,
@@ -45,7 +46,11 @@ const incrGetIndex = (t: NodeType) => {
   return currIndex
 }
 
-export const makeNodeMaker = <G extends GraphNodeEphemeral, Args extends any[]>(
+// export const makeNodeMaker = <G extends GraphNodeEphemeral, Args extends any[]>(
+export const makeNodeMaker = <
+  G extends GraphNodeBaseType<any, any, any, any>,
+  Args extends any[]
+>(
   f: (injected: SignalMakerInjected, ...args: Args) => NodeConstructor<G>,
 ) => {
   return (...args: Args): Node<G> => {
