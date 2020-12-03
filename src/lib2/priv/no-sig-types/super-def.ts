@@ -1,6 +1,6 @@
 import { EdgeType } from './edge-types'
 
-export interface SuperDef {
+export interface BaseSuperDef {
   nodeType: `${string}/${string}`
   publicName: string
   packageName: `code-daw/${string}`

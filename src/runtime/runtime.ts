@@ -1,7 +1,6 @@
 import { Observable } from 'rxjs'
 import { CoolZone } from '../editor/cool-zone'
-import { getGraphNodeDefinition } from '../lib2/priv/all-nodes'
-import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
+import { getNodeInputDef, getSuperDef } from '../lib2/priv/all-nodes'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 import { LifecycleContext } from '../lifecycle/types'
 import {
@@ -104,9 +103,10 @@ const evalateGraph = (
         )
 
       case 'oscillators/sine': {
-        superSineDef.verifyConfig(node.config as any)
+        const superDef = getSuperDef(node.type)
+        superDef.verifyConfig(node.config as any)
         verifyInputs(node, resolvedInputs)
-        const osc = superSineDef.makeOutput(
+        const osc = superDef.makeOutput(
           audioContext,
           node.config as any,
           resolvedInputs,
@@ -145,7 +145,7 @@ const evalateGraph = (
 
 // TODO test because it's worth it
 const verifyInputs = (node: NN, inputs: any) => {
-  const inputConfig = getGraphNodeDefinition(node.type as any).inputs
+  const inputConfig = getNodeInputDef(node.type as any)
 
   if (inputConfig.length || inputs.length) {
     throw new Error('somehow got array input')

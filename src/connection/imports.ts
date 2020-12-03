@@ -2,10 +2,10 @@
 // import from a honeypot?
 
 import { alertFinishedLoadingListeners } from '../editor/finished-loading-listeners'
-import { SuperDef } from '../lib2/priv/no-sig-types/super-def'
+import { superDefs } from '../lib2/priv/all-nodes'
+import { BaseSuperDef } from '../lib2/priv/no-sig-types/super-def'
 import { _interactables_exports } from '../lib2/priv/nodes/interactables/dial'
 import { _io_exports } from '../lib2/priv/nodes/io/master-out'
-import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
 
 export const evalCompiledUserCode = (code: string) => {
   ;(window as any).codeDawInEval = true
@@ -45,7 +45,7 @@ const registerExports = ({ packageName, content }: RegisterArgs) => {
   }
 }
 
-const registerSuperDef = (superDef: SuperDef) => {
+const registerSuperDef = (superDef: BaseSuperDef) => {
   registerExports({
     packageName: superDef.packageName,
     content: {
@@ -56,8 +56,11 @@ const registerSuperDef = (superDef: SuperDef) => {
 
 export const registerAllExports = () => {
   registerExports(_interactables_exports)
-  registerSuperDef(superSineDef)
   registerExports(_io_exports)
+
+  for (const def of superDefs) {
+    registerSuperDef(def)
+  }
 }
 
 // `require` in compiled user code becomes `codeDawRequire`

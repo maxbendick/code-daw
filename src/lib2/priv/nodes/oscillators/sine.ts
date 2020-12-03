@@ -3,7 +3,6 @@ import { Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
 import { GraphNodeBaseType } from '../../no-sig-types/graph-node-base-type'
-import { SuperDef } from '../../no-sig-types/super-def'
 
 export const sineNodeType = 'oscillators/sine' as const
 
@@ -25,7 +24,7 @@ export type SineNodeEphemeral = typeof sineGraphNodeDefinition
 
 type SineArgs = [frequency: Signal<number>, phase: Signal<number>]
 
-export const sineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
+const sineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
   ({ id }, frequency) => {
     return {
       type: sineNodeType,
@@ -36,25 +35,8 @@ export const sineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
 )
 
 // TODO better typing
-export const sine: (...args: SineArgs) => Signal<number> = (...args) => {
+const sine: (...args: SineArgs) => Signal<number> = (...args) => {
   return (sineRaw(...args) as any) as Signal<number>
-}
-
-export const _oscillators_exports = {
-  packageName: 'code-daw/oscillators' as const,
-  content: {
-    sine,
-  },
-}
-
-export const resolveSineOutput = (
-  audioContext: AudioContext,
-  config: any,
-  { frequency }: any,
-) => {
-  const { makeOscillator } = injectAudioContext(audioContext)
-  const osc = makeOscillator(frequency)
-  return osc
 }
 
 export const superSineDef = {
@@ -91,10 +73,3 @@ export const superSineDef = {
     return result
   },
 } as const
-
-// proof
-const vv: SuperDef = superSineDef
-
-const x = (null as any) as typeof superSineDef
-
-console.log('superdef', superSineDef)
