@@ -1,6 +1,7 @@
-import { Observable, of } from 'rxjs'
+import { Observable } from 'rxjs'
 import { LifecycleContext } from '../lifecycle/types'
-import { makeGain, makeObservableFromSend, makeOscillator } from './utils'
+import { injectAudioContext } from './utils'
+// import { makeGain, makeObservableFromSend, makeOscillator } from './utils'
 
 /*
 Could try:
@@ -13,7 +14,6 @@ what reprentations do i need?
 /*
  need: sine, masterOut, dial
 */
-const OUTPUT_GAIN = 0.21
 
 /*
 need to make a generic way to create new nodes (sources and effects)
@@ -28,12 +28,26 @@ for effects like gain: gain node is created first, and then inputs and outputs a
 Next: 
 * assemble audio graph from signal graph
 */
+
+// const toMaster = (audioContext: AudioContext, source: AudioNode) => {
+//   const outputGain = makeGain(audioContext, source, of(MASTER_GAIN))
+//   outputGain.connect(audioContext.destination)
+// }
+
 export const startRuntime = async (context: LifecycleContext) => {
   console.log('graph roots :)', context.signalGraph.roots)
+  console.log('graph leaves :0', context.signalGraph.leaves)
+
   // start with leaves, go to roots
 
   const audioContext = new (window.AudioContext ||
     ((window as any).webkitAudioContext as AudioContext))()
+
+  const {
+    toMaster,
+    makeObservableFromSend,
+    makeOscillator,
+  } = injectAudioContext(audioContext)
 
   const idToZoneSend$ = {} as { [id: string]: Observable<number> }
 
@@ -43,11 +57,9 @@ export const startRuntime = async (context: LifecycleContext) => {
 
   const zoneFreq1 = idToZoneSend$[context.coolZones?.[0].codeDawVar?.id!]
 
-  const osc = makeOscillator(audioContext, zoneFreq1)
+  const osc = makeOscillator(zoneFreq1)
 
-  const outputGain = makeGain(audioContext, osc, of(OUTPUT_GAIN))
-
-  outputGain.connect(audioContext.destination)
+  toMaster(osc)
 
   // STARTS IT!!!
   // osc.start()

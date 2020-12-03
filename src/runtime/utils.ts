@@ -1,31 +1,42 @@
-import { BehaviorSubject, Observable } from 'rxjs'
+import { BehaviorSubject, Observable, of } from 'rxjs'
 import { CoolZone } from '../editor/cool-zone'
 import { easyConnect } from './easy-connect'
 
-export const makeOscillator = (
-  audioContext: AudioContext,
-  frequency: AudioNode | Observable<number>,
-): OscillatorNode => {
-  const oscillator = audioContext.createOscillator()
-  oscillator.type = 'sine'
-  easyConnect(audioContext, frequency, oscillator.frequency)
-  return oscillator
-}
+const MASTER_GAIN = 0.21
 
-export const makeGain = (
-  audioContext: AudioContext,
-  source: AudioNode,
-  gainInput: AudioNode | Observable<number>,
-): GainNode => {
-  const gainNode = audioContext.createGain()
-  easyConnect(audioContext, gainInput, gainNode.gain)
-  source.connect(gainNode)
-  return gainNode
-}
+export const injectAudioContext = (audioContext: AudioContext) => {
+  const self = {
+    makeOscillator: (
+      frequency: AudioNode | Observable<number>,
+    ): OscillatorNode => {
+      const oscillator = audioContext.createOscillator()
+      oscillator.type = 'sine'
+      easyConnect(audioContext, frequency, oscillator.frequency)
+      return oscillator
+    },
 
-export const makeObservableFromSend = <A>(coolZone: CoolZone) => {
-  const value$ = new BehaviorSubject<A>(coolZone.initialValue)
-  console.log('set send', coolZone.initialValue)
-  coolZone.setSend((v: A) => value$.next(v))
-  return value$.asObservable()
+    makeGain: (
+      source: AudioNode,
+      gainInput: AudioNode | Observable<number>,
+    ): GainNode => {
+      const gainNode = audioContext.createGain()
+      easyConnect(audioContext, gainInput, gainNode.gain)
+      source.connect(gainNode)
+      return gainNode
+    },
+
+    makeObservableFromSend: <A>(coolZone: CoolZone) => {
+      const value$ = new BehaviorSubject<A>(coolZone.initialValue)
+      console.log('set send', coolZone.initialValue)
+      coolZone.setSend((v: A) => value$.next(v))
+      return value$.asObservable()
+    },
+
+    toMaster: (source: AudioNode) => {
+      const outputGain = self.makeGain(source, of(MASTER_GAIN))
+      outputGain.connect(audioContext.destination)
+    },
+  }
+
+  return self
 }
