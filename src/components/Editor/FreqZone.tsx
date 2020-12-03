@@ -1,11 +1,10 @@
 import * as React from 'react'
-// import { _DialInteractable } from '../../lib/interactable'
 import './Editor.css'
 import { ZoneComponent, ZoneLoadingComponent } from './zone-component'
 
-const TextZone: React.FC<{ label: string; onChange: (a: string) => void }> = ({
+const FreqZone: React.FC<{ label: string; send: (a: number) => void }> = ({
   label,
-  onChange,
+  send,
 }) => {
   return (
     <div
@@ -19,36 +18,33 @@ const TextZone: React.FC<{ label: string; onChange: (a: string) => void }> = ({
         paddingLeft: '10px',
       }}
     >
-      <label>
+      <div style={{ display: 'flex', flexDirection: 'row' }}>
+        <button onClick={() => send(200)}>200</button>
+        <button onClick={() => send(300)}>300</button>
+        <button onClick={() => send(400)}>400</button>
+      </div>
+      {/* <label>
         {label}
-        <input
-          style={{
-            display: 'block',
-            background: '#333',
-            color: 'white',
-            marginTop: '5px',
-          }}
-          onChange={e => onChange((e as any).nativeEvent.data)}
-        />
-      </label>
+        <button>200</button>
+      </label> */}
     </div>
   )
 }
 
-export const TextZoneZooone: ZoneComponent = ({ token, codeDawVar, send }) => {
+export const FreqZoneZooone: ZoneComponent = ({ token, codeDawVar, send }) => {
   const config = codeDawVar.config
   // useEffect(() => {
   //   console.log('TextZoneZooone', token, codeDawVar)
   //   send('sendingg from the textt zone')
   // }, [send])
   return (
-    <TextZone
+    <FreqZone
       label={`${token.varName}: { ${config.start} ${config.end} ${config.defaultValue} }`}
-      onChange={send}
-    ></TextZone>
+      send={send}
+    ></FreqZone>
   )
 }
 
-export const TextZoneLoading: ZoneLoadingComponent = ({ token }) => {
+export const FreqZoneLoading: ZoneLoadingComponent = ({ token }) => {
   return <div>loading {token.varName}</div>
 }

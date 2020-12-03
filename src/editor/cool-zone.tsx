@@ -35,7 +35,7 @@ export const makeCoolZoneFactory = (
     initialNumLines,
     ZoneComponentArg,
     ZoneLoadingComponentArg,
-    a => console.log('sent from', token.varName, a),
+    // a => console.log('sent from', token.varName, a),
   )
 }
 
@@ -46,6 +46,8 @@ export class CoolZone {
   private contentWidgetResult: ReturnType<typeof addContentWidget>
   private decorationResult: ReturnType<typeof addDecorations>
 
+  private send?: (a: any) => void
+
   constructor(
     monaco: MonacoT,
     editor: EditorT,
@@ -54,7 +56,6 @@ export class CoolZone {
     initialNumLines: number,
     ZoneComponentArg: ZoneComponent,
     ZoneLoadingComponentArg: ZoneLoadingComponent,
-    send: (a: any) => void,
   ) {
     this._lineNumber = token.line + 1
     this.numLines = initialNumLines
@@ -72,7 +73,11 @@ export class CoolZone {
       editor,
       this._lineNumber + 1,
       this.numLines,
-      <ZoneComponentArg token={token} codeDawVar={codeDawVar} send={send} />,
+      <ZoneComponentArg
+        token={token}
+        codeDawVar={codeDawVar}
+        send={v => this.send!(v)}
+      />,
     )
 
     this.decorationResult = addDecorations(monaco, editor, this._lineNumber)
@@ -94,5 +99,11 @@ export class CoolZone {
     this.viewZoneResult.destroy()
     this.contentWidgetResult.destroy()
     this.decorationResult.destroy()
+  }
+
+  setSend = (send: (v: any) => void) => {
+    this.send = send
+
+    console.log('after setsend', this)
   }
 }

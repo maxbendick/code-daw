@@ -1,6 +1,6 @@
-import { BehaviorSubject, of } from 'rxjs'
+import { of } from 'rxjs'
 import { LifecycleContext } from '../lifecycle/types'
-import { makeGain, makeOscillator } from './utils'
+import { makeGain, makeObservableFromSend, makeOscillator } from './utils'
 
 /*
 Could try:
@@ -31,23 +31,10 @@ export const startRuntime = async (context: LifecycleContext) => {
   const audioContext = new (window.AudioContext ||
     ((window as any).webkitAudioContext as AudioContext))()
 
-  const FREQ = new BehaviorSubject(300)
-  ;(async () => {
-    console.log('a')
+  const zoneFreq1 = makeObservableFromSend(200, context?.coolZones?.[0]!)
+  const zoneFreq2 = makeObservableFromSend(200, context?.coolZones?.[1]!)
 
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    FREQ.next(400)
-    console.log('a')
-
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    FREQ.next(200)
-    console.log('a')
-
-    await new Promise(resolve => setTimeout(resolve, 2000))
-    console.log('a')
-  })()
-
-  const osc = makeOscillator(audioContext, FREQ)
+  const osc = makeOscillator(audioContext, zoneFreq1)
 
   const outputGain = makeGain(audioContext, osc, of(OUTPUT_GAIN))
 

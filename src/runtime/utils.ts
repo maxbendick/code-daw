@@ -1,4 +1,5 @@
-import { Observable } from 'rxjs'
+import { BehaviorSubject, Observable } from 'rxjs'
+import { CoolZone } from '../editor/cool-zone'
 import { easyConnect } from './easy-connect'
 
 export const makeOscillator = (
@@ -18,7 +19,13 @@ export const makeGain = (
 ): GainNode => {
   const gainNode = audioContext.createGain()
   easyConnect(audioContext, gainInput, gainNode.gain)
-
   source.connect(gainNode)
   return gainNode
+}
+
+export const makeObservableFromSend = <A>(initial: A, coolZone: CoolZone) => {
+  const value$ = new BehaviorSubject<A>(initial)
+  console.log('set send', initial)
+  coolZone.setSend((v: A) => value$.next(v))
+  return value$.asObservable()
 }
