@@ -1,9 +1,9 @@
 import { monaco as monacoReact } from '@monaco-editor/react'
 import {
-  defaultFreqZoneValue,
-  FreqZoneLoading,
-  FreqZoneZooone,
-} from '../components/Editor/FreqZone'
+  defaultDialZoneValue,
+  DialZoneLoading,
+  DialZoneZooone,
+} from '../components/Editor/DialZone'
 import {
   evalCompiledUserCode as _evalCompiledUserCode,
   registerAllExports,
@@ -58,9 +58,9 @@ export const attachCoolZones = async (
           return coolZoneFactory(
             token,
             3,
-            FreqZoneZooone,
-            FreqZoneLoading,
-            defaultFreqZoneValue(codeDawVars[token.varName]),
+            DialZoneZooone,
+            DialZoneLoading,
+            defaultDialZoneValue(codeDawVars[token.varName]),
           )
         })
         .filter(a => a) as CoolZone[]
