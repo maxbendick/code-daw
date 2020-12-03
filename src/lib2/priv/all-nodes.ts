@@ -1,14 +1,14 @@
+import { GraphNodeBaseType } from './no-sig-types/graph-node-base-type'
 import {
   dialGraphNodeDefinition,
   DialNodeEphemeral,
   dialNodeType,
-} from '../interactables/dial'
+} from './nodes/interactables/dial'
 import {
   sineGraphNodeDefinition,
   SineNodeEphemeral,
   sineNodeType,
-} from '../oscillators/sine'
-import { GraphNodeBaseType } from './no-sig-types/graph-node-base-type'
+} from './nodes/oscillators/sine'
 
 export type GraphNodeEphemeral = DialNodeEphemeral | SineNodeEphemeral
 

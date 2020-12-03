@@ -2,9 +2,9 @@
 // import from a honeypot?
 
 import { alertFinishedLoadingListeners } from '../editor/finished-loading-listeners'
-import { _interactables_exports } from '../lib2/interactables/dial'
-import { _io_exports } from '../lib2/io/master-out'
-import { _oscillators_exports } from '../lib2/oscillators/sine'
+import { _interactables_exports } from '../lib2/priv/nodes/interactables/dial'
+import { _io_exports } from '../lib2/priv/nodes/io/master-out'
+import { _oscillators_exports } from '../lib2/priv/nodes/oscillators/sine'
 
 export const evalCompiledUserCode = (code: string) => {
   ;(window as any).codeDawInEval = true

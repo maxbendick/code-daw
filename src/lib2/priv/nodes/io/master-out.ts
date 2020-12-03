@@ -1,6 +1,6 @@
-import { makeNodeMaker } from '../priv/makeNodeMaker'
-import { GraphNodeBaseType } from '../priv/no-sig-types/graph-node-base-type'
-import { AudioSignal, Signal } from '../sigs'
+import { AudioSignal, Signal } from '../../../sigs'
+import { makeNodeMaker } from '../../makeNodeMaker'
+import { GraphNodeBaseType } from '../../no-sig-types/graph-node-base-type'
 
 export const masterOutNodeType = 'io/masterOut' as const
 

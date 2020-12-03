@@ -1,7 +1,7 @@
-import { makeNodeMaker } from '../priv/makeNodeMaker'
-import { EdgeType } from '../priv/no-sig-types/edge-types'
-import { GraphNodeBaseType } from '../priv/no-sig-types/graph-node-base-type'
-import { Signal } from '../sigs'
+import { Signal } from '../../../sigs'
+import { makeNodeMaker } from '../../makeNodeMaker'
+import { EdgeType } from '../../no-sig-types/edge-types'
+import { GraphNodeBaseType } from '../../no-sig-types/graph-node-base-type'
 
 export const sineNodeType = 'oscillators/sine' as const
 
@@ -23,7 +23,7 @@ export type SineNodeEphemeral = typeof sineGraphNodeDefinition
 
 type SineArgs = [frequency: Signal<number>, phase: Signal<number>]
 
-const sineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
+export const sineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
   ({ id }, frequency) => {
     return {
       type: sineNodeType,
@@ -34,7 +34,7 @@ const sineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
 )
 
 // TODO better typing
-const sine: (...args: SineArgs) => Signal<number> = (...args) => {
+export const sine: (...args: SineArgs) => Signal<number> = (...args) => {
   return (sineRaw(...args) as any) as Signal<number>
 }
 
