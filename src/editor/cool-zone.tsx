@@ -106,8 +106,6 @@ export class CoolZone {
 
   setSend = (send: (v: any) => void) => {
     this.send = send
-
-    console.log('after setsend', this)
   }
 
   get id(): string {

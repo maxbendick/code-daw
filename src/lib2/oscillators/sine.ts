@@ -18,27 +18,39 @@ export type SineConfig = {}
 
 export const SineGraphNodeDefinition: GraphNodeBaseType<
   typeof sineNodeType,
-  { phase: 'signal' },
+  { frequency: 'signal' },
   'signal',
   SineConfig
 > = {
   nodeType: sineNodeType,
-  inputs: { phase: 'signal' },
+  inputs: { frequency: 'signal' },
   output: EdgeType.Signal,
   config: (null as any) as SineConfig,
 }
 
 export type SineNodeEphemeral = typeof SineGraphNodeDefinition
 
-const SineRaw = makeNodeMaker<SineNodeEphemeral, [phase: Signal<any>]>(
-  ({ id }, phase) => {
+type SineArgs = [frequency: Signal<number>, phase: Signal<number>]
+
+const SineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
+  ({ id }, frequency) => {
     return {
       type: sineNodeType,
-      inputs: { phase } as any,
+      inputs: { frequency } as any,
       config: {},
     }
   },
 )
 
 // TODO better typing
-export const sine: (config: SineConfig) => Signal<number> = SineRaw as any
+const sine: (...args: SineArgs) => Signal<number> = (...args) => {
+  console.log('sine!!!')
+  return (SineRaw(...args) as any) as Signal<number>
+}
+
+export const _oscillators_exports = {
+  packageName: 'code-daw/oscillators' as const,
+  content: {
+    sine,
+  },
+}

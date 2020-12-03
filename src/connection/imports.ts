@@ -3,6 +3,7 @@
 
 import { alertFinishedLoadingListeners } from '../editor/finished-loading-listeners'
 import { _interactables_exports } from '../lib2/interactables/dial'
+import { _oscillators_exports } from '../lib2/oscillators/sine'
 
 export const evalCompiledUserCode = (code: string) => {
   ;(window as any).codeDawInEval = true
@@ -42,6 +43,7 @@ const registerExports = ({ packageName, content }: RegisterArgs) => {
 
 export const registerAllExports = () => {
   registerExports(_interactables_exports)
+  registerExports(_oscillators_exports)
 }
 
 // `require` in compiled user code becomes `codeDawRequire`

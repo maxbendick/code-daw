@@ -1,5 +1,5 @@
 * next steps
-** create actual dial component
+** create actual dial component ( ish ;) )
 ** create sine
 ** create masterOut
 

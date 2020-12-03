@@ -69,7 +69,6 @@ export const machine = Machine<
             target: 'creatingEditor',
             actions: assign({
               monaco: (context, event) => {
-                console.log('pre editor event', event)
                 return event.data.monaco
               },
             }),
@@ -97,7 +96,6 @@ export const machine = Machine<
             target: 'compilingCode',
             actions: assign({
               tokens: (context, event) => {
-                console.log('invoke!!', event.data)
                 return event.data
               },
             }),
@@ -105,9 +103,6 @@ export const machine = Machine<
         },
       },
       compilingCode: {
-        onEntry: (...args) => {
-          console.log('on compile code entry', ...args)
-        },
         invoke: {
           id: 'compileCodeInvoke',
           src: 'compileCode',
@@ -121,9 +116,6 @@ export const machine = Machine<
         },
       },
       evalingCode: {
-        onEntry: context => {
-          console.log('compiled code', context.compiledCode!)
-        },
         invoke: {
           id: 'evalingCodeInvoke',
           src: 'evalCompiledUserCode',
@@ -131,7 +123,6 @@ export const machine = Machine<
             target: 'attachingCoolZones',
             actions: assign({
               codeDawVars: (context, event) => {
-                console.log('assigning codeDawVars', context, event)
                 return event.data.codeDawVars
               },
             }),

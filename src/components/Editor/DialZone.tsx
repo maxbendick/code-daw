@@ -112,7 +112,7 @@ const DialZone: React.FC<{
     try {
       send(value)
     } catch (e) {
-      console.warn('sent with an error - send may be undefined', e)
+      console.warn('sent with an error - send may be undefined')
     }
   }, [value])
 
