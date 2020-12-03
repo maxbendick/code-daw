@@ -1,5 +1,6 @@
 import { Observable } from 'rxjs'
-import { map, tap } from 'rxjs/operators'
+import { CoolZone } from '../editor/cool-zone'
+import { SignalGraph } from '../lib2/priv/signal-graph'
 import { LifecycleContext } from '../lifecycle/types'
 import { injectAudioContext, makeObservableFromSend } from './utils'
 // import { makeGain, makeObservableFromSend, makeOscillator } from './utils'
@@ -31,8 +32,10 @@ Next:
 */
 
 export const startRuntime = async (context: LifecycleContext) => {
-  console.log('graph roots :)', context.signalGraph.roots)
-  console.log('graph leaves :0', context.signalGraph.leaves)
+  const { signalGraph } = context
+
+  console.log('graph roots :)', signalGraph.roots)
+  console.log('graph leaves :0', signalGraph.leaves)
 
   // start with leaves, go to roots
 
@@ -47,21 +50,74 @@ export const startRuntime = async (context: LifecycleContext) => {
     idToZoneSend$[zone.codeDawVar.id] = makeObservableFromSend(zone) // TODO default value!!
   }
 
-  const firstDialZone = context.coolZones?.[0]!
-
-  const zoneFreq1 = idToZoneSend$[firstDialZone.id].pipe(
-    map(v => Math.max(200, Math.min(v, 1000))),
-    tap(f => console.log('osc freq', f)),
-  )
-
-  const osc = makeOscillator(zoneFreq1)
-
-  toMaster(osc)
-
-  // STARTS IT!!!
-  // osc.start()
+  // should send to master
+  const evaluation = evalateGraph(audioContext, signalGraph, context.coolZones!)
+  console.log('evaluation', evaluation)
 
   await new Promise(resolve => {})
+}
+
+type NN = typeof SignalGraph.prototype.masterOut
+
+const evalateGraph = (
+  audioContext: AudioContext,
+  graph: SignalGraph,
+  coolZones: CoolZone[],
+) => {
+  const { toMaster, makeOscillator } = injectAudioContext(audioContext)
+
+  const existingOutputs = {} as { [id: string]: AudioNode | Observable<number> }
+  const oscillatorNodes = [] as OscillatorNode[]
+
+  for (const zone of coolZones) {
+    existingOutputs[zone.codeDawVar.id] = makeObservableFromSend(zone) // TODO default value!!
+  }
+
+  const rec = (node: NN) => {
+    const resolvedInputs = {} as {
+      [slot: string]: Observable<number> | AudioNode
+    }
+
+    for (const [inputSlot, id] of Object.entries(node.inputIds)) {
+      const inputNode = graph.getNode(id)
+      if (!existingOutputs[id]) {
+        rec(inputNode)
+      }
+      if (!existingOutputs[id]) {
+        throw new Error('rec should have added to existingOutputs')
+      }
+      resolvedInputs[inputSlot] = existingOutputs[id]
+    }
+
+    // switch on node types
+    if (node.type === 'dial') {
+      throw new Error(
+        'shouldnt be here because dials are handled with coolzones',
+      )
+    } else if (node.type === 'oscillators/sine') {
+      const osc = makeOscillator(resolvedInputs['frequency'])
+      existingOutputs[node.id] = osc
+      oscillatorNodes.push(osc)
+      console.log('on the sine node', node)
+      return
+    } else if (node.type === 'io/masterOut') {
+      console.log('on the masterout', node)
+      toMaster(resolvedInputs['audioToOutput'] as AudioNode)
+      return
+    }
+
+    throw new Error(`unexpected node type ${node.type}`)
+  }
+
+  rec(graph.masterOut)
+
+  console.log('oscilkllator nodes', oscillatorNodes)
+  // STARTS IT
+  // for (const osc of oscillatorNodes) {
+  //   osc.start()
+  // }
+
+  return existingOutputs
 }
 
 const assembleAudioGraph = (context: LifecycleContext) => {

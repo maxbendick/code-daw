@@ -20,6 +20,7 @@ export class SignalGraph {
         return n
       }
     }
+    throw new Error(`could not getNode ${id}`)
   }
 
   get roots(): Set<Node<any>> {
@@ -51,6 +52,15 @@ export class SignalGraph {
       }
     }
     return result
+  }
+
+  get masterOut(): Node<any> {
+    for (const node of this.nodes) {
+      if (node.type === 'io/masterOut') {
+        return node
+      }
+    }
+    throw new Error('no master out in graph!')
   }
 }
 
