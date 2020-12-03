@@ -109,4 +109,8 @@ export class CoolZone {
 
     console.log('after setsend', this)
   }
+
+  get id(): string {
+    return this.codeDawVar.id
+  }
 }

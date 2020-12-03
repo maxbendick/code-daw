@@ -1,5 +1,7 @@
 import { isObservable, Observable } from 'rxjs'
-import { skip, take } from 'rxjs/operators'
+import { skip, take, throttleTime } from 'rxjs/operators'
+
+const SAFE_MODE_THROTTLE_TIME = 50
 
 // TODO handle subscription mem leak
 export const easyConnect = (
@@ -21,10 +23,12 @@ export const easyConnect = (
 
     output.setValueAtTime(initialValue, audioContext.currentTime)
 
-    input.pipe(skip(1)).subscribe(currentValue => {
-      console.log('setting target', currentValue)
-      output.setTargetAtTime(currentValue, audioContext.currentTime + 0.1, 0.3)
-    })
+    input
+      .pipe(skip(1), throttleTime(SAFE_MODE_THROTTLE_TIME))
+      .subscribe(currentValue => {
+        console.log('setting target', currentValue)
+        output.setTargetAtTime(currentValue, audioContext.currentTime + 0, 0.1)
+      })
   } else {
     input.connect(output)
   }

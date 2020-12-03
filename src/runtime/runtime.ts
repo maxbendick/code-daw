@@ -1,6 +1,7 @@
 import { Observable } from 'rxjs'
+import { map, tap } from 'rxjs/operators'
 import { LifecycleContext } from '../lifecycle/types'
-import { injectAudioContext } from './utils'
+import { injectAudioContext, makeObservableFromSend } from './utils'
 // import { makeGain, makeObservableFromSend, makeOscillator } from './utils'
 
 /*
@@ -29,11 +30,6 @@ Next:
 * assemble audio graph from signal graph
 */
 
-// const toMaster = (audioContext: AudioContext, source: AudioNode) => {
-//   const outputGain = makeGain(audioContext, source, of(MASTER_GAIN))
-//   outputGain.connect(audioContext.destination)
-// }
-
 export const startRuntime = async (context: LifecycleContext) => {
   console.log('graph roots :)', context.signalGraph.roots)
   console.log('graph leaves :0', context.signalGraph.leaves)
@@ -43,11 +39,7 @@ export const startRuntime = async (context: LifecycleContext) => {
   const audioContext = new (window.AudioContext ||
     ((window as any).webkitAudioContext as AudioContext))()
 
-  const {
-    toMaster,
-    makeObservableFromSend,
-    makeOscillator,
-  } = injectAudioContext(audioContext)
+  const { toMaster, makeOscillator } = injectAudioContext(audioContext)
 
   const idToZoneSend$ = {} as { [id: string]: Observable<number> }
 
@@ -55,7 +47,12 @@ export const startRuntime = async (context: LifecycleContext) => {
     idToZoneSend$[zone.codeDawVar.id] = makeObservableFromSend(zone) // TODO default value!!
   }
 
-  const zoneFreq1 = idToZoneSend$[context.coolZones?.[0].codeDawVar?.id!]
+  const firstDialZone = context.coolZones?.[0]!
+
+  const zoneFreq1 = idToZoneSend$[firstDialZone.id].pipe(
+    map(v => Math.max(200, Math.min(v, 1000))),
+    tap(f => console.log('osc freq', f)),
+  )
 
   const osc = makeOscillator(zoneFreq1)
 

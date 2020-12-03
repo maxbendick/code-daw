@@ -109,6 +109,11 @@ const DialZone: React.FC<{
   useEffect(() => {
     console.log('use effect value', value)
     // get ready to send it here
+    try {
+      send(value)
+    } catch (e) {
+      console.warn('sent with an error - send may be undefined', e)
+    }
   }, [value])
 
   const bind = useDrag(registerMovement)

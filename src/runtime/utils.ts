@@ -4,6 +4,12 @@ import { easyConnect } from './easy-connect'
 
 const MASTER_GAIN = 0.21
 
+export const makeObservableFromSend = <A>(coolZone: CoolZone) => {
+  const value$ = new BehaviorSubject<A>(coolZone.initialValue)
+  coolZone.setSend((v: A) => value$.next(v))
+  return value$.asObservable()
+}
+
 export const injectAudioContext = (audioContext: AudioContext) => {
   const self = {
     makeOscillator: (
@@ -23,13 +29,6 @@ export const injectAudioContext = (audioContext: AudioContext) => {
       easyConnect(audioContext, gainInput, gainNode.gain)
       source.connect(gainNode)
       return gainNode
-    },
-
-    makeObservableFromSend: <A>(coolZone: CoolZone) => {
-      const value$ = new BehaviorSubject<A>(coolZone.initialValue)
-      console.log('set send', coolZone.initialValue)
-      coolZone.setSend((v: A) => value$.next(v))
-      return value$.asObservable()
     },
 
     toMaster: (source: AudioNode) => {

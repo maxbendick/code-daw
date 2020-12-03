@@ -148,15 +148,15 @@ export const code4 = `
 import { dial } from 'code-daw/interactables'
 
 const firstDial = dial({
-  start: 100,
+  start: 200,
   end: 561,
   defaultValue: 107,
 })
 
 const secondDial = dial({
-  start: 50,
-  end: 150,
-  defaultValue: 100,
+  start: 250,
+  end: 350,
+  defaultValue: 200,
 })
 
 console.log('dial1', firstDial)
