@@ -17,9 +17,13 @@ export const easyConnect = (
       throw new Error('easy connect missing initial value!')
     }
 
-    input.pipe(skip(1)).subscribe(freq => {
-      output.value = freq
-      output.setTargetAtTime(freq, audioContext.currentTime + 1000, 1000)
+    // output.value = initialValue
+
+    output.setValueAtTime(initialValue, audioContext.currentTime)
+
+    input.pipe(skip(1)).subscribe(currentValue => {
+      console.log('setting target', currentValue)
+      output.setTargetAtTime(currentValue, audioContext.currentTime + 0.1, 0.3)
     })
   } else {
     input.connect(output)

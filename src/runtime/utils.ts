@@ -13,9 +13,12 @@ export const makeOscillator = (
 
 export const makeGain = (
   audioContext: AudioContext,
+  source: AudioNode,
   gainInput: AudioNode | Observable<number>,
 ): GainNode => {
   const gainNode = audioContext.createGain()
   easyConnect(audioContext, gainInput, gainNode.gain)
+
+  source.connect(gainNode)
   return gainNode
 }

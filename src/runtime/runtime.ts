@@ -1,6 +1,7 @@
-import { of } from 'rxjs'
+import { BehaviorSubject, of } from 'rxjs'
 import { LifecycleContext } from '../lifecycle/types'
 import { makeGain, makeOscillator } from './utils'
+
 /*
 Could try:
 components/coolzones are in loading state until runtime started
@@ -12,7 +13,16 @@ what reprentations do i need?
 /*
  need: sine, masterOut, dial
 */
-const OUTPUT_GAIN = 0.05
+const OUTPUT_GAIN = 0.21
+
+/*
+need to make a generic way to create new nodes (sources and effects)
+
+some dial.ts should be able to define a mapping from token+var to actual webaudio
+
+for effects like gain: gain node is created first, and then inputs and outputs are
+
+*/
 
 export const startRuntime = async (context: LifecycleContext) => {
   console.log('graph roots :)', context.signalGraph.roots)
@@ -21,11 +31,25 @@ export const startRuntime = async (context: LifecycleContext) => {
   const audioContext = new (window.AudioContext ||
     ((window as any).webkitAudioContext as AudioContext))()
 
-  const osc = makeOscillator(audioContext, of(300))
+  const FREQ = new BehaviorSubject(300)
+  ;(async () => {
+    console.log('a')
 
-  const outputGain = makeGain(audioContext, of(OUTPUT_GAIN))
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    FREQ.next(400)
+    console.log('a')
 
-  osc.connect(outputGain)
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    FREQ.next(200)
+    console.log('a')
+
+    await new Promise(resolve => setTimeout(resolve, 2000))
+    console.log('a')
+  })()
+
+  const osc = makeOscillator(audioContext, FREQ)
+
+  const outputGain = makeGain(audioContext, osc, of(OUTPUT_GAIN))
 
   outputGain.connect(audioContext.destination)
 
