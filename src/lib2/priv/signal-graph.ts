@@ -14,7 +14,15 @@ export class SignalGraph {
     this.nodes.add(node)
   }
 
-  get roots() {
+  getNode = (id: string) => {
+    for (const n of this.nodes) {
+      if (n.id === id) {
+        return n
+      }
+    }
+  }
+
+  get roots(): Set<Node<any>> {
     const notInputted = new Set<string>()
     for (const node of this.nodes) {
       notInputted.add(node.id)
@@ -26,7 +34,23 @@ export class SignalGraph {
       }
     }
 
-    return notInputted
+    const result = new Set<Node<any>>()
+    for (const nodeId of notInputted) {
+      result.add(this.getNode(nodeId)!)
+    }
+
+    return result
+  }
+
+  get leaves(): Set<Node<any>> {
+    const result = new Set<Node<any>>()
+    for (const node of this.nodes) {
+      if (Object.keys(node.inputIds).length === 0) {
+        console.log('found a leaf!')
+        result.add(node)
+      }
+    }
+    return result
   }
 }
 
