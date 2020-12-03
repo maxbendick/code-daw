@@ -1,4 +1,4 @@
-import { of } from 'rxjs'
+import { Observable, of } from 'rxjs'
 import { LifecycleContext } from '../lifecycle/types'
 import { makeGain, makeObservableFromSend, makeOscillator } from './utils'
 
@@ -24,6 +24,10 @@ for effects like gain: gain node is created first, and then inputs and outputs a
 
 */
 
+/*
+Next: 
+* assemble audio graph from signal graph
+*/
 export const startRuntime = async (context: LifecycleContext) => {
   console.log('graph roots :)', context.signalGraph.roots)
   // start with leaves, go to roots
@@ -31,8 +35,13 @@ export const startRuntime = async (context: LifecycleContext) => {
   const audioContext = new (window.AudioContext ||
     ((window as any).webkitAudioContext as AudioContext))()
 
-  const zoneFreq1 = makeObservableFromSend(200, context?.coolZones?.[0]!)
-  const zoneFreq2 = makeObservableFromSend(200, context?.coolZones?.[1]!)
+  const idToZoneSend$ = {} as { [id: string]: Observable<number> }
+
+  for (const zone of context.coolZones!) {
+    idToZoneSend$[zone.codeDawVar.id] = makeObservableFromSend(zone) // TODO default value!!
+  }
+
+  const zoneFreq1 = idToZoneSend$[context.coolZones?.[0].codeDawVar?.id!]
 
   const osc = makeOscillator(audioContext, zoneFreq1)
 

@@ -31,10 +31,15 @@ const FreqZone: React.FC<{ label: string; send: (a: number) => void }> = ({
   )
 }
 
+export const defaultFreqZoneValue = (codeDawVar: any) => {
+  console.log('defaultFreqZoneValue', codeDawVar)
+  return codeDawVar.config.defaultValue
+}
+
 export const FreqZoneZooone: ZoneComponent = ({ token, codeDawVar, send }) => {
   const config = codeDawVar.config
   // useEffect(() => {
-  //   console.log('TextZoneZooone', token, codeDawVar)
+  //   console.log('FreqZoneZooone', token, codeDawVar)
   //   send('sendingg from the textt zone')
   // }, [send])
   return (

@@ -23,9 +23,9 @@ export const makeGain = (
   return gainNode
 }
 
-export const makeObservableFromSend = <A>(initial: A, coolZone: CoolZone) => {
-  const value$ = new BehaviorSubject<A>(initial)
-  console.log('set send', initial)
+export const makeObservableFromSend = <A>(coolZone: CoolZone) => {
+  const value$ = new BehaviorSubject<A>(coolZone.initialValue)
+  console.log('set send', coolZone.initialValue)
   coolZone.setSend((v: A) => value$.next(v))
   return value$.asObservable()
 }
