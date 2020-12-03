@@ -43,3 +43,12 @@ export const _interactables_exports = {
     dial,
   },
 }
+
+// const superDef = {
+//   packageName: 'code-daw/interactables',
+//   publicFunction: dial,
+//   nodeType: dialNodeType,
+//   inputs: {},
+//   output: 'signal' as const,
+//   config: (null as any) as DialConfig,
+// }

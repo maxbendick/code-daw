@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs'
 import { CoolZone } from '../editor/cool-zone'
 import { getGraphNodeDefinition } from '../lib2/priv/all-nodes'
-import { resolveSineOutput } from '../lib2/priv/nodes/oscillators/sine'
+import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 import { LifecycleContext } from '../lifecycle/types'
 import {
@@ -100,12 +100,17 @@ const evalateGraph = (
     switch (node.type) {
       case 'dial':
         throw new Error(
-          'shouldnt be here because dials are handled with coolzones',
+          'shouldnt be here because interactables are handled with coolzones',
         )
 
       case 'oscillators/sine': {
+        superSineDef.verifyConfig(node.config as any)
         verifyInputs(node, resolvedInputs)
-        const osc = resolveSineOutput(audioContext, node.config, resolvedInputs)
+        const osc = superSineDef.makeOutput(
+          audioContext,
+          node.config as any,
+          resolvedInputs,
+        )
         verifyOutput(node, osc)
 
         existingOutputs[node.id] = osc

@@ -1,3 +1,3 @@
-import { sine as _sine } from '../priv/nodes/oscillators/sine'
+import { superSineDef } from '../priv/nodes/oscillators/sine'
 
-export const sine = _sine
+export const sine = superSineDef.publicFunction
