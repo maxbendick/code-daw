@@ -3,7 +3,7 @@ import { StringKeys } from './no-sig-types/string-keys'
 import { globalSignalGraph, Node } from './signal-graph'
 
 export type NodeConstructor = {
-  type: string
+  type: NodeType
   inputs: StringKeys<any>
   config: StringKeys<any>
 }

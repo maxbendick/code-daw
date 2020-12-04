@@ -1,8 +1,9 @@
+import { NodeType } from './all-nodes'
 import { StringKeys } from './no-sig-types/string-keys'
 
 export type Node = {
   id: string
-  type: string
+  type: NodeType
   inputIds: StringKeys<string>
   config: StringKeys<any>
   index: number
