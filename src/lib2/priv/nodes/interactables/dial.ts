@@ -1,5 +1,3 @@
-import { Signal } from '../../../sigs'
-import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
 import { SuperDef } from '../../no-sig-types/super-def'
 
@@ -11,19 +9,9 @@ type DialConfig = {
   defaultValue: number
 }
 
-const dialRaw = makeNodeMaker<[config: DialConfig]>(({ id }, config) => {
-  return {
-    type: dialNodeType,
-    inputs: {},
-    config,
-  }
-})
-
-const dial: (config: DialConfig) => Signal<number> = dialRaw as any
-
+// const dial: (config: DialConfig) => Signal<number> = dialRaw as any
 export const superDialDef = {
   nodeType: dialNodeType,
-  publicFunction: dial,
   inputs: { frequency: EdgeType.Signal },
   output: EdgeType.AudioSignal,
   interactable: true,

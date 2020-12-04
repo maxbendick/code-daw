@@ -4,7 +4,6 @@ export interface SuperDef {
   nodeType: string
   publicName: string
   packageName: string
-  publicFunction: any
   inputs: { [k: string]: EdgeType }
   output: EdgeType
   interactable: boolean

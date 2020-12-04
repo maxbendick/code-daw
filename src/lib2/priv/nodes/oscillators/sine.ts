@@ -1,5 +1,4 @@
 import { Signal } from '../../../sigs'
-import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
 import { SuperDef } from '../../no-sig-types/super-def'
 import { injectAudioContext } from '../../webaudio-utils'
@@ -8,24 +7,14 @@ const sineNodeType = 'oscillators/sine' as const
 
 type SineConfig = {}
 
-type SineArgs = [frequency: Signal<number>]
+// type SineArgs = [frequency: Signal<number>]
 
-const sineRaw = makeNodeMaker<SineArgs>(({ id }, frequency) => {
-  return {
-    type: sineNodeType,
-    inputs: { frequency } as any,
-    config: {},
-  }
-})
-
-// TODO better typing
-const sine: (...args: SineArgs) => Signal<number> = (...args) => {
-  return (sineRaw(...args) as any) as Signal<number>
-}
+// const sine: (...args: SineArgs) => Signal<number> = (...args) => {
+//   return (sineRaw(...args) as any) as Signal<number>
+// }
 
 export const superSineDef = {
   nodeType: sineNodeType,
-  publicFunction: sine,
   inputs: { frequency: EdgeType.Signal },
   output: EdgeType.AudioSignal,
   interactable: false,
