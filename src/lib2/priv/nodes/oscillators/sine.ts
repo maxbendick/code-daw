@@ -2,18 +2,10 @@ import { injectAudioContext } from '../../../../runtime/utils'
 import { Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
-import { GraphNodeBaseType } from '../../no-sig-types/graph-node-base-type'
 
 const sineNodeType = 'oscillators/sine' as const
 
 type SineConfig = {}
-
-export const sineGraphNodeDefinition: GraphNodeBaseType = {
-  nodeType: sineNodeType,
-  inputs: { frequency: 'signal' },
-  output: EdgeType.Signal,
-  config: (null as any) as SineConfig,
-}
 
 type SineArgs = [frequency: Signal<number>, phase: Signal<number>]
 

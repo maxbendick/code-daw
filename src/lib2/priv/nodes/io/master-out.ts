@@ -2,18 +2,10 @@ import { injectAudioContext } from '../../../../runtime/utils'
 import { AudioSignal, Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
-import { GraphNodeBaseType } from '../../no-sig-types/graph-node-base-type'
 
 const masterOutNodeType = 'io/masterOut' as const
 
 type MasterOutConfig = {}
-
-export const masterOutGraphNodeDefinition: GraphNodeBaseType = {
-  nodeType: masterOutNodeType,
-  inputs: { audioToOutput: 'audioSignal' },
-  output: EdgeType.Nothing,
-  config: (null as any) as MasterOutConfig,
-}
 
 type MasterOutArgs = [signal: AudioSignal]
 

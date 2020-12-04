@@ -1,7 +1,6 @@
 import { Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
-import { GraphNodeBaseType } from '../../no-sig-types/graph-node-base-type'
 
 const dialNodeType = 'interactables/dial' as const
 
@@ -9,13 +8,6 @@ type DialConfig = {
   start: number
   end: number
   defaultValue: number
-}
-
-export const dialGraphNodeDefinition: GraphNodeBaseType = {
-  nodeType: dialNodeType,
-  inputs: {},
-  output: 'signal' as const,
-  config: (null as any) as DialConfig,
 }
 
 const dialRaw = makeNodeMaker<[config: DialConfig]>(({ id }, config) => {
