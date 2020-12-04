@@ -1,17 +1,18 @@
-import { GraphNodeBaseType } from './no-sig-types/graph-node-base-type'
-import {
-  dialGraphNodeDefinition,
-  dialNodeType,
-} from './nodes/interactables/dial'
-import { sineGraphNodeDefinition, sineNodeType } from './nodes/oscillators/sine'
+import { SuperDef } from './no-sig-types/super-def'
+import { superDialDef } from './nodes/interactables/dial'
+import { superMasterOutDef } from './nodes/io/master-out'
+import { superSineDef } from './nodes/oscillators/sine'
 
-export const nodeDefinitions: GraphNodeBaseType[] = [
-  dialGraphNodeDefinition,
-  sineGraphNodeDefinition,
-]
+type ValuesOf<T extends readonly any[]> = T[number]
 
-export type NodeType = typeof dialNodeType
-export const NodeType = {
-  Dial: dialNodeType,
-  Sine: sineNodeType,
-}
+const registeredSuperDefs = [
+  superDialDef,
+  superMasterOutDef,
+  superSineDef,
+] as const
+
+type RegisteredSuperDef = ValuesOf<typeof registeredSuperDefs>
+
+const _proof: SuperDef = (null as any) as RegisteredSuperDef
+
+export type NodeType = RegisteredSuperDef['nodeType']

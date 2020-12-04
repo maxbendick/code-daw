@@ -3,9 +3,8 @@ import { Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
 import { GraphNodeBaseType } from '../../no-sig-types/graph-node-base-type'
-import { SuperDef } from '../../no-sig-types/super-def'
 
-export const sineNodeType = 'oscillators/sine' as const
+const sineNodeType = 'oscillators/sine' as const
 
 type SineConfig = {}
 
@@ -31,7 +30,7 @@ const sine: (...args: SineArgs) => Signal<number> = (...args) => {
   return (sineRaw(...args) as any) as Signal<number>
 }
 
-export const superSineDef: SuperDef = {
+export const superSineDef = {
   nodeType: sineNodeType,
   publicFunction: sine,
   inputs: { frequency: EdgeType.Signal },
@@ -64,4 +63,4 @@ export const superSineDef: SuperDef = {
     }
     return result
   },
-}
+} as const

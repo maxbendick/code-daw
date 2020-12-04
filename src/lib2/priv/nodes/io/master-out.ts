@@ -3,9 +3,8 @@ import { AudioSignal, Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
 import { GraphNodeBaseType } from '../../no-sig-types/graph-node-base-type'
-import { SuperDef } from '../../no-sig-types/super-def'
 
-export const masterOutNodeType = 'io/masterOut' as const
+const masterOutNodeType = 'io/masterOut' as const
 
 type MasterOutConfig = {}
 
@@ -32,7 +31,7 @@ const masterOut: (...args: MasterOutArgs) => Signal<number> = (...args) => {
   return (masterOutRaw(...args) as any) as Signal<number>
 }
 
-export const superMasterOutDef: SuperDef = {
+export const superMasterOutDef = {
   nodeType: masterOutNodeType,
   publicFunction: masterOut,
   inputs: { audioToOutput: EdgeType.AudioSignal },
@@ -68,4 +67,4 @@ export const superMasterOutDef: SuperDef = {
     }
     return result
   },
-}
+} as const
