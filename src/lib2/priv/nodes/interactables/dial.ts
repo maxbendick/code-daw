@@ -4,9 +4,9 @@ import { EdgeType } from '../../no-sig-types/edge-types'
 import { GraphNodeBaseType } from '../../no-sig-types/graph-node-base-type'
 import { SuperDef } from '../../no-sig-types/super-def'
 
-export const dialNodeType = 'dial' as const
+export const dialNodeType = 'interactables/dial' as const
 
-export type DialConfig = {
+type DialConfig = {
   start: number
   end: number
   defaultValue: number

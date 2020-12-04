@@ -93,7 +93,7 @@ const evalateGraph = (
       resolvedInputs[inputSlot] = existingOutputs[id]
     }
 
-    if (node.type === 'dial') {
+    if (node.type.includes('dial')) {
       throw new Error(
         'shouldnt be here because interactables are handled with coolzones',
       )

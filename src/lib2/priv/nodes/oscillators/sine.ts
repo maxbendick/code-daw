@@ -7,7 +7,7 @@ import { SuperDef } from '../../no-sig-types/super-def'
 
 export const sineNodeType = 'oscillators/sine' as const
 
-export type SineConfig = {}
+type SineConfig = {}
 
 export const sineGraphNodeDefinition: GraphNodeBaseType<
   typeof sineNodeType,

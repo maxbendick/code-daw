@@ -7,7 +7,7 @@ import { SuperDef } from '../../no-sig-types/super-def'
 
 export const masterOutNodeType = 'io/masterOut' as const
 
-export type MasterOutConfig = {}
+type MasterOutConfig = {}
 
 export const masterOutGraphNodeDefinition: GraphNodeBaseType<
   typeof masterOutNodeType,
