@@ -47,7 +47,7 @@ export const makeNodeMaker = <
 >(
   f: (injected: SignalMakerInjected, ...args: Args) => NodeConstructor<G>,
 ) => {
-  return (...args: Args): Node<G> => {
+  return (...args: Args): Node => {
     const id = Math.random().toString(36).substring(7)
 
     const injected: SignalMakerInjected = { id }
@@ -58,10 +58,10 @@ export const makeNodeMaker = <
 
     const inputIds: StringKeys<string> = {}
     for (const [k, v] of Object.entries(inputs)) {
-      inputIds[k] = ((v as any) as Node<G>).id!
+      inputIds[k] = ((v as any) as Node).id!
     }
 
-    let result: Node<G> = {
+    let result: Node = {
       id,
       type,
       inputIds,

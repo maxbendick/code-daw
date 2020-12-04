@@ -1,11 +1,18 @@
-import { GraphNodeEphemeral } from './all-nodes'
-import { ConfigOf, NodeTypeOf } from './no-sig-types/graph-node-ephemeral-utils'
 import { StringKeys } from './no-sig-types/string-keys'
 
-export class SignalGraph {
-  private nodes = new Set<Node<any>>()
+export type Node = {
+  id: string
+  type: string
+  inputIds: StringKeys<string>
+  config: StringKeys<any>
+  index: number
+  lastObservedCompiledLineNumber: number
+}
 
-  addNode = (node: Node<any>) => {
+export class SignalGraph {
+  private nodes = new Set<Node>()
+
+  addNode = (node: Node) => {
     if (this.nodes.size > 100) {
       console.log('graph', this)
       console.log('trying to add', node)
@@ -23,7 +30,7 @@ export class SignalGraph {
     throw new Error(`could not getNode ${id}`)
   }
 
-  get roots(): Set<Node<any>> {
+  get roots(): Set<Node> {
     const notInputted = new Set<string>()
     for (const node of this.nodes) {
       notInputted.add(node.id)
@@ -35,7 +42,7 @@ export class SignalGraph {
       }
     }
 
-    const result = new Set<Node<any>>()
+    const result = new Set<Node>()
     for (const nodeId of notInputted) {
       result.add(this.getNode(nodeId)!)
     }
@@ -43,8 +50,8 @@ export class SignalGraph {
     return result
   }
 
-  get leaves(): Set<Node<any>> {
-    const result = new Set<Node<any>>()
+  get leaves(): Set<Node> {
+    const result = new Set<Node>()
     for (const node of this.nodes) {
       if (Object.keys(node.inputIds).length === 0) {
         console.log('found a leaf!')
@@ -54,7 +61,7 @@ export class SignalGraph {
     return result
   }
 
-  get masterOut(): Node<any> {
+  get masterOut(): Node {
     for (const node of this.nodes) {
       if (node.type === 'io/masterOut') {
         return node
@@ -62,15 +69,6 @@ export class SignalGraph {
     }
     throw new Error('no master out in graph!')
   }
-}
-
-export type Node<G extends GraphNodeEphemeral> = {
-  id: string
-  type: NodeTypeOf<G>
-  inputIds: StringKeys<string>
-  config: ConfigOf<G>
-  index: number
-  lastObservedCompiledLineNumber: number
 }
 
 export const globalSignalGraph = new SignalGraph()
