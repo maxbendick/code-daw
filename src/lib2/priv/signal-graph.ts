@@ -71,5 +71,5 @@ export class SignalGraph {
   }
 }
 
+// TODO state machine can make this
 export const globalSignalGraph = new SignalGraph()
-;(window as any).globalSignalGraph = globalSignalGraph
