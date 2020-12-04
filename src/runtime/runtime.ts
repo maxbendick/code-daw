@@ -2,6 +2,7 @@ import { Observable } from 'rxjs'
 import { CoolZone } from '../editor/cool-zone'
 import { getSuperDef } from '../lib2/priv/all-nodes'
 import { EdgeType } from '../lib2/priv/no-sig-types/edge-types'
+import { superMasterOutDef } from '../lib2/priv/nodes/io/master-out'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 import { LifecycleContext } from '../lifecycle/types'
 import {
@@ -9,6 +10,8 @@ import {
   makeObservableFromSend,
   verifySigType,
 } from './utils'
+
+const MASTER_STOP_DELAY = 300
 // import { makeGain, makeObservableFromSend, makeOscillator } from './utils'
 
 /*
@@ -39,7 +42,7 @@ Next:
 
 // TODO runtime should take in a master node facade
 // lifecycle will fade it out, then destroy it(?)
-export const startRuntime = async (context: LifecycleContext) => {
+export const startRuntime = (context: LifecycleContext) => {
   const { signalGraph, audioContext: _audioContext } = context
   const audioContext = _audioContext!
 
@@ -53,6 +56,13 @@ export const startRuntime = async (context: LifecycleContext) => {
     context.coolZones!,
   )
   console.log('evaluation', evaluation)
+
+  return {
+    destroy: async () => {
+      superMasterOutDef.destroy()
+      await new Promise(resolve => setTimeout(resolve, MASTER_STOP_DELAY)) // should be enough time to avoid clicks with MASTER_FADEOUT
+    },
+  }
 }
 
 type NN = typeof SignalGraph.prototype.masterOut

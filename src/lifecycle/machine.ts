@@ -41,7 +41,7 @@ const defaultServices: LifecycleServices = {
     }),
   doRuntime: context => {
     console.log('starting fake runtime!', context)
-    return (waitForShiftEnter() as any) as Promise<void>
+    return waitForShiftEnter()
   },
 }
 

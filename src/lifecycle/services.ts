@@ -109,7 +109,9 @@ export const lifecycleServices: LifecycleServices = {
     return getTokensFromEditor(context.editor!)
   },
   doRuntime: async context => {
-    await startRuntime(context)
-    return (waitForShiftEnter() as any) as Promise<void>
+    const { destroy } = startRuntime(context)
+    await waitForShiftEnter()
+    await destroy()
+    return
   },
 }

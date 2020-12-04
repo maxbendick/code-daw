@@ -1,7 +1,7 @@
 import { AudioSignal } from '../../../sigs'
 import { EdgeType } from '../../no-sig-types/edge-types'
 import { SuperDef } from '../../no-sig-types/super-def'
-import { injectAudioContext } from '../../webaudio-utils'
+import { toMaster } from '../../webaudio-utils'
 
 const masterOutNodeType = 'io/masterOut' as const
 
@@ -14,6 +14,7 @@ type MasterOutConfig = {}
 //   console.log('master out!!!')
 //   return (masterOutRaw(...args) as any) as Signal<number>
 // }
+let _masterOutResult: ReturnType<typeof toMaster> = null as any
 
 export const superMasterOutDef = {
   nodeType: masterOutNodeType,
@@ -30,9 +31,18 @@ export const superMasterOutDef = {
     config: MasterOutConfig,
     inputs: any,
   ) => {
-    const { toMaster } = injectAudioContext(audioContext)
-    toMaster(inputs['audioToOutput'] as AudioNode)
+    if (_masterOutResult) {
+      throw new Error('cannot have two master outs')
+    }
+    _masterOutResult = toMaster(
+      audioContext,
+      inputs['audioToOutput'] as AudioNode,
+    )
     return 'nothing'
+  },
+  destroy: () => {
+    _masterOutResult.destroy()
+    _masterOutResult = null as any
   },
 
   get publicName() {
