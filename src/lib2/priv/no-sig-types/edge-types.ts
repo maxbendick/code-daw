@@ -1,8 +1,9 @@
-export type EdgeType = 'signal' | 'audioSignal' | 'midiSignal'
+export type EdgeType = 'signal' | 'audioSignal' | 'midiSignal' | 'nothing'
 export const EdgeType = {
   Signal: 'signal' as const,
   AudioSignal: 'audioSignal' as const,
   MidiSignal: 'midiSignal' as const,
+  Nothing: 'nothing' as const,
 }
 
 // export type EdgeToSigT<EdgeType> = EdgeType extends typeof EdgeType.Signal

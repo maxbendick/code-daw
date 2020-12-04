@@ -1,6 +1,8 @@
 import { Observable } from 'rxjs'
 import { CoolZone } from '../editor/cool-zone'
-import { getGraphNodeDefinition } from '../lib2/priv/all-nodes'
+import { EdgeType } from '../lib2/priv/no-sig-types/edge-types'
+import { superDialDef } from '../lib2/priv/nodes/interactables/dial'
+import { superMasterOutDef } from '../lib2/priv/nodes/io/master-out'
 import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 import { LifecycleContext } from '../lifecycle/types'
@@ -98,29 +100,36 @@ const evalateGraph = (
 
     // Build webaudio nodes+edges
     switch (node.type) {
-      case 'dial':
+      case superDialDef.nodeType:
         throw new Error(
           'shouldnt be here because interactables are handled with coolzones',
         )
 
-      case 'oscillators/sine': {
+      case superSineDef.nodeType: {
         superSineDef.verifyConfig(node.config as any)
-        verifyInputs(node, resolvedInputs)
-        const osc = superSineDef.makeOutput(
+        verifyInputs(superSineDef.inputs, resolvedInputs)
+        const output = superSineDef.makeOutput(
           audioContext,
           node.config as any,
           resolvedInputs,
         )
-        verifyOutput(node, osc)
+        verifyOutput(superSineDef.output, output)
 
-        existingOutputs[node.id] = osc
+        existingOutputs[node.id] = output
         console.log('on the sine node', node)
         return
       }
 
-      case 'io/masterOut': {
+      case superMasterOutDef.nodeType: {
         console.log('on the masterout', node)
-        toMaster(resolvedInputs['audioToOutput'] as AudioNode)
+        verifyInputs(superMasterOutDef.inputs, resolvedInputs)
+        const output = superMasterOutDef.makeOutput(
+          audioContext,
+          node.config,
+          resolvedInputs,
+        )
+        verifyOutput(superMasterOutDef.output, output)
+        existingOutputs[node.id] = output
         return
       }
     }
@@ -144,8 +153,8 @@ const evalateGraph = (
 // OscillatorNode, ConstantSourceNode, or others?
 
 // TODO test because it's worth it
-const verifyInputs = (node: NN, inputs: any) => {
-  const inputConfig = getGraphNodeDefinition(node.type as any).inputs
+const verifyInputs = (inputConfig: any, inputs: any) => {
+  // const inputConfig = getGraphNodeDefinition(node.type as any).inputs
 
   if (inputConfig.length || inputs.length) {
     throw new Error('somehow got array input')
@@ -157,10 +166,11 @@ const verifyInputs = (node: NN, inputs: any) => {
   }
   for (const [id, inputType] of Object.entries(inputConfig)) {
     const inputValue = inputs[id]
-    verifySigType(inputType as string, inputValue)
+    verifySigType(inputType as EdgeType, inputValue)
   }
 }
 
-const verifyOutput = (node: NN, output: any) => {
-  verifySigType(node.type, output)
+const verifyOutput = (edgeType: EdgeType, output: any) => {
+  console.log('verifying output', edgeType, output)
+  verifySigType(edgeType, output)
 }

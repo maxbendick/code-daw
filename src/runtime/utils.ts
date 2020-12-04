@@ -1,5 +1,6 @@
 import { BehaviorSubject, isObservable, Observable, of } from 'rxjs'
 import { CoolZone } from '../editor/cool-zone'
+import { EdgeType } from '../lib2/priv/no-sig-types/edge-types'
 import { easyConnect } from './easy-connect'
 
 const MASTER_GAIN = 0.11
@@ -48,7 +49,7 @@ export const isAudioNode = (o: any): o is AudioNode => {
   return o instanceof AudioNode
 }
 
-export const verifySigType = (sigType: string, value: any) => {
+export const verifySigType = (sigType: EdgeType, value: any) => {
   if (sigType === null || typeof sigType === 'undefined') {
     throw new Error('missing sigType')
   }
@@ -64,17 +65,25 @@ export const verifySigType = (sigType: string, value: any) => {
 
   switch (sigType) {
     // TODO narrow this? idk
-    case 'signal':
+    case EdgeType.Signal:
       if (!isObservable(value) && !isAudioNode(value)) {
         errorOut()
       }
       return
-    case 'audioSignal':
+    case EdgeType.AudioSignal:
       if (!isAudioNode(value)) {
         errorOut()
       }
       return
-    case 'midiSignal':
+    case EdgeType.MidiSignal:
       throw new Error('cant support midiSignals yet')
+    case EdgeType.Nothing:
+      if (value !== 'nothing') {
+        throw new Error('a nothing sig can only be nothing')
+      }
+      return
   }
+
+  console.error('could not verify', { sigType, value })
+  throw new Error('could not verify')
 }

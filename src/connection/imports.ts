@@ -4,7 +4,7 @@
 import { alertFinishedLoadingListeners } from '../editor/finished-loading-listeners'
 import { SuperDef } from '../lib2/priv/no-sig-types/super-def'
 import { superDialDef } from '../lib2/priv/nodes/interactables/dial'
-import { _io_exports } from '../lib2/priv/nodes/io/master-out'
+import { superMasterOutDef } from '../lib2/priv/nodes/io/master-out'
 import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
 
 export const evalCompiledUserCode = (code: string) => {
@@ -56,7 +56,7 @@ const registerSuperDef = (superDef: SuperDef) => {
 export const registerAllExports = () => {
   registerSuperDef(superDialDef)
   registerSuperDef(superSineDef)
-  registerExports(_io_exports)
+  registerSuperDef(superMasterOutDef)
 }
 
 // `require` in compiled user code becomes `codeDawRequire`
