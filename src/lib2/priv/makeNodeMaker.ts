@@ -23,7 +23,7 @@ const incrGetIndex = (t: NodeType) => {
 export const makeNodeMaker = <Args extends any[]>(
   f: (injected: SignalMakerInjected, ...args: Args) => NodeConstructor,
 ) => {
-  return (...args: Args): Node => {
+  return (...args: Args): Node<any> => {
     const id = Math.random().toString(36).substring(7)
 
     const injected: SignalMakerInjected = { id }
@@ -34,10 +34,10 @@ export const makeNodeMaker = <Args extends any[]>(
 
     const inputIds: StringKeys<string> = {}
     for (const [k, v] of Object.entries(inputs)) {
-      inputIds[k] = ((v as any) as Node).id!
+      inputIds[k] = ((v as any) as Node<any>).id!
     }
 
-    let result: Node = {
+    let result: Node<any> = {
       id,
       type,
       inputIds,

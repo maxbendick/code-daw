@@ -1,19 +1,19 @@
-import { NodeType } from './all-nodes'
 import { StringKeys } from './no-sig-types/string-keys'
+import { ConfigOf, SuperDef } from './no-sig-types/super-def'
 
-export type Node = {
+export type Node<Def extends SuperDef> = {
   id: string
-  type: NodeType
+  type: Def['nodeType']
   inputIds: StringKeys<string>
-  config: StringKeys<any>
+  config: ConfigOf<Def>
   index: number
   lastObservedCompiledLineNumber: number
 }
 
 export class SignalGraph {
-  private nodes = new Set<Node>()
+  private nodes = new Set<Node<any>>()
 
-  addNode = (node: Node) => {
+  addNode = (node: Node<any>) => {
     if (this.nodes.size > 100) {
       console.log('graph', this)
       console.log('trying to add', node)
@@ -31,7 +31,7 @@ export class SignalGraph {
     throw new Error(`could not getNode ${id}`)
   }
 
-  get roots(): Set<Node> {
+  get roots(): Set<Node<any>> {
     const notInputted = new Set<string>()
     for (const node of this.nodes) {
       notInputted.add(node.id)
@@ -43,7 +43,7 @@ export class SignalGraph {
       }
     }
 
-    const result = new Set<Node>()
+    const result = new Set<Node<any>>()
     for (const nodeId of notInputted) {
       result.add(this.getNode(nodeId)!)
     }
@@ -51,8 +51,8 @@ export class SignalGraph {
     return result
   }
 
-  get leaves(): Set<Node> {
-    const result = new Set<Node>()
+  get leaves(): Set<Node<any>> {
+    const result = new Set<Node<any>>()
     for (const node of this.nodes) {
       if (Object.keys(node.inputIds).length === 0) {
         console.log('found a leaf!')
@@ -62,7 +62,7 @@ export class SignalGraph {
     return result
   }
 
-  get masterOut(): Node {
+  get masterOut(): Node<any> {
     for (const node of this.nodes) {
       if (node.type === 'io/masterOut') {
         return node

@@ -11,3 +11,9 @@ export interface SuperDef {
   verifyConfig: (config: any) => void
   makeOutput: (audioContext: AudioContext, config: any, inputs: any) => any
 }
+
+export type ConfigOf<Def extends SuperDef> = Def['verifyConfig'] extends (
+  config: infer Config,
+) => void
+  ? Config
+  : never
