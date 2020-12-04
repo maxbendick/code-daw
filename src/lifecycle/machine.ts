@@ -44,6 +44,16 @@ const defaultServices: LifecycleServices = {
   },
 }
 
+const makeJsonStringifySafe = (obj: any) => {
+  const seen = new Set<string>()
+  obj.toJSON = (key: string) => {
+    if (seen.size > 1000 || seen.has(key)) {
+      return '...'
+    }
+    seen.add(key)
+  }
+}
+
 export const machine = Machine<
   LifecycleContext,
   LifecycleStateSchema,
@@ -69,6 +79,7 @@ export const machine = Machine<
             target: 'creatingEditor',
             actions: assign({
               monaco: (context, event) => {
+                makeJsonStringifySafe(event.data.monaco)
                 return event.data.monaco
               },
             }),
@@ -82,6 +93,7 @@ export const machine = Machine<
             target: 'editing',
             actions: assign({
               editor: (context, event) => {
+                makeJsonStringifySafe(event.editor)
                 return event.editor
               },
             }),
@@ -111,6 +123,7 @@ export const machine = Machine<
             target: 'compilingCode',
             actions: assign({
               tokens: (context, event) => {
+                makeJsonStringifySafe(event.data)
                 return event.data
               },
             }),
@@ -138,6 +151,7 @@ export const machine = Machine<
             target: 'attachingCoolZones',
             actions: assign({
               codeDawVars: (context, event) => {
+                makeJsonStringifySafe(event.data.codeDawVars)
                 return event.data.codeDawVars
               },
             }),
@@ -152,6 +166,7 @@ export const machine = Machine<
             target: 'runtime',
             actions: assign({
               coolZones: (context, event) => {
+                makeJsonStringifySafe(event.data)
                 return event.data
               },
             }),
