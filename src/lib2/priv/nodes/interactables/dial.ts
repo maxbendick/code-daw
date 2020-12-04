@@ -1,6 +1,8 @@
 import { Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
+import { EdgeType } from '../../no-sig-types/edge-types'
 import { GraphNodeBaseType } from '../../no-sig-types/graph-node-base-type'
+import { SuperDef } from '../../no-sig-types/super-def'
 
 export const dialNodeType = 'dial' as const
 
@@ -34,21 +36,41 @@ const dialRaw = makeNodeMaker<DialNodeEphemeral, [config: DialConfig]>(
   },
 )
 
-// TODO better typing
-export const dial: (config: DialConfig) => Signal<number> = dialRaw as any
+const dial: (config: DialConfig) => Signal<number> = dialRaw as any
 
-export const _interactables_exports = {
-  packageName: 'code-daw/interactables' as const,
-  content: {
-    dial,
+export const superDialDef: SuperDef = {
+  nodeType: 'interactables/dial',
+  publicFunction: dial,
+  inputs: { frequency: EdgeType.Signal },
+  output: EdgeType.AudioSignal,
+  interactable: true,
+  verifyConfig: (config: DialConfig) => {
+    for (const k of ['start', 'end', 'defaultValue']) {
+      if (typeof (config as any)[k] !== 'number') {
+        throw new Error('Bad dial config')
+      }
+    }
+  },
+  makeOutput: (audioContext: AudioContext, config: DialConfig, inputs: any) => {
+    // const { makeOscillator } = injectAudioContext(audioContext)
+    // const osc = makeOscillator(inputs['frequency'])
+    // return osc
+    throw new Error('Interactable doesnt need makeOutput')
+  },
+
+  get publicName() {
+    const result = this.nodeType.split('/')[1]
+    if (!result) {
+      throw new Error('could not get publicName')
+    }
+    return result
+  },
+  get packageName() {
+    const split = this.nodeType.split('/')
+    const result = `code-daw/${split[0]}`
+    if (!result) {
+      throw new Error('could not get publicName')
+    }
+    return result
   },
 }
-
-// const superDef = {
-//   packageName: 'code-daw/interactables',
-//   publicFunction: dial,
-//   nodeType: dialNodeType,
-//   inputs: {},
-//   output: 'signal' as const,
-//   config: (null as any) as DialConfig,
-// }

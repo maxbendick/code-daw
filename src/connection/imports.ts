@@ -3,7 +3,7 @@
 
 import { alertFinishedLoadingListeners } from '../editor/finished-loading-listeners'
 import { SuperDef } from '../lib2/priv/no-sig-types/super-def'
-import { _interactables_exports } from '../lib2/priv/nodes/interactables/dial'
+import { superDialDef } from '../lib2/priv/nodes/interactables/dial'
 import { _io_exports } from '../lib2/priv/nodes/io/master-out'
 import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
 
@@ -54,7 +54,7 @@ const registerSuperDef = (superDef: SuperDef) => {
 }
 
 export const registerAllExports = () => {
-  registerExports(_interactables_exports)
+  registerSuperDef(superDialDef)
   registerSuperDef(superSineDef)
   registerExports(_io_exports)
 }

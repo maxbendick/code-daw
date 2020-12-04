@@ -1,3 +1,3 @@
-import { dial as _dial } from '../priv/nodes/interactables/dial'
+import { superDialDef } from '../priv/nodes/interactables/dial'
 
-export const dial = _dial
+export const dial = superDialDef.publicFunction
