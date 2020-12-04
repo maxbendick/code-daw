@@ -106,7 +106,7 @@ const evalateGraph = (
   // STARTS IT
   for (const [id, node] of Object.entries(existingOutputs)) {
     if (isOscillatorNode(node)) {
-      // node.start()
+      node.start()
     }
   }
 

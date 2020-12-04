@@ -13,6 +13,7 @@ export interface LifecycleStateSchema {
     preMount: {}
     preEditorSetup: {}
     creatingEditor: {}
+    editing: {}
     parsingTokens: {}
     attachingCoolZones: {}
     compilingCode: {}

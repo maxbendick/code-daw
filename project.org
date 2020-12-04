@@ -2,6 +2,9 @@
 ** ctrl/shift-enter to compile, attach elements, run
 ** save code on compile, reset code
 ** global volume dial
+** runtime creates audio context, which is destroyed without click on exit
+** can toggle between runtime and editing
+** hook into devserver refresh for lifecycle?
 
 ** DONE create actual dial component ( ish ;) )
 ** DONE create sine

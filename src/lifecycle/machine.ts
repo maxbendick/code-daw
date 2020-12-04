@@ -79,13 +79,28 @@ export const machine = Machine<
       creatingEditor: {
         on: {
           EDITOR_CREATED: {
-            target: 'parsingTokens',
+            target: 'editing',
             actions: assign({
               editor: (context, event) => {
                 return event.editor
               },
             }),
           },
+        },
+      },
+      editing: {
+        invoke: {
+          id: 'editingInvoke',
+          src: (context, event) =>
+            new Promise<null>((resolve, reject) => {
+              window.onkeydown = (event: KeyboardEvent) => {
+                if (event.key === 'Enter' && event.shiftKey) {
+                  window.onkeydown = null
+                  resolve(null)
+                }
+              }
+            }),
+          onDone: 'parsingTokens',
         },
       },
       parsingTokens: {
@@ -144,6 +159,7 @@ export const machine = Machine<
           onError: 'failure',
         },
       },
+      // TODO: runtime creates audio context, which is destroyed on exit
       runtime: {
         entry: (context, event) => {
           console.log('runtime!!!', context, event)

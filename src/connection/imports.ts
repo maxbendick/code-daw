@@ -14,11 +14,6 @@ export const evalCompiledUserCode = (code: string) => {
   eval(code)
   ;(window as any).codeDawInEval = false
 
-  console.log(
-    'from window!',
-    (window as any).codeDawVars.firstDial._interactable,
-  )
-
   alertFinishedLoadingListeners()
 }
 

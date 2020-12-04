@@ -29,6 +29,10 @@ export const Editor: React.FC = () => {
     })
   }
 
+  useEffect(() => {
+    console.log('--state:', state.value)
+  }, [state])
+
   if (!editorPreSetupFinished) {
     return <div>loading...</div>
   }
