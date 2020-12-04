@@ -1,10 +1,14 @@
 * next steps
-** create actual dial component ( ish ;) )
-** create sine
-** create masterOut
+** ctrl/shift-enter to compile, attach elements, run
+** save code on compile, reset code
+** global volume dial
 
-* TODO next graph steps
-** TODO create graph in eval
+** DONE create actual dial component ( ish ;) )
+** DONE create sine
+** DONE create masterOut
+
+* DONE next graph steps
+** DONE create graph in eval
 
 get rid of outputs. the node is the output
 output is necessary to differentiate types for the users editing experience
