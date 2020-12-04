@@ -164,18 +164,13 @@ export const machine = Machine<
         },
       },
       runtime: {
-        entry: ['logRuntimeStart', 'createAudioContext'],
+        entry: ['createAudioContext'],
         invoke: {
           id: 'doRuntimeInvoke',
           src: 'doRuntime',
           onDone: 'editing',
         },
-        exit: [
-          'logRuntimeExit',
-          'destroyAudioContext',
-          'destroySignalGraph',
-          'destroyCoolZones',
-        ],
+        exit: ['destroyAudioContext', 'destroySignalGraph', 'destroyCoolZones'],
       },
       waiting: {
         entry: (context, event) => {
@@ -221,15 +216,9 @@ export const machine = Machine<
         },
       }),
 
-      logRuntimeStart: (context, event) => {
-        console.log('runtime!!!', context, event)
-      },
       createAudioContext: assign({
         audioContext: (context, event) => makeAudioContext(),
       }),
-      logRuntimeExit: (context, event) => {
-        console.warn('should destroy signal graph here')
-      },
       destroyAudioContext: assign({
         audioContext: (context, event) => {
           if (!context.audioContext) {

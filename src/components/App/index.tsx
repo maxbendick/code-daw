@@ -20,7 +20,7 @@ function App() {
   }, [send])
 
   useEffect(() => {
-    console.log('--state:', state.value)
+    console.log('--state:', state.value, state)
   }, [state])
 
   const spinning = state.matches('runtime')
