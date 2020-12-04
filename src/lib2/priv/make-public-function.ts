@@ -2,8 +2,6 @@ import { StringKeys } from './no-sig-types/string-keys'
 import { SuperDef } from './no-sig-types/super-def'
 import { Node, SignalGraph } from './signal-graph'
 
-const makeNodeMakerCopy = null as any
-
 const nodeTypeToNextIndex = new Map<string, number>()
 
 const incrGetIndex = (t: string) => {
@@ -46,12 +44,3 @@ export const makePublicFunction = <Def extends SuperDef, Args extends any[]>(
 
   return result
 }
-
-// export const makePublicFunction = <Def extends SuperDef>(def: Def) =>
-//   makeNodeMakerCopy(({ id }: any, ...args: any) => {
-//     return {
-//       type: def.nodeType,
-//       inputs: def.argsToInputs(...args),
-//       config: def.argsToConfig(...args),
-//     }
-//   })

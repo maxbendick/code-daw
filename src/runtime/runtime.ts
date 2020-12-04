@@ -37,15 +37,21 @@ Next:
 * assemble audio graph from signal graph
 */
 
+// TODO runtime should take in a master node facade
+// lifecycle will fade it out, then destroy it(?)
 export const startRuntime = async (context: LifecycleContext) => {
   const { signalGraph, audioContext: _audioContext } = context
   const audioContext = _audioContext!
 
-  console.log('graph roots :)', signalGraph.roots)
-  console.log('graph leaves :0', signalGraph.leaves)
+  console.log('graph roots :)', signalGraph!.roots)
+  console.log('graph leaves :0', signalGraph!.leaves)
 
   // should send to master
-  const evaluation = evalateGraph(audioContext, signalGraph, context.coolZones!)
+  const evaluation = evalateGraph(
+    audioContext,
+    signalGraph!,
+    context.coolZones!,
+  )
   console.log('evaluation', evaluation)
 }
 

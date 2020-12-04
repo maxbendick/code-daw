@@ -70,7 +70,8 @@ export class SignalGraph {
     }
     throw new Error('no master out in graph!')
   }
-}
 
-// TODO state machine can make this
-export const globalSignalGraph = new SignalGraph()
+  destroy = () => {
+    console.warn('signal graph may need special cleanup')
+  }
+}

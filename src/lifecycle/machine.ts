@@ -1,6 +1,6 @@
 // import { assign as _assign, Machine } from 'xstate'
 import { assign, Machine } from 'xstate'
-import { globalSignalGraph } from '../lib2/priv/signal-graph'
+import { SignalGraph } from '../lib2/priv/signal-graph'
 import {
   LifecycleContext,
   LifecycleEvent,
@@ -60,9 +60,7 @@ export const machine = Machine<
   {
     id: 'lifecycle',
     initial: 'preMount',
-    context: {
-      signalGraph: globalSignalGraph,
-    },
+    context: {},
     states: {
       preMount: {
         on: {
@@ -121,6 +119,7 @@ export const machine = Machine<
         },
       },
       compilingCode: {
+        entry: 'createSignalGraph',
         invoke: {
           id: 'compileCodeInvoke',
           src: 'compileCode',
@@ -164,7 +163,6 @@ export const machine = Machine<
           onError: 'failure',
         },
       },
-      // TODO: runtime creates audio context, which is destroyed on exit
       runtime: {
         entry: ['logRuntimeStart', 'createAudioContext'],
         invoke: {
@@ -172,7 +170,12 @@ export const machine = Machine<
           src: 'doRuntime',
           onDone: 'editing',
         },
-        exit: ['logRuntimeExit', 'destroyAudioContext'],
+        exit: [
+          'logRuntimeExit',
+          'destroyAudioContext',
+          'destroySignalGraph',
+          'destroyCoolZones',
+        ],
       },
       waiting: {
         entry: (context, event) => {
@@ -193,13 +196,29 @@ export const machine = Machine<
   {
     services: defaultServices,
     actions: {
+      createSignalGraph: assign({
+        signalGraph: (context, event) => {
+          return new SignalGraph()
+        },
+      }),
+      destroySignalGraph: assign({
+        signalGraph: (context, event) => {
+          if (!context.signalGraph) {
+            throw new Error('tried to destroy nonexistent signalGraph')
+          }
+          return undefined
+        },
+      }),
+      destroyCoolZones: (context, event) => {
+        console.warn('TODO need to reset coolzones')
+      },
+
       logRuntimeStart: (context, event) => {
         console.log('runtime!!!', context, event)
       },
       createAudioContext: assign({
         audioContext: (context, event) => makeAudioContext(),
       }),
-
       logRuntimeExit: (context, event) => {
         console.warn('should destroy signal graph here')
       },

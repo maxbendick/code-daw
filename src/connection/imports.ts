@@ -7,7 +7,7 @@ import { SuperDef } from '../lib2/priv/no-sig-types/super-def'
 import { superDialDef } from '../lib2/priv/nodes/interactables/dial'
 import { superMasterOutDef } from '../lib2/priv/nodes/io/master-out'
 import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
-import { globalSignalGraph } from '../lib2/priv/signal-graph'
+import { SignalGraph } from '../lib2/priv/signal-graph'
 
 export const evalCompiledUserCode = (code: string) => {
   ;(window as any).codeDawInEval = true
@@ -40,19 +40,19 @@ const registerExports = ({ packageName, content }: RegisterArgs) => {
   w.codeDawPackages[packageName] = content
 }
 
-const registerSuperDef = (superDef: SuperDef) => {
+const registerSuperDef = (superDef: SuperDef, signalGraph: SignalGraph) => {
   registerExports({
     packageName: superDef.packageName as any,
     content: {
-      [superDef.publicName]: makePublicFunction(superDef, globalSignalGraph),
+      [superDef.publicName]: makePublicFunction(superDef, signalGraph),
     },
   })
 }
 
-export const registerAllExports = () => {
-  registerSuperDef(superDialDef)
-  registerSuperDef(superSineDef)
-  registerSuperDef(superMasterOutDef)
+export const registerAllExports = (signalGraph: SignalGraph) => {
+  registerSuperDef(superDialDef, signalGraph)
+  registerSuperDef(superSineDef, signalGraph)
+  registerSuperDef(superMasterOutDef, signalGraph)
 }
 
 // `require` in compiled user code becomes `codeDawRequire`

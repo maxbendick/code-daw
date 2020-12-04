@@ -21,6 +21,7 @@ import {
 } from '../editor/load-files'
 import { getAllTokens, TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
+import { SignalGraph } from '../lib2/priv/signal-graph'
 import { startRuntime } from '../runtime/runtime'
 import { LifecycleServices } from './types'
 import { waitForShiftEnter } from './util'
@@ -30,7 +31,6 @@ export const preEditorSetup = async (getTokens: () => TokenPlaces) => {
   setCompilerAndDiagnosticOptions(monaco)
   addHighlighting(monaco, getTokens)
   await loadFiles(monaco)
-  registerAllExports()
 
   return { monaco }
 }
@@ -70,7 +70,12 @@ export const attachCoolZones = async (
     .value()
 }
 
-export const compileAndEval = async (editor: EditorT, tokens: TokenPlaces) => {
+export const compileAndEval = async (
+  signalGraph: SignalGraph,
+  editor: EditorT,
+  tokens: TokenPlaces,
+) => {
+  registerAllExports(signalGraph)
   return await _compileAndEval(editor, tokens)
 }
 
@@ -90,7 +95,8 @@ export const lifecycleServices: LifecycleServices = {
     console.log('preeditor setup args', context, ...args)
     return preEditorSetup(() => context.tokens!)
   },
-  compileCode: context => compileAndEval(context.editor!, context.tokens!),
+  compileCode: context =>
+    compileAndEval(context.signalGraph!, context.editor!, context.tokens!),
   evalCompiledUserCode: context => evalCompiledUserCode(context.compiledCode!),
   attachCoolZones: context =>
     attachCoolZones(

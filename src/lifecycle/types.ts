@@ -31,7 +31,7 @@ export interface LifecycleContext {
   tokens?: TokenPlaces
   codeDawVars?: any
   coolZones?: CoolZone[]
-  signalGraph: SignalGraph
+  signalGraph?: SignalGraph
   audioContext?: AudioContext
 }
 
