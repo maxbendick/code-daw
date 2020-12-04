@@ -1,40 +1,39 @@
 import MonacoEditor from '@monaco-editor/react'
-import { useMachine } from '@xstate/react'
-import { useEffect } from 'react'
+import { useService } from '@xstate/react'
+import { Interpreter } from 'xstate'
 import * as Config from '../../config'
 import { EditorT } from '../../editor/types'
-import { machine } from '../../lifecycle/machine'
-import { lifecycleServices } from '../../lifecycle/services'
+import { LifecycleContext, LifecycleEvent } from '../../lifecycle/types'
 import { code4 } from './code'
 import './Editor.css'
 
-const configgedMachine = machine.withConfig({
-  services: lifecycleServices,
-})
+interface Props {
+  lifecycleService: Interpreter<
+    LifecycleContext,
+    any,
+    LifecycleEvent,
+    {
+      value: any
+      context: LifecycleContext
+    }
+  >
+}
 
-export const Editor: React.FC = () => {
-  const [state, send] = useMachine(configgedMachine, { devTools: true })
+export const Editor: React.FC<Props> = ({ lifecycleService }) => {
+  const [state, send] = useService(lifecycleService)
 
   const editorPreSetupFinished =
     !state.matches('preMount') && !state.matches('preEditorSetup')
 
-  useEffect(() => {
-    send('REACT_MOUNTED')
-  }, [send])
+  if (!editorPreSetupFinished) {
+    return <div>loading...</div>
+  }
 
   const handleEditorDidMount = (_: any, editor: EditorT) => {
     send({
       type: 'EDITOR_CREATED',
-      editor,
-    })
-  }
-
-  useEffect(() => {
-    console.log('--state:', state.value)
-  }, [state])
-
-  if (!editorPreSetupFinished) {
-    return <div>loading...</div>
+      editor: editor,
+    } as any)
   }
 
   const extraOptions: { [k: string]: boolean } = {

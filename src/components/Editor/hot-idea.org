@@ -1,0 +1,23 @@
+react doesnt have 1st class reactivity
+
+make a higher-order component that takes in normal props
+and its argument takes in observable args.
+
+original args: 
+{ creen: number, editor: EditorT, boofs }
+
+injected args:
+{ creen$: Observable<number>, creen: number
+, editor$: Observable<EditorT>, editor: EditorT
+, boofs$: Observable<any>, boofs: any
+}
+
+
+make a fn that takes in observables and a fn from raw
+values to jsx, and returns a component applied with
+connected props
+
+// better to just use observable-hook
+return injectBoofs([creen$, boofs$], (creen, boofs) => {
+  return <div>{creen}</div>
+})
