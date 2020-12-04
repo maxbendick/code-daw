@@ -1,6 +1,7 @@
 import { Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
+import { SuperDef } from '../../no-sig-types/super-def'
 
 const dialNodeType = 'interactables/dial' as const
 
@@ -55,4 +56,9 @@ export const superDialDef = {
     }
     return result
   },
+
+  argsToInputs: (config: DialConfig) => ({}),
+  argsToConfig: (config: DialConfig) => config,
 } as const
+
+const _proof: SuperDef = superDialDef

@@ -1,6 +1,7 @@
 import { AudioSignal, Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
+import { SuperDef } from '../../no-sig-types/super-def'
 import { injectAudioContext } from '../../webaudio-utils'
 
 const masterOutNodeType = 'io/masterOut' as const
@@ -59,4 +60,9 @@ export const superMasterOutDef = {
     }
     return result
   },
+
+  argsToInputs: (signal: AudioSignal) => ({ audioToOutput: signal }),
+  argsToConfig: (signal: AudioSignal): MasterOutConfig => ({}),
 } as const
+
+const _proof: SuperDef = superMasterOutDef

@@ -1,13 +1,14 @@
 import { Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
+import { SuperDef } from '../../no-sig-types/super-def'
 import { injectAudioContext } from '../../webaudio-utils'
 
 const sineNodeType = 'oscillators/sine' as const
 
 type SineConfig = {}
 
-type SineArgs = [frequency: Signal<number>, phase: Signal<number>]
+type SineArgs = [frequency: Signal<number>]
 
 const sineRaw = makeNodeMaker<SineArgs>(({ id }, frequency) => {
   return {
@@ -55,4 +56,9 @@ export const superSineDef = {
     }
     return result
   },
+
+  argsToInputs: (frequency: Signal<number>) => ({ frequency }),
+  argsToConfig: (frequency: Signal<number>): SineConfig => ({}),
 } as const
+
+const _proof: SuperDef = superSineDef

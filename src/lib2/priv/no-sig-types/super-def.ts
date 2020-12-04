@@ -10,6 +10,8 @@ export interface SuperDef {
   interactable: boolean
   verifyConfig: (config: any) => void
   makeOutput: (audioContext: AudioContext, config: any, inputs: any) => any
+  argsToInputs: (...args: any[]) => any
+  argsToConfig: (...args: any[]) => any
 }
 
 export type ConfigOf<Def extends SuperDef> = Def['verifyConfig'] extends (
