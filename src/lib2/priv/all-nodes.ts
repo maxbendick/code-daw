@@ -3,7 +3,6 @@ import { BaseSuperDef } from './no-sig-types/super-def'
 import {
   dialGraphNodeDefinition,
   DialNodeEphemeral,
-  dialNodeType,
 } from './nodes/interactables/dial'
 import {
   sineGraphNodeDefinition,
@@ -11,19 +10,11 @@ import {
   superSineDef,
 } from './nodes/oscillators/sine'
 
-type ValuesOf<T extends readonly any[]> = T[number]
+// type ValuesOf<T extends readonly any[]> = T[number]
 
 export type GraphNodeEphemeral = DialNodeEphemeral | SineNodeEphemeral
 
-// proof that all GraphNodeEphemerals are GraphNodeBaseTypes
-const testValue: GraphNodeBaseType<
-  any,
-  any,
-  any,
-  any
-> = (null as any) as GraphNodeEphemeral
-
-export const nodeDefinitions: GraphNodeBaseType<any, any, any, any>[] = [
+const nodeDefinitions: GraphNodeBaseType[] = [
   dialGraphNodeDefinition,
   sineGraphNodeDefinition,
 ]
@@ -32,10 +23,10 @@ export const nodeDefinitions: GraphNodeBaseType<any, any, any, any>[] = [
 export const superDefs = [superSineDef] as const
 const _proof: readonly BaseSuperDef[] = superDefs
 
-type SuperDef = ValuesOf<typeof superDefs>
-type SuperDefNodeType = SuperDef['nodeType']
+type SuperDef = BaseSuperDef // ValuesOf<typeof superDefs>
+type SuperDefNodeType = string // SuperDef['nodeType']
 
-export const getSuperDef = (type: SuperDefNodeType) => {
+export const getSuperDef = (type: string) => {
   for (const def of superDefs) {
     if (def.nodeType === type) {
       return def
@@ -44,12 +35,10 @@ export const getSuperDef = (type: SuperDefNodeType) => {
   throw new Error('could not find superdef')
 }
 
-export type NodeType = typeof dialNodeType | SuperDefNodeType
+export type NodeType = string // typeof dialNodeType | SuperDefNodeType
 
-const getGraphNodeDefinition = (
-  nodeType: NodeType,
-): GraphNodeBaseType<any, any, any, any> => {
-  const result = nodeDefinitions.find(d => d.nodeType === nodeType)
+const getGraphNodeDefinition = (nodeType: NodeType): GraphNodeBaseType => {
+  const result = nodeDefinitions.find(d => (d as any).nodeType === nodeType)
 
   if (!result) {
     throw new Error(`could not find definition for node type ${nodeType}`)
@@ -64,5 +53,5 @@ export const getNodeInputDef = (nodeType: NodeType) => {
       return def.inputs
     }
   }
-  return getGraphNodeDefinition(nodeType).inputs
+  return (getGraphNodeDefinition(nodeType) as any).inputs
 }

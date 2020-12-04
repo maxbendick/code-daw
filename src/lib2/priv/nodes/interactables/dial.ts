@@ -10,12 +10,7 @@ export type DialConfig = {
   defaultValue: number
 }
 
-export const dialGraphNodeDefinition: GraphNodeBaseType<
-  typeof dialNodeType,
-  {},
-  'signal',
-  DialConfig
-> = {
+export const dialGraphNodeDefinition: GraphNodeBaseType = {
   nodeType: dialNodeType,
   inputs: {},
   output: 'signal' as const,
@@ -24,15 +19,13 @@ export const dialGraphNodeDefinition: GraphNodeBaseType<
 
 export type DialNodeEphemeral = typeof dialGraphNodeDefinition
 
-const dialRaw = makeNodeMaker<DialNodeEphemeral, [config: DialConfig]>(
-  ({ id }, config) => {
-    return {
-      type: dialNodeType,
-      inputs: {},
-      config,
-    }
-  },
-)
+const dialRaw = makeNodeMaker<[config: DialConfig]>(({ id }, config) => {
+  return {
+    type: dialNodeType,
+    inputs: {},
+    config,
+  }
+})
 
 // TODO better typing
 export const dial: (config: DialConfig) => Signal<number> = dialRaw as any

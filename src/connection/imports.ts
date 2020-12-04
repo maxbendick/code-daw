@@ -21,7 +21,7 @@ export const evalCompiledUserCode = (code: string) => {
 }
 
 interface RegisterArgs {
-  packageName: `code-daw/${string}`
+  packageName: string // `code-daw/${string}`
   content: any
 }
 

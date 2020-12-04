@@ -8,12 +8,7 @@ export const sineNodeType = 'oscillators/sine' as const
 
 export type SineConfig = {}
 
-export const sineGraphNodeDefinition: GraphNodeBaseType<
-  typeof sineNodeType,
-  { frequency: 'signal' },
-  'signal',
-  SineConfig
-> = {
+export const sineGraphNodeDefinition: GraphNodeBaseType = {
   nodeType: sineNodeType,
   inputs: { frequency: 'signal' },
   output: EdgeType.Signal,
@@ -64,7 +59,8 @@ export const superSineDef = {
     }
     return result
   },
-  get packageName(): `code-daw/${string}` {
+
+  get packageName(): string {
     const split = this.nodeType.split('/')
     const result = `code-daw/${split[0]}` as const
     if (!result) {
@@ -72,4 +68,4 @@ export const superSineDef = {
     }
     return result
   },
-} as const
+}

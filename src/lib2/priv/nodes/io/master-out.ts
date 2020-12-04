@@ -6,15 +6,10 @@ export const masterOutNodeType = 'io/masterOut' as const
 
 export type MasterOutConfig = {}
 
-export const masterOutGraphNodeDefinition: GraphNodeBaseType<
-  typeof masterOutNodeType,
-  { audioToOutput: 'audioSignal' },
-  null,
-  MasterOutConfig
-> = {
+export const masterOutGraphNodeDefinition: GraphNodeBaseType = {
   nodeType: masterOutNodeType,
   inputs: { audioToOutput: 'audioSignal' },
-  output: null, // EdgeType.AudioSignal,
+  output: null,
   config: (null as any) as MasterOutConfig,
 }
 
@@ -22,15 +17,13 @@ export type MasterOutEphemeral = typeof masterOutGraphNodeDefinition
 
 type MasterOutArgs = [signal: AudioSignal]
 
-const masterOutRaw = makeNodeMaker<MasterOutEphemeral, MasterOutArgs>(
-  ({ id }, audioToOutput) => {
-    return {
-      type: masterOutNodeType,
-      inputs: { audioToOutput },
-      config: {},
-    }
-  },
-)
+const masterOutRaw = makeNodeMaker<MasterOutArgs>(({ id }, audioToOutput) => {
+  return {
+    type: masterOutNodeType,
+    inputs: { audioToOutput },
+    config: {},
+  }
+})
 
 // Available for editor
 export const masterOut: (...args: MasterOutArgs) => Signal<number> = (
