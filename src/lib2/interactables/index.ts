@@ -1,3 +1,5 @@
+import { makePublicFunction } from '../priv/make-public-function'
 import { superDialDef } from '../priv/nodes/interactables/dial'
+import { globalSignalGraph } from '../priv/signal-graph'
 
-export const dial = superDialDef.publicFunction
+export const dial = makePublicFunction(superDialDef, globalSignalGraph)
