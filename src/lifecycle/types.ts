@@ -19,7 +19,6 @@ export interface LifecycleStateSchema {
     compilingCode: {}
     evalingCode: {}
     runtime: {}
-    waiting: {}
     failure: {}
   }
 }

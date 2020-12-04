@@ -177,11 +177,6 @@ export const machine = Machine<
           'clearReadonly',
         ],
       },
-      waiting: {
-        entry: (context, event) => {
-          console.log('waiting!!!', context, event)
-        },
-      },
       failure: {
         entry: (context, event) => {
           console.error(
