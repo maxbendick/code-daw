@@ -25,7 +25,7 @@ export type SineNodeEphemeral = typeof sineGraphNodeDefinition
 
 type SineArgs = [frequency: Signal<number>, phase: Signal<number>]
 
-export const sineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
+const sineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
   ({ id }, frequency) => {
     return {
       type: sineNodeType,
@@ -36,18 +36,18 @@ export const sineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
 )
 
 // TODO better typing
-export const sine: (...args: SineArgs) => Signal<number> = (...args) => {
+const sine: (...args: SineArgs) => Signal<number> = (...args) => {
   return (sineRaw(...args) as any) as Signal<number>
 }
 
-export const _oscillators_exports = {
+const _oscillators_exports = {
   packageName: 'code-daw/oscillators' as const,
   content: {
     sine,
   },
 }
 
-export const resolveSineOutput = (
+const resolveSineOutput = (
   audioContext: AudioContext,
   config: any,
   { frequency }: any,
