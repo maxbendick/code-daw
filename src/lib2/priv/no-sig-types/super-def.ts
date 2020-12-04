@@ -1,5 +1,16 @@
 import { EdgeType } from './edge-types'
 
+/*
+TODOs
+
+Maybe later: can have a function that takes in audio 
+context, args, and a resolver fn that recurses in graph
+to find or create the input. Each node would resolve 
+the inputs it wants. 
+
+Example: resolve(args[0].frequency, EdgeType.Signal): AudioNode | Observable<number>
+
+*/
 export interface SuperDef {
   nodeType: string
   publicName: string
@@ -18,3 +29,17 @@ export type ConfigOf<Def extends SuperDef> = Def['verifyConfig'] extends (
 ) => void
   ? Config
   : never
+
+// type Unresolved = { __never: true }
+
+// export type OUTTputMaker = (
+//   injected: {
+//     audioContext: AudioContext
+//     resolveInput: (
+//       value: Unresolved,
+//       edgeType: EdgeType,
+//     ) => number | Observable<number> | AudioNode
+//   },
+
+//   args: any[],
+// ) => any
