@@ -1,7 +1,7 @@
-import { injectAudioContext } from '../../../../runtime/utils'
 import { AudioSignal, Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
+import { injectAudioContext } from '../../webaudio-utils'
 
 const masterOutNodeType = 'io/masterOut' as const
 

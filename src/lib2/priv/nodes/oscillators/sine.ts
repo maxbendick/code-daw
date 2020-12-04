@@ -1,7 +1,7 @@
-import { injectAudioContext } from '../../../../runtime/utils'
 import { Signal } from '../../../sigs'
 import { makeNodeMaker } from '../../makeNodeMaker'
 import { EdgeType } from '../../no-sig-types/edge-types'
+import { injectAudioContext } from '../../webaudio-utils'
 
 const sineNodeType = 'oscillators/sine' as const
 
