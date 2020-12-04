@@ -16,7 +16,7 @@ export const makePublicFunction = <Def extends SuperDef, Args extends any[]>(
   def: Def,
   signalGraph: SignalGraph,
 ) => {
-  return (...args: Args): Node<Def> => {
+  const result = (...args: Args): Node<Def> => {
     const id = Math.random().toString(36).substring(7)
 
     const type = def.nodeType
@@ -43,6 +43,8 @@ export const makePublicFunction = <Def extends SuperDef, Args extends any[]>(
 
     return result
   }
+
+  return result
 }
 
 // export const makePublicFunction = <Def extends SuperDef>(def: Def) =>

@@ -2,10 +2,12 @@
 // import from a honeypot?
 
 import { alertFinishedLoadingListeners } from '../editor/finished-loading-listeners'
+import { makePublicFunction } from '../lib2/priv/make-public-function'
 import { SuperDef } from '../lib2/priv/no-sig-types/super-def'
 import { superDialDef } from '../lib2/priv/nodes/interactables/dial'
 import { superMasterOutDef } from '../lib2/priv/nodes/io/master-out'
 import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
+import { globalSignalGraph } from '../lib2/priv/signal-graph'
 
 export const evalCompiledUserCode = (code: string) => {
   ;(window as any).codeDawInEval = true
@@ -44,11 +46,10 @@ const registerExports = ({ packageName, content }: RegisterArgs) => {
 }
 
 const registerSuperDef = (superDef: SuperDef) => {
-  const sss = superDef as any
   registerExports({
-    packageName: sss.packageName,
+    packageName: superDef.packageName as any,
     content: {
-      [sss.publicName]: sss.publicFunction,
+      [superDef.publicName]: makePublicFunction(superDef, globalSignalGraph),
     },
   })
 }
