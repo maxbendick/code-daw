@@ -9,12 +9,7 @@ export const sineNodeType = 'oscillators/sine' as const
 
 type SineConfig = {}
 
-export const sineGraphNodeDefinition: GraphNodeBaseType<
-  typeof sineNodeType,
-  { frequency: 'signal' },
-  'signal',
-  SineConfig
-> = {
+export const sineGraphNodeDefinition: GraphNodeBaseType = {
   nodeType: sineNodeType,
   inputs: { frequency: 'signal' },
   output: EdgeType.Signal,

@@ -9,12 +9,7 @@ export const masterOutNodeType = 'io/masterOut' as const
 
 type MasterOutConfig = {}
 
-export const masterOutGraphNodeDefinition: GraphNodeBaseType<
-  typeof masterOutNodeType,
-  { audioToOutput: 'audioSignal' },
-  null,
-  MasterOutConfig
-> = {
+export const masterOutGraphNodeDefinition: GraphNodeBaseType = {
   nodeType: masterOutNodeType,
   inputs: { audioToOutput: 'audioSignal' },
   output: null, // EdgeType.AudioSignal,

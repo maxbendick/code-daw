@@ -13,14 +13,9 @@ import {
 export type GraphNodeEphemeral = DialNodeEphemeral | SineNodeEphemeral
 
 // proof that all GraphNodeEphemerals are GraphNodeBaseTypes
-const testValue: GraphNodeBaseType<
-  any,
-  any,
-  any,
-  any
-> = (null as any) as GraphNodeEphemeral
+const testValue: GraphNodeBaseType = (null as any) as GraphNodeEphemeral
 
-export const nodeDefinitions: GraphNodeBaseType<any, any, any, any>[] = [
+export const nodeDefinitions: GraphNodeBaseType[] = [
   dialGraphNodeDefinition,
   sineGraphNodeDefinition,
 ]
@@ -33,7 +28,7 @@ export const NodeType = {
 
 export const getGraphNodeDefinition = (
   nodeType: NodeType,
-): GraphNodeBaseType<any, any, any, any> => {
+): GraphNodeBaseType => {
   const result = nodeDefinitions.find(d => d.nodeType === nodeType)
 
   if (!result) {

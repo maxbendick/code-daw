@@ -12,12 +12,7 @@ type DialConfig = {
   defaultValue: number
 }
 
-export const dialGraphNodeDefinition: GraphNodeBaseType<
-  typeof dialNodeType,
-  {},
-  'signal',
-  DialConfig
-> = {
+export const dialGraphNodeDefinition: GraphNodeBaseType = {
   nodeType: dialNodeType,
   inputs: {},
   output: 'signal' as const,
