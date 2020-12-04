@@ -38,19 +38,15 @@ Next:
 */
 
 export const startRuntime = async (context: LifecycleContext) => {
-  const { signalGraph } = context
+  const { signalGraph, audioContext: _audioContext } = context
+  const audioContext = _audioContext!
 
   console.log('graph roots :)', signalGraph.roots)
   console.log('graph leaves :0', signalGraph.leaves)
 
-  const audioContext = new (window.AudioContext ||
-    ((window as any).webkitAudioContext as AudioContext))()
-
   // should send to master
   const evaluation = evalateGraph(audioContext, signalGraph, context.coolZones!)
   console.log('evaluation', evaluation)
-
-  await new Promise(resolve => {})
 }
 
 type NN = typeof SignalGraph.prototype.masterOut

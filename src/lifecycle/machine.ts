@@ -7,6 +7,7 @@ import {
   LifecycleServices,
   LifecycleStateSchema,
 } from './types'
+import { makeJsonStringifySafe, waitForShiftEnter } from './util'
 
 const defaultServices: LifecycleServices = {
   preEditorSetup: () =>
@@ -40,18 +41,15 @@ const defaultServices: LifecycleServices = {
     }),
   doRuntime: context => {
     console.log('starting fake runtime!', context)
-    return new Promise(resolve => {})
+    return (waitForShiftEnter() as any) as Promise<void>
   },
 }
 
-const makeJsonStringifySafe = (obj: any) => {
-  const seen = new Set<string>()
-  obj.toJSON = (key: string) => {
-    if (seen.size > 1000 || seen.has(key)) {
-      return '...'
-    }
-    seen.add(key)
-  }
+const makeAudioContext = () => {
+  const result = new (window.AudioContext ||
+    ((window as any).webkitAudioContext as AudioContext))()
+  makeJsonStringifySafe(result)
+  return result
 }
 
 export const machine = Machine<
@@ -103,15 +101,7 @@ export const machine = Machine<
       editing: {
         invoke: {
           id: 'editingInvoke',
-          src: (context, event) =>
-            new Promise<null>((resolve, reject) => {
-              window.onkeydown = (event: KeyboardEvent) => {
-                if (event.key === 'Enter' && event.shiftKey) {
-                  window.onkeydown = null
-                  resolve(null)
-                }
-              }
-            }),
+          src: (context, event) => waitForShiftEnter(),
           onDone: 'parsingTokens',
         },
       },
@@ -176,13 +166,13 @@ export const machine = Machine<
       },
       // TODO: runtime creates audio context, which is destroyed on exit
       runtime: {
-        entry: (context, event) => {
-          console.log('runtime!!!', context, event)
-        },
+        entry: ['logRuntimeStart', 'createAudioContext'],
         invoke: {
           id: 'doRuntimeInvoke',
           src: 'doRuntime',
+          onDone: 'editing',
         },
+        exit: ['logRuntimeExit', 'destroyAudioContext'],
       },
       waiting: {
         entry: (context, event) => {
@@ -202,5 +192,26 @@ export const machine = Machine<
   },
   {
     services: defaultServices,
+    actions: {
+      logRuntimeStart: (context, event) => {
+        console.log('runtime!!!', context, event)
+      },
+      createAudioContext: assign({
+        audioContext: (context, event) => makeAudioContext(),
+      }),
+
+      logRuntimeExit: (context, event) => {
+        console.warn('should destroy signal graph here')
+      },
+      destroyAudioContext: assign({
+        audioContext: (context, event) => {
+          if (!context.audioContext) {
+            throw new Error('tried to close nonexistent audio context')
+          }
+          context.audioContext.close()
+          return undefined
+        },
+      }),
+    },
   },
 )

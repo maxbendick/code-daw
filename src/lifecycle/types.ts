@@ -32,6 +32,7 @@ export interface LifecycleContext {
   codeDawVars?: any
   coolZones?: CoolZone[]
   signalGraph: SignalGraph
+  audioContext?: AudioContext
 }
 
 export interface LifecycleContextWithMonaco {

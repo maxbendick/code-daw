@@ -23,6 +23,7 @@ import { getAllTokens, TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
 import { startRuntime } from '../runtime/runtime'
 import { LifecycleServices } from './types'
+import { waitForShiftEnter } from './util'
 
 export const preEditorSetup = async (getTokens: () => TokenPlaces) => {
   const monaco: MonacoT = await monacoReact.init()
@@ -101,5 +102,8 @@ export const lifecycleServices: LifecycleServices = {
   parseTokens: async context => {
     return getTokensFromEditor(context.editor!)
   },
-  doRuntime: startRuntime,
+  doRuntime: async context => {
+    await startRuntime(context)
+    return (waitForShiftEnter() as any) as Promise<void>
+  },
 }

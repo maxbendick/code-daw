@@ -1,7 +1,7 @@
 import { Observable, of } from 'rxjs'
 import { easyConnect } from '../../runtime/easy-connect'
 
-const MASTER_GAIN = 0.11
+const MASTER_GAIN = 0.081
 
 export const injectAudioContext = (audioContext: AudioContext) => {
   const self = {
