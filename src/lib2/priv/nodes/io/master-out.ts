@@ -36,7 +36,7 @@ export const superMasterOutDef = {
   publicFunction: masterOut,
   inputs: { audioToOutput: EdgeType.AudioSignal },
   output: 'nothing',
-  interactable: true,
+  interactable: false,
   verifyConfig: (config: MasterOutConfig) => {
     if (Object.keys(config).length !== 0) {
       throw new Error('bad master out config')

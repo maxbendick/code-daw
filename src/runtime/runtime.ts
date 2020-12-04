@@ -1,9 +1,7 @@
 import { Observable } from 'rxjs'
 import { CoolZone } from '../editor/cool-zone'
+import { getSuperDef } from '../lib2/priv/all-nodes'
 import { EdgeType } from '../lib2/priv/no-sig-types/edge-types'
-import { SuperDef } from '../lib2/priv/no-sig-types/super-def'
-import { superMasterOutDef } from '../lib2/priv/nodes/io/master-out'
-import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 import { LifecycleContext } from '../lifecycle/types'
 import {
@@ -85,13 +83,13 @@ const evalateGraph = (
       resolvedInputs[inputSlot] = existingOutputs[id]
     }
 
-    if (node.type.includes('dial')) {
+    const superDef = getSuperDef(node.type as any)
+
+    if (superDef.interactable) {
       throw new Error(
         'shouldnt be here because interactables are handled with coolzones',
       )
     }
-
-    const superDef = getSuperDef(node.type)
 
     verifyInputs(superDef.inputs, resolvedInputs)
     const output = superDef.makeOutput(
@@ -137,17 +135,4 @@ const verifyInputs = (inputConfig: any, inputs: any) => {
 const verifyOutput = (edgeType: EdgeType, output: any) => {
   console.log('verifying output', edgeType, output)
   verifySigType(edgeType, output)
-}
-
-const getSuperDef = (nodeType: string): SuperDef => {
-  switch (nodeType) {
-    case superSineDef.nodeType:
-      return superSineDef
-
-    case superMasterOutDef.nodeType:
-      return superMasterOutDef
-
-    default:
-      throw new Error(`unexpected node type ${nodeType}`)
-  }
 }

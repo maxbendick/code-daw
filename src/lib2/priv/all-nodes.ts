@@ -16,3 +16,11 @@ type RegisteredSuperDef = ValuesOf<typeof registeredSuperDefs>
 const _proof: SuperDef = (null as any) as RegisteredSuperDef
 
 export type NodeType = RegisteredSuperDef['nodeType']
+
+export const getSuperDef = (nodeType: NodeType): SuperDef => {
+  const result = registeredSuperDefs.find(def => def.nodeType === nodeType)
+  if (!result) {
+    throw new Error(`unexpected node type ${nodeType}`)
+  }
+  return result
+}
