@@ -40,24 +40,7 @@ const sine: (...args: SineArgs) => Signal<number> = (...args) => {
   return (sineRaw(...args) as any) as Signal<number>
 }
 
-const _oscillators_exports = {
-  packageName: 'code-daw/oscillators' as const,
-  content: {
-    sine,
-  },
-}
-
-const resolveSineOutput = (
-  audioContext: AudioContext,
-  config: any,
-  { frequency }: any,
-) => {
-  const { makeOscillator } = injectAudioContext(audioContext)
-  const osc = makeOscillator(frequency)
-  return osc
-}
-
-export const superSineDef = {
+export const superSineDef: SuperDef = {
   nodeType: 'oscillators/sine',
   publicFunction: sine,
   inputs: { frequency: EdgeType.Signal },
@@ -90,11 +73,4 @@ export const superSineDef = {
     }
     return result
   },
-} as const
-
-// proof
-const vv: SuperDef = superSineDef
-
-const x = (null as any) as typeof superSineDef
-
-console.log('superdef', superSineDef)
+}
