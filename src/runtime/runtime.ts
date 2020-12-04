@@ -1,13 +1,12 @@
 import { Observable } from 'rxjs'
 import { CoolZone } from '../editor/cool-zone'
 import { EdgeType } from '../lib2/priv/no-sig-types/edge-types'
-import { superDialDef } from '../lib2/priv/nodes/interactables/dial'
+import { SuperDef } from '../lib2/priv/no-sig-types/super-def'
 import { superMasterOutDef } from '../lib2/priv/nodes/io/master-out'
 import { superSineDef } from '../lib2/priv/nodes/oscillators/sine'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 import { LifecycleContext } from '../lifecycle/types'
 import {
-  injectAudioContext,
   isOscillatorNode,
   makeObservableFromSend,
   verifySigType,
@@ -51,8 +50,6 @@ export const startRuntime = async (context: LifecycleContext) => {
   const audioContext = new (window.AudioContext ||
     ((window as any).webkitAudioContext as AudioContext))()
 
-  const { toMaster, makeOscillator } = injectAudioContext(audioContext)
-
   const idToZoneSend$ = {} as { [id: string]: Observable<number> }
 
   for (const zone of context.coolZones!) {
@@ -73,8 +70,6 @@ const evalateGraph = (
   graph: SignalGraph,
   coolZones: CoolZone[],
 ) => {
-  const { toMaster } = injectAudioContext(audioContext)
-
   const existingOutputs = {} as { [id: string]: AudioNode | Observable<number> }
 
   for (const zone of coolZones) {
@@ -98,43 +93,22 @@ const evalateGraph = (
       resolvedInputs[inputSlot] = existingOutputs[id]
     }
 
-    // Build webaudio nodes+edges
-    switch (node.type) {
-      case superDialDef.nodeType:
-        throw new Error(
-          'shouldnt be here because interactables are handled with coolzones',
-        )
-
-      case superSineDef.nodeType: {
-        superSineDef.verifyConfig(node.config as any)
-        verifyInputs(superSineDef.inputs, resolvedInputs)
-        const output = superSineDef.makeOutput(
-          audioContext,
-          node.config as any,
-          resolvedInputs,
-        )
-        verifyOutput(superSineDef.output, output)
-
-        existingOutputs[node.id] = output
-        console.log('on the sine node', node)
-        return
-      }
-
-      case superMasterOutDef.nodeType: {
-        console.log('on the masterout', node)
-        verifyInputs(superMasterOutDef.inputs, resolvedInputs)
-        const output = superMasterOutDef.makeOutput(
-          audioContext,
-          node.config,
-          resolvedInputs,
-        )
-        verifyOutput(superMasterOutDef.output, output)
-        existingOutputs[node.id] = output
-        return
-      }
+    if (node.type === 'dial') {
+      throw new Error(
+        'shouldnt be here because interactables are handled with coolzones',
+      )
     }
 
-    throw new Error(`unexpected node type ${node.type}`)
+    const superDef = getSuperDef(node.type)
+
+    verifyInputs(superDef.inputs, resolvedInputs)
+    const output = superDef.makeOutput(
+      audioContext,
+      node.config,
+      resolvedInputs,
+    )
+    verifyOutput(superDef.output, output)
+    existingOutputs[node.id] = output
   }
 
   rec(graph.masterOut)
@@ -154,8 +128,6 @@ const evalateGraph = (
 
 // TODO test because it's worth it
 const verifyInputs = (inputConfig: any, inputs: any) => {
-  // const inputConfig = getGraphNodeDefinition(node.type as any).inputs
-
   if (inputConfig.length || inputs.length) {
     throw new Error('somehow got array input')
   }
@@ -173,4 +145,17 @@ const verifyInputs = (inputConfig: any, inputs: any) => {
 const verifyOutput = (edgeType: EdgeType, output: any) => {
   console.log('verifying output', edgeType, output)
   verifySigType(edgeType, output)
+}
+
+const getSuperDef = (nodeType: string): SuperDef => {
+  switch (nodeType) {
+    case superSineDef.nodeType:
+      return superSineDef
+
+    case superMasterOutDef.nodeType:
+      return superMasterOutDef
+
+    default:
+      throw new Error(`unexpected node type ${nodeType}`)
+  }
 }
