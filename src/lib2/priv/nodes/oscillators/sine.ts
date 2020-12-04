@@ -25,15 +25,13 @@ export type SineNodeEphemeral = typeof sineGraphNodeDefinition
 
 type SineArgs = [frequency: Signal<number>, phase: Signal<number>]
 
-const sineRaw = makeNodeMaker<SineNodeEphemeral, SineArgs>(
-  ({ id }, frequency) => {
-    return {
-      type: sineNodeType,
-      inputs: { frequency } as any,
-      config: {},
-    }
-  },
-)
+const sineRaw = makeNodeMaker<SineArgs>(({ id }, frequency) => {
+  return {
+    type: sineNodeType,
+    inputs: { frequency } as any,
+    config: {},
+  }
+})
 
 // TODO better typing
 const sine: (...args: SineArgs) => Signal<number> = (...args) => {

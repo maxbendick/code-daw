@@ -25,15 +25,13 @@ export type MasterOutEphemeral = typeof masterOutGraphNodeDefinition
 
 type MasterOutArgs = [signal: AudioSignal]
 
-const masterOutRaw = makeNodeMaker<MasterOutEphemeral, MasterOutArgs>(
-  ({ id }, audioToOutput) => {
-    return {
-      type: masterOutNodeType,
-      inputs: { audioToOutput },
-      config: {},
-    }
-  },
-)
+const masterOutRaw = makeNodeMaker<MasterOutArgs>(({ id }, audioToOutput) => {
+  return {
+    type: masterOutNodeType,
+    inputs: { audioToOutput },
+    config: {},
+  }
+})
 
 // Available for editor
 const masterOut: (...args: MasterOutArgs) => Signal<number> = (...args) => {

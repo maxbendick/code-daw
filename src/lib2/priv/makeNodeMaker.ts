@@ -1,31 +1,24 @@
-import { AudioSignal, MidiSignal, Signal } from '../sigs'
-import { GraphNodeEphemeral, NodeType } from './all-nodes'
-import { GraphNodeBaseType } from './no-sig-types/graph-node-base-type'
-import {
-  ConfigOf,
-  InputsOf,
-  NodeTypeOf,
-} from './no-sig-types/graph-node-ephemeral-utils'
+import { NodeType } from './all-nodes'
 import { StringKeys } from './no-sig-types/string-keys'
 import { globalSignalGraph, Node } from './signal-graph'
 
 // TODO
 // const isInteractable = (t: NodeType) => getGraphNodeDefinition(t).interactable
 
-type SigTypeInputsOf<G extends GraphNodeEphemeral> = {
-  [k in keyof InputsOf<G>]: InputsOf<G>[k] extends 'signal'
-    ? Signal<any>
-    : InputsOf<G>[k] extends 'audioSignal'
-    ? AudioSignal
-    : InputsOf<G>[k] extends 'midiSignal'
-    ? MidiSignal
-    : never
-}
+// type SigTypeInputsOf<G extends GraphNodeEphemeral> = {
+//   [k in keyof InputsOf<G>]: InputsOf<G>[k] extends 'signal'
+//     ? Signal<any>
+//     : InputsOf<G>[k] extends 'audioSignal'
+//     ? AudioSignal
+//     : InputsOf<G>[k] extends 'midiSignal'
+//     ? MidiSignal
+//     : never
+// }
 
-export type NodeConstructor<G extends GraphNodeEphemeral> = {
-  type: NodeTypeOf<G>
-  inputs: SigTypeInputsOf<G> // InputsOf<G> //
-  config: ConfigOf<G>
+export type NodeConstructor = {
+  type: string
+  inputs: StringKeys<any>
+  config: StringKeys<any>
 }
 
 type SignalMakerInjected = {
@@ -40,12 +33,8 @@ const incrGetIndex = (t: NodeType) => {
   return currIndex
 }
 
-// export const makeNodeMaker = <G extends GraphNodeEphemeral, Args extends any[]>(
-export const makeNodeMaker = <
-  G extends GraphNodeBaseType<any, any, any, any>,
-  Args extends any[]
->(
-  f: (injected: SignalMakerInjected, ...args: Args) => NodeConstructor<G>,
+export const makeNodeMaker = <Args extends any[]>(
+  f: (injected: SignalMakerInjected, ...args: Args) => NodeConstructor,
 ) => {
   return (...args: Args): Node => {
     const id = Math.random().toString(36).substring(7)
