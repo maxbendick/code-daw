@@ -209,9 +209,17 @@ export const machine = Machine<
           return undefined
         },
       }),
-      destroyCoolZones: (context, event) => {
-        console.warn('TODO need to reset coolzones')
-      },
+      destroyCoolZones: assign({
+        coolZones: (context, event) => {
+          if (!context.coolZones) {
+            throw new Error('tried to destroy nonexistent coolZones')
+          }
+          for (const coolZone of context.coolZones) {
+            coolZone.destroy()
+          }
+          return undefined
+        },
+      }),
 
       logRuntimeStart: (context, event) => {
         console.log('runtime!!!', context, event)
