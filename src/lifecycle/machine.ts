@@ -164,13 +164,18 @@ export const machine = Machine<
         },
       },
       runtime: {
-        entry: ['createAudioContext'],
+        entry: ['createAudioContext', 'setReadonly'],
         invoke: {
           id: 'doRuntimeInvoke',
           src: 'doRuntime',
           onDone: 'editing',
         },
-        exit: ['destroyAudioContext', 'destroySignalGraph', 'destroyCoolZones'],
+        exit: [
+          'destroyAudioContext',
+          'destroySignalGraph',
+          'destroyCoolZones',
+          'clearReadonly',
+        ],
       },
       waiting: {
         entry: (context, event) => {
@@ -191,6 +196,18 @@ export const machine = Machine<
   {
     services: defaultServices,
     actions: {
+      setReadonly: (context, event) => {
+        if (!context.editor) {
+          throw new Error('cant be in setReadonly without editor')
+        }
+        context.editor.updateOptions({ readOnly: true })
+      },
+      clearReadonly: (context, event) => {
+        if (!context.editor) {
+          throw new Error('cant be in setReadonly without editor')
+        }
+        context.editor.updateOptions({ readOnly: false })
+      },
       createSignalGraph: assign({
         signalGraph: (context, event) => {
           return new SignalGraph()
