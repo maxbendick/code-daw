@@ -45,16 +45,8 @@ export const startRuntime = async (context: LifecycleContext) => {
   console.log('graph roots :)', signalGraph.roots)
   console.log('graph leaves :0', signalGraph.leaves)
 
-  // start with leaves, go to roots
-
   const audioContext = new (window.AudioContext ||
     ((window as any).webkitAudioContext as AudioContext))()
-
-  const idToZoneSend$ = {} as { [id: string]: Observable<number> }
-
-  for (const zone of context.coolZones!) {
-    idToZoneSend$[zone.codeDawVar.id] = makeObservableFromSend(zone) // TODO default value!!
-  }
 
   // should send to master
   const evaluation = evalateGraph(audioContext, signalGraph, context.coolZones!)
