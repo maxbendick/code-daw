@@ -19,8 +19,6 @@ export const dialGraphNodeDefinition: GraphNodeBaseType = {
   config: (null as any) as DialConfig,
 }
 
-export type DialNodeEphemeral = typeof dialGraphNodeDefinition
-
 const dialRaw = makeNodeMaker<[config: DialConfig]>(({ id }, config) => {
   return {
     type: dialNodeType,
@@ -32,7 +30,7 @@ const dialRaw = makeNodeMaker<[config: DialConfig]>(({ id }, config) => {
 const dial: (config: DialConfig) => Signal<number> = dialRaw as any
 
 export const superDialDef: SuperDef = {
-  nodeType: 'interactables/dial',
+  nodeType: dialNodeType,
   publicFunction: dial,
   inputs: { frequency: EdgeType.Signal },
   output: EdgeType.AudioSignal,

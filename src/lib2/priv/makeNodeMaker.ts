@@ -2,19 +2,6 @@ import { NodeType } from './all-nodes'
 import { StringKeys } from './no-sig-types/string-keys'
 import { globalSignalGraph, Node } from './signal-graph'
 
-// TODO
-// const isInteractable = (t: NodeType) => getGraphNodeDefinition(t).interactable
-
-// type SigTypeInputsOf<G extends GraphNodeEphemeral> = {
-//   [k in keyof InputsOf<G>]: InputsOf<G>[k] extends 'signal'
-//     ? Signal<any>
-//     : InputsOf<G>[k] extends 'audioSignal'
-//     ? AudioSignal
-//     : InputsOf<G>[k] extends 'midiSignal'
-//     ? MidiSignal
-//     : never
-// }
-
 export type NodeConstructor = {
   type: string
   inputs: StringKeys<any>

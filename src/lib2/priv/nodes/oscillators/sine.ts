@@ -16,8 +16,6 @@ export const sineGraphNodeDefinition: GraphNodeBaseType = {
   config: (null as any) as SineConfig,
 }
 
-export type SineNodeEphemeral = typeof sineGraphNodeDefinition
-
 type SineArgs = [frequency: Signal<number>, phase: Signal<number>]
 
 const sineRaw = makeNodeMaker<SineArgs>(({ id }, frequency) => {
@@ -34,7 +32,7 @@ const sine: (...args: SineArgs) => Signal<number> = (...args) => {
 }
 
 export const superSineDef: SuperDef = {
-  nodeType: 'oscillators/sine',
+  nodeType: sineNodeType,
   publicFunction: sine,
   inputs: { frequency: EdgeType.Signal },
   output: EdgeType.AudioSignal,

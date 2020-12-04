@@ -12,11 +12,9 @@ type MasterOutConfig = {}
 export const masterOutGraphNodeDefinition: GraphNodeBaseType = {
   nodeType: masterOutNodeType,
   inputs: { audioToOutput: 'audioSignal' },
-  output: null, // EdgeType.AudioSignal,
+  output: EdgeType.Nothing,
   config: (null as any) as MasterOutConfig,
 }
-
-export type MasterOutEphemeral = typeof masterOutGraphNodeDefinition
 
 type MasterOutArgs = [signal: AudioSignal]
 
@@ -35,7 +33,7 @@ const masterOut: (...args: MasterOutArgs) => Signal<number> = (...args) => {
 }
 
 export const superMasterOutDef: SuperDef = {
-  nodeType: 'io/masterOut',
+  nodeType: masterOutNodeType,
   publicFunction: masterOut,
   inputs: { audioToOutput: EdgeType.AudioSignal },
   output: 'nothing',
