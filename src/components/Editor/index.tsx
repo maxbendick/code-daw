@@ -24,9 +24,11 @@ interface Props {
   >
 }
 
+const defaultCode = code4 // .substring(1) need some padding
+
 const codeLocalStorageKey = 'code-daw/code'
 
-const initialCode = localStorage.getItem(codeLocalStorageKey) ?? code4
+const initialCode = localStorage.getItem(codeLocalStorageKey) ?? defaultCode
 
 export const Editor: React.FC<Props> = ({ lifecycleService }) => {
   const [state, send] = useService(lifecycleService)
@@ -44,7 +46,7 @@ export const Editor: React.FC<Props> = ({ lifecycleService }) => {
       return
     }
     if (state.event.type === 'RESET_CODE') {
-      editor.setValue(code4)
+      editor.setValue(defaultCode)
     }
     if (state.matches('runtime') && state.changed) {
       localStorage.setItem(codeLocalStorageKey, editor.getValue())
