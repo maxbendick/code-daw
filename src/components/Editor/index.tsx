@@ -3,14 +3,18 @@ import { useService } from '@xstate/react'
 import { Interpreter } from 'xstate'
 import * as Config from '../../config'
 import { EditorT } from '../../editor/types'
-import { LifecycleContext, LifecycleEvent } from '../../lifecycle/types'
+import {
+  LifecycleContext,
+  LifecycleEvent,
+  LifecycleStateSchema,
+} from '../../lifecycle/types'
 import { code4 } from './code'
 import './Editor.css'
 
 interface Props {
   lifecycleService: Interpreter<
     LifecycleContext,
-    any,
+    LifecycleStateSchema,
     LifecycleEvent,
     {
       value: any
@@ -33,11 +37,7 @@ export const Editor: React.FC<Props> = ({ lifecycleService }) => {
     send({
       type: 'EDITOR_CREATED',
       editor: editor,
-    } as any)
-  }
-
-  const extraOptions: { [k: string]: boolean } = {
-    'semanticHighlighting.enabled': true,
+    })
   }
 
   return (
@@ -48,7 +48,7 @@ export const Editor: React.FC<Props> = ({ lifecycleService }) => {
       options={{
         fontSize: Config.fontSize,
         lineHeight: Config.lineHeight,
-        ...extraOptions,
+        ['semanticHighlighting.enabled' as any]: true,
       }}
       value={code4}
       editorDidMount={handleEditorDidMount}
