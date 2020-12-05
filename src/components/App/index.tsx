@@ -90,6 +90,7 @@ function App() {
               start={200}
               end={300}
               initialValue={230}
+              radius={20}
             />
           </VerticallyCenter>
         </div>

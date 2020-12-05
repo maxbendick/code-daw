@@ -169,14 +169,11 @@ export const DialZoneLoading: ZoneLoadingComponent = ({ token }) => {
   return <div>loading {token.varName}</div>
 }
 
-const dialRadius = 25
-const dialDiameter = dialRadius * 2
-
-const DialBase = styled.div`
-  height: ${dialDiameter}px;
-  width: ${dialDiameter}px;
-  border-radius: ${dialDiameter}px;
-  background-color: #111;
+const DialBase = styled.div<{ radius: number }>`
+  height: ${props => props.radius * 2}px;
+  width: ${props => props.radius * 2}px;
+  border-radius: ${props => props.radius * 2}px;
+  background-color: #000;
   user-select: none;
 `
 
@@ -184,14 +181,15 @@ const DialTickContainer = styled.div<{
   transitions: boolean
   degrees: number
   hide: boolean
+  radius: number
 }>`
-  height: ${dialDiameter}px;
-  width: ${dialDiameter}px;
+  height: ${props => props.radius * 2}px;
+  width: ${props => props.radius * 2}px;
   position: absolute;
   ${({ transitions, degrees }) =>
     transitions ? `transform: rotate(${degrees}deg);` : ''}
   transform: rotate(${props => props.degrees}deg);
-  transition: transform 0.1s, filter 0.3s;
+  transition: transform 0.1s, filter 0.4s;
   display: flex;
   justify-content: center;
 
@@ -209,6 +207,7 @@ interface TickProps {
   moveable: boolean
   hide: boolean
   length: any
+  radius: number
 }
 const DialTick: React.FC<TickProps> = ({
   color,
@@ -216,8 +215,14 @@ const DialTick: React.FC<TickProps> = ({
   moveable,
   hide,
   length,
+  radius,
 }) => (
-  <DialTickContainer degrees={degrees} transitions={moveable} hide={hide}>
+  <DialTickContainer
+    degrees={degrees}
+    transitions={moveable}
+    hide={hide}
+    radius={radius}
+  >
     <DialTickInner color={color} length={length} />
   </DialTickContainer>
 )
@@ -231,7 +236,8 @@ export const Dial2: React.FC<{
   end: number
   label: string
   send: (a: number) => void
-}> = ({ label, send, start, end, initialValue }) => {
+  radius: number
+}> = ({ label, send, start, end, initialValue, radius }) => {
   const [{ value, dragging }, registerMovement] = useObservableState(
     movementsToDialValue(start, end, initialValue),
     {
@@ -263,13 +269,14 @@ export const Dial2: React.FC<{
   const showMax = dragging && endDegrees - degrees < showThreshold
 
   return (
-    <DialBase {...bind()}>
+    <DialBase radius={radius} {...bind()}>
       <DialTick
         color={'#666'}
         degrees={startDegrees}
         moveable={false}
         hide={!showMin}
         length={'20%'}
+        radius={radius}
       />
       <DialTick
         color={'#666'}
@@ -277,13 +284,15 @@ export const Dial2: React.FC<{
         moveable={false}
         hide={!showMax}
         length={'20%'}
+        radius={radius}
       />
       <DialTick
-        color={'#11d'}
+        color={'#13d' || '#11d'}
         degrees={degrees}
         moveable={true}
         hide={false}
         length={'50%'}
+        radius={radius}
       />
     </DialBase>
   )
