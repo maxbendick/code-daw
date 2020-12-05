@@ -53,6 +53,9 @@ function App() {
   const inRuntime = state.matches('runtime')
   const inEditing = state.matches('editing')
 
+  const showEditor =
+    !state.matches('preMount') && !state.matches('preEditorSetup')
+
   return (
     <div>
       <Header>
@@ -76,7 +79,7 @@ function App() {
         </div>
       </Header>
 
-      <Editor lifecycleService={service} />
+      {showEditor ? <Editor lifecycleService={service} /> : 'loading...'}
     </div>
   )
 }

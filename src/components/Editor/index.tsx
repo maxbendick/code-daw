@@ -26,13 +26,6 @@ interface Props {
 export const Editor: React.FC<Props> = ({ lifecycleService }) => {
   const [state, send] = useService(lifecycleService)
 
-  const editorPreSetupFinished =
-    !state.matches('preMount') && !state.matches('preEditorSetup')
-
-  if (!editorPreSetupFinished) {
-    return <div>loading...</div>
-  }
-
   const handleEditorDidMount = (_: any, editor: EditorT) => {
     send({
       type: 'EDITOR_CREATED',
