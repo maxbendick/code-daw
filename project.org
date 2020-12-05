@@ -1,10 +1,22 @@
 * next steps
-** ctrl/shift-enter to compile, attach elements, run
-** save code on compile, reset code
+** DONE ctrl/shift-enter to compile, attach elements, run
+** DONE save code on compile, reset code
 ** global volume dial
-** runtime creates audio context, which is destroyed without click on exit
-** can toggle between runtime and editing
+** DONE runtime creates audio context, which is destroyed without click on exit
+** DONE can toggle between runtime and editing
+
+* later
 ** hook into devserver refresh for lifecycle?
+** setup and teardown of window vars
+** organization of window vars
+** thinner Node
+
+* offtopic
+** could make blog post about types only used for deviation
+   interface Dong { thing: any }
+   const myDong = { thing: 'on' } as const
+   const _proof: Dong = myDong // nice for development
+   const getThing: <D extends Dong>() => Dong['thing']
 
 ** DONE create actual dial component ( ish ;) )
 ** DONE create sine
@@ -29,9 +41,9 @@ output is necessary to differentiate types for the users editing experience
 ** dial updates?
 
 * next step ideas
-** dials update audio?
-** TODO convert to graph based eval, with separate runtime
-** organize stuff better
+** DONE dials update audio?
+** DONE convert to graph based eval, with separate runtime
+** DONE organize stuff better
 ** rename Token to InteractableType
 ** use sourcemap somehow
 ** do some actual livecoding for fun
@@ -39,19 +51,18 @@ output is necessary to differentiate types for the users editing experience
 *** DONE line = getLineNumber(); var x = window.codeDawVars.x = .....
 
 * hot ideas
-** dial can be referenced by variable name!
+** DONE dial can be referenced by variable name!
   const myDial = dial(...) registers a dial with ID 'myDial'?
-** dial instances can add themselves to window
+** DONE dial instances can add themselves to window
 ** dial zones can add themselves to window through an OO facade
 ** buses can be added to dials through window
 ** should be able to keep code for a zone + instance all together
 
-** step eval doesn't start runtime
+** DONE step eval doesn't start runtime
 *** add step for connecting buses, after eval
-*** eval adds function to window to start runtime
-*** rest of program calls eval
+*** DONE rest of program calls eval
 
-** add all vars to window?
+** TODO add all vars to window?
    replace "var myVar = dial(" 
    with    "var myVar = window.codeDawVars.myVar = dial("
 *** have to error all dials without assigning to const
@@ -61,32 +72,32 @@ output is necessary to differentiate types for the users editing experience
 *** DONE add dialVarName to token parse result
 
 * Binding brainstorming
-** each interactable in runtime has an index
-** each coolzone instance knows it's own index?
-** need to crossreference coolzone instances with dial instances
+** DONE each interactable in runtime has an index
+** DONE each coolzone instance knows it's own index?
+** DONE need to crossreference coolzone instances with dial instances
    component will get start/end/default
-** first, need a basic runtime
+** DONE first, need a basic runtime
 ** multiple dials on one line -> error in runtime?
 ** need to error if in loop/function or multiple 
    calls for one call expression 
 ** can error if token doesn't match interactable runtime function
 
 * Runtime brainstorming
-** compile with tsc
-** run with eval
-** need to add runtime dependencies (audio-signals.js, etc.)
-** need to create runtime files
-** need cross-communication between evaled files and rest of program
-** send dial updates to runtime
+** DONE compile with tsc
+** DONE run with eval
+** DONE need to add runtime dependencies (audio-signals.js, etc.)
+** DONE need to create runtime files
+** DONE need cross-communication between evaled files and rest of program
+** DONE send dial updates to runtime
 ** consider messages sent from runtime, like for gain meters
 ** buses are visible to runtime based off code analysis before eval
 
 ** mvp:
-*** tsc to compile to JS
-*** remove types only?
-*** use global eval + window to communicate, share lib
-*** remove imports before compilation?
-*** configure tsc? tslib? 
+*** DONE tsc to compile to JS
+*** DONE remove types only?
+*** DONE use global eval + window to communicate, share lib
+*** DONE remove imports before compilation?
+*** DONE configure tsc? tslib? 
 
 ** steps
 *** DONE make runtime evaluate fine
