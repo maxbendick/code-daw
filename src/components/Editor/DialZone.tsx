@@ -4,6 +4,7 @@ import { useEffect } from 'react'
 import { useDrag } from 'react-use-gesture'
 import { Observable } from 'rxjs'
 import { map, sampleTime, scan } from 'rxjs/operators'
+import styled from 'styled-components'
 import './Editor.css'
 import { ZoneComponent, ZoneLoadingComponent } from './zone-component'
 
@@ -81,7 +82,7 @@ const movementsToDialValue = (
   initialValue: number,
 ) => (
   event$: Observable<{ down: boolean; movement: [mx: number, my: number] }>,
-): Observable<number> => {
+): Observable<{ value: number; dragging: boolean }> => {
   return event$.pipe(
     scan(dialReducer, initialDialState(initialValue)),
     sampleTime(100),
@@ -89,7 +90,10 @@ const movementsToDialValue = (
     //   console.log('curr dial reducer state in the tappp', v)
     // }),
     map(state => {
-      return translateDialValue(state.currValue, start, end)
+      return {
+        value: translateDialValue(state.currValue, start, end),
+        dragging: state.prevMovement.down,
+      }
     }),
   )
 }
@@ -101,9 +105,12 @@ const DialZone: React.FC<{
   label: string
   send: (a: number) => void
 }> = ({ label, send, start, end, initialValue }) => {
-  const [value, registerMovement] = useObservableState(
+  const [{ value, dragging }, registerMovement] = useObservableState(
     movementsToDialValue(start, end, initialValue),
-    initialValue,
+    {
+      value: initialValue,
+      dragging: false,
+    },
   )
 
   useEffect(() => {
@@ -160,4 +167,124 @@ export const DialZoneZooone: ZoneComponent = ({ token, codeDawVar, send }) => {
 
 export const DialZoneLoading: ZoneLoadingComponent = ({ token }) => {
   return <div>loading {token.varName}</div>
+}
+
+const dialRadius = 25
+const dialDiameter = dialRadius * 2
+
+const DialBase = styled.div`
+  height: ${dialDiameter}px;
+  width: ${dialDiameter}px;
+  border-radius: ${dialDiameter}px;
+  background-color: #111;
+  user-select: none;
+`
+
+const DialTickContainer = styled.div<{
+  transitions: boolean
+  degrees: number
+  hide: boolean
+}>`
+  height: ${dialDiameter}px;
+  width: ${dialDiameter}px;
+  position: absolute;
+  ${({ transitions, degrees }) =>
+    transitions ? `transform: rotate(${degrees}deg);` : ''}
+  transform: rotate(${props => props.degrees}deg);
+  transition: transform 0.1s, filter 0.3s;
+  display: flex;
+  justify-content: center;
+
+  filter: opacity(${props => (props.hide ? '0' : '1')});
+`
+const DialTickInner = styled.div<{ color: any; length: any }>`
+  height: ${props => props.length};
+  width: 1px;
+  background-color: ${props => props.color};
+`
+
+interface TickProps {
+  color: any
+  degrees: number
+  moveable: boolean
+  hide: boolean
+  length: any
+}
+const DialTick: React.FC<TickProps> = ({
+  color,
+  degrees,
+  moveable,
+  hide,
+  length,
+}) => (
+  <DialTickContainer degrees={degrees} transitions={moveable} hide={hide}>
+    <DialTickInner color={color} length={length} />
+  </DialTickContainer>
+)
+
+const normalize = (start: number, end: number, value: number) =>
+  (value - start) / (end - start)
+
+export const Dial2: React.FC<{
+  initialValue: number
+  start: number
+  end: number
+  label: string
+  send: (a: number) => void
+}> = ({ label, send, start, end, initialValue }) => {
+  const [{ value, dragging }, registerMovement] = useObservableState(
+    movementsToDialValue(start, end, initialValue),
+    {
+      value: initialValue,
+      dragging: false,
+    },
+  )
+
+  useEffect(() => {
+    console.log('use effect value', value)
+    // get ready to send it here
+    try {
+      send(value)
+    } catch (e) {
+      console.warn('sent with an error - send may be undefined')
+    }
+  }, [value])
+
+  const bind = useDrag(registerMovement)
+
+  // 240 degrees of movement, centered at 0
+  const span = 240
+  const startDegrees = span / -2.0
+  const endDegrees = span / 2.0
+  const degrees = normalize(start, end, value) * span + startDegrees
+
+  const showThreshold = 50
+  const showMin = dragging && degrees - startDegrees < showThreshold
+  const showMax = dragging && endDegrees - degrees < showThreshold
+
+  return (
+    <DialBase {...bind()}>
+      <DialTick
+        color={'#666'}
+        degrees={startDegrees}
+        moveable={false}
+        hide={!showMin}
+        length={'20%'}
+      />
+      <DialTick
+        color={'#666'}
+        degrees={endDegrees}
+        moveable={false}
+        hide={!showMax}
+        length={'20%'}
+      />
+      <DialTick
+        color={'#11d'}
+        degrees={degrees}
+        moveable={true}
+        hide={false}
+        length={'50%'}
+      />
+    </DialBase>
+  )
 }

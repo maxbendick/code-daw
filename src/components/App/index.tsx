@@ -5,6 +5,7 @@ import { machine } from '../../lifecycle/machine'
 import { lifecycleServices } from '../../lifecycle/services'
 import { Button } from '../Button'
 import { Editor } from '../Editor'
+import { Dial2 } from '../Editor/DialZone'
 import { PlayButton } from '../PlayButton'
 import './App.css'
 import logo from './logo.svg'
@@ -81,6 +82,15 @@ function App() {
             <Button onClick={() => send('RESET_CODE')} disabled={!inEditing}>
               reset
             </Button>
+          </VerticallyCenter>
+          <VerticallyCenter style={{ marginLeft: 5 }}>
+            <Dial2
+              label={'my label'}
+              send={s => console.log('send', s)}
+              start={200}
+              end={300}
+              initialValue={230}
+            />
           </VerticallyCenter>
         </div>
       </Header>
