@@ -1,7 +1,9 @@
 * next steps
+** TODO global volume dial
+** TODO pretty dial
+** TODO revisit coolzone attachment
 ** DONE ctrl/shift-enter to compile, attach elements, run
 ** DONE save code on compile, reset code
-** global volume dial
 ** DONE runtime creates audio context, which is destroyed without click on exit
 ** DONE can toggle between runtime and editing
 
@@ -9,7 +11,7 @@
 ** hook into devserver refresh for lifecycle?
 ** setup and teardown of window vars
 ** organization of window vars
-** thinner Node
+** make signal graph basically callstack only
 ** automated tests
 
 * offtopic

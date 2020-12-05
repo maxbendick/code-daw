@@ -101,6 +101,7 @@ export const machine = Machine<
           id: 'editingInvoke',
           src: (context, event) => waitForShiftEnter(),
           onDone: 'parsingTokens',
+          onError: 'failure',
         },
       },
       parsingTokens: {
@@ -116,6 +117,7 @@ export const machine = Machine<
               },
             }),
           },
+          onError: 'failure',
         },
       },
       compilingCode: {
