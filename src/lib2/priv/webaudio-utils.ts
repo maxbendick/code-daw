@@ -1,7 +1,7 @@
 import { Observable } from 'rxjs'
 import { easyConnect } from '../../runtime/easy-connect'
 
-const MASTER_GAIN = 0.081
+const MASTER_GAIN = 0.05
 const MASTER_FADEOUT = 0.1
 const MASTER_FADEIN = 0.05
 

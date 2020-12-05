@@ -146,19 +146,19 @@ const myXwitcherrr = switcher([
 
 export const code4 = `
 import { dial } from 'code-daw/interactables'
-import { sine } from 'code-daw/oscillators'
+import { sine, saw } from 'code-daw/oscillators'
 import { masterOut } from 'code-daw/io'
 
 const firstDial = dial({
   start: 200,
   end: 561,
-  defaultValue: 107,
+  defaultValue: 207,
 })
 
 const secondDial = dial({
   start: 250,
   end: 350,
-  defaultValue: 200,
+  defaultValue: 300,
 })
 
 const mySine = sine(firstDial)

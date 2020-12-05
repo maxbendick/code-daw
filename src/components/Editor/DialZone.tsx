@@ -24,8 +24,8 @@ const initialDialState = (initialValue: number): DialState => ({
   prevMovement: { down: false, movement: [0, 0] },
 })
 
-const DIAL_MIN_VALUE = -200
-const DIAL_MAX_VALUE = 200
+const DIAL_MIN_VALUE = -75
+const DIAL_MAX_VALUE = 75
 
 const dialReducer = (state: DialState, movement: Movement): DialState => {
   const {
@@ -86,9 +86,6 @@ const movementsToDialValue = (
   return event$.pipe(
     scan(dialReducer, initialDialState(initialValue)),
     sampleTime(100),
-    // tap(v => {
-    //   console.log('curr dial reducer state in the tappp', v)
-    // }),
     map(state => {
       return {
         value: translateDialValue(state.currValue, start, end),
@@ -98,70 +95,51 @@ const movementsToDialValue = (
   )
 }
 
-const DialZone: React.FC<{
-  initialValue: number
-  start: number
-  end: number
-  label: string
-  send: (a: number) => void
-}> = ({ label, send, start, end, initialValue }) => {
-  const [{ value, dragging }, registerMovement] = useObservableState(
-    movementsToDialValue(start, end, initialValue),
-    {
-      value: initialValue,
-      dragging: false,
-    },
-  )
-
-  useEffect(() => {
-    console.log('use effect value', value)
-    // get ready to send it here
-    try {
-      send(value)
-    } catch (e) {
-      console.warn('sent with an error - send may be undefined')
-    }
-  }, [value])
-
-  const bind = useDrag(registerMovement)
-
-  return (
-    <div
-      {...bind()}
-      style={{
-        height: '100%',
-        display: 'flex',
-        flexDirection: 'column',
-        justifyContent: 'center',
-        background: 'rgba(0,0,255, 0.3)',
-        fontSize: '10px',
-        paddingLeft: '10px',
-      }}
-    >
-      <div style={{ display: 'flex', flexDirection: 'row' }}>
-        <b>
-          {label} {value}
-        </b>
-      </div>
-    </div>
-  )
-}
-
 export const defaultDialZoneValue = (codeDawVar: any) => {
   console.log('defaultDialZoneValue', codeDawVar)
   return codeDawVar.config.defaultValue
 }
 
+const DialZoneContainer = styled.div`
+  height: 100%;
+  width: 400px;
+  background-color: #333;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  padding-left: 20px;
+`
+const DialZoneContent = styled.div`
+  height: 50px;
+  display: flex;
+`
+const VerticalAlign = styled.div`
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
+
 export const DialZoneZooone: ZoneComponent = ({ token, codeDawVar, send }) => {
   const config = codeDawVar.config
+  const label = `${token.varName}: { ${config.start} ${config.end} ${config.defaultValue} }`
   return (
-    <DialZone
-      label={`${token.varName}: { ${config.start} ${config.end} ${config.defaultValue} }`}
-      send={send}
-      initialValue={config.defaultValue}
-      start={config.start}
-      end={config.end}
-    ></DialZone>
+    <DialZoneContainer>
+      <DialZoneContent>
+        <VerticalAlign>
+          <Dial
+            send={send}
+            initialValue={config.defaultValue}
+            start={config.start}
+            end={config.end}
+            radius={25}
+          ></Dial>
+        </VerticalAlign>
+        <VerticalAlign>
+          <div style={{ marginLeft: 10 }}>{label}</div>
+        </VerticalAlign>
+      </DialZoneContent>
+    </DialZoneContainer>
   )
 }
 
@@ -197,7 +175,7 @@ const DialTickContainer = styled.div<{
 `
 const DialTickInner = styled.div<{ color: any; length: any }>`
   height: ${props => props.length};
-  width: 1px;
+  width: 2px;
   background-color: ${props => props.color};
 `
 
@@ -230,14 +208,13 @@ const DialTick: React.FC<TickProps> = ({
 const normalize = (start: number, end: number, value: number) =>
   (value - start) / (end - start)
 
-export const Dial2: React.FC<{
+export const Dial: React.FC<{
   initialValue: number
   start: number
   end: number
-  label: string
   send: (a: number) => void
   radius: number
-}> = ({ label, send, start, end, initialValue, radius }) => {
+}> = ({ send, start, end, initialValue, radius }) => {
   const [{ value, dragging }, registerMovement] = useObservableState(
     movementsToDialValue(start, end, initialValue),
     {
