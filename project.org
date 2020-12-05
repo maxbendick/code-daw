@@ -10,6 +10,7 @@
 ** setup and teardown of window vars
 ** organization of window vars
 ** thinner Node
+** automated tests
 
 * offtopic
 ** could make blog post about types only used for deviation
