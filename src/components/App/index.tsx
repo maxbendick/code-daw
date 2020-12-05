@@ -1,14 +1,41 @@
 import { useMachine } from '@xstate/react'
 import React, { useEffect } from 'react'
+import styled from 'styled-components'
 import { machine } from '../../lifecycle/machine'
 import { lifecycleServices } from '../../lifecycle/services'
 import { Editor } from '../Editor'
+import { PlayButton } from '../PlayButton'
 import './App.css'
 import logo from './logo.svg'
 
 const configgedMachine = machine.withConfig({
   services: lifecycleServices,
 })
+
+const headerBackgroundColor = '#282c34'
+
+const Header = styled.header`
+  background-color: ${headerBackgroundColor};
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  font-size: calc(20px);
+  color: white;
+`
+
+const VerticallyCenter = styled.div`
+  height: 50px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`
+
+const Logo = styled.img`
+  height: 50px;
+  pointer-events: none;
+`
 
 function App() {
   const [state, send, service] = useMachine(configgedMachine, {
@@ -23,28 +50,31 @@ function App() {
     console.log('--state:', state.value, state)
   }, [state])
 
-  const spinning = state.matches('runtime')
+  const inRuntime = state.matches('runtime')
+  const inEditing = state.matches('editing')
 
   return (
-    <div className="App">
-      <header className="App-header">
-        <img
-          src={logo}
-          className={`App-logo ${spinning ? 'App-spinning' : ''}`}
-          alt="logo"
-        />
-        {/* <p>
-          Edit <code>src/App.tsx</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a> */}
-      </header>
+    <div>
+      <Header>
+        <div style={{ display: 'flex' }}>
+          <VerticallyCenter>
+            <Logo
+              src={logo}
+              className={inRuntime ? 'App-spinning' : ''}
+              alt="logo"
+            />
+          </VerticallyCenter>
+          <VerticallyCenter>
+            <PlayButton
+              disabled={!inRuntime && !inEditing}
+              playing={inRuntime}
+              toggle={() => {
+                ;(window.onkeydown as any)({ key: 'Enter', shiftKey: true })
+              }}
+            />
+          </VerticallyCenter>
+        </div>
+      </Header>
 
       <Editor lifecycleService={service} />
     </div>

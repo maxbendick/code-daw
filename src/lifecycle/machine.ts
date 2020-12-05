@@ -169,6 +169,7 @@ export const machine = Machine<
           id: 'doRuntimeInvoke',
           src: 'doRuntime',
           onDone: 'editing',
+          onError: 'failure',
         },
         exit: [
           'destroyAudioContext',
