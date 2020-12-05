@@ -10,4 +10,7 @@ export const Button = styled.button`
   :active {
     border: 1px solid #11a;
   }
+  :disabled {
+    color: #777;
+  }
 `

@@ -6,6 +6,7 @@ import { SignalGraph } from '../lib2/priv/signal-graph'
 export type LifecycleEvent =
   | { type: 'REACT_MOUNTED' }
   | { type: 'EDITOR_CREATED'; editor: EditorT }
+  | { type: 'RESET_CODE' }
   | { type: '__nil'; data: any }
 
 export interface LifecycleStateSchema {

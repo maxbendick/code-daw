@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { machine } from '../../lifecycle/machine'
 import { lifecycleServices } from '../../lifecycle/services'
+import { Button } from '../Button'
 import { Editor } from '../Editor'
 import { PlayButton } from '../PlayButton'
 import './App.css'
@@ -75,6 +76,11 @@ function App() {
                 ;(window.onkeydown as any)({ key: 'Enter', shiftKey: true })
               }}
             />
+          </VerticallyCenter>
+          <VerticallyCenter style={{ marginLeft: 5 }}>
+            <Button onClick={() => send('RESET_CODE')} disabled={!inEditing}>
+              reset
+            </Button>
           </VerticallyCenter>
         </div>
       </Header>

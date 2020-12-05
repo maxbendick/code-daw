@@ -1,5 +1,6 @@
 import MonacoEditor from '@monaco-editor/react'
 import { useService } from '@xstate/react'
+import { useEffect } from 'react'
 import { Interpreter } from 'xstate'
 import * as Config from '../../config'
 import { EditorT } from '../../editor/types'
@@ -23,6 +24,10 @@ interface Props {
   >
 }
 
+const codeLocalStorageKey = 'code-daw/code'
+
+const initialCode = localStorage.getItem(codeLocalStorageKey) ?? code4
+
 export const Editor: React.FC<Props> = ({ lifecycleService }) => {
   const [state, send] = useService(lifecycleService)
 
@@ -32,6 +37,19 @@ export const Editor: React.FC<Props> = ({ lifecycleService }) => {
       editor: editor,
     })
   }
+
+  useEffect(() => {
+    const editor = state.context.editor
+    if (!editor) {
+      return
+    }
+    if (state.event.type === 'RESET_CODE') {
+      editor.setValue(code4)
+    }
+    if (state.matches('runtime') && state.changed) {
+      localStorage.setItem(codeLocalStorageKey, editor.getValue())
+    }
+  }, [state])
 
   return (
     <MonacoEditor
@@ -43,7 +61,7 @@ export const Editor: React.FC<Props> = ({ lifecycleService }) => {
         lineHeight: Config.lineHeight,
         ['semanticHighlighting.enabled' as any]: true,
       }}
-      value={code4}
+      value={initialCode}
       editorDidMount={handleEditorDidMount}
     />
   )
