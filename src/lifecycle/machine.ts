@@ -145,6 +145,7 @@ export const machine = Machine<
               },
             }),
           },
+          onError: 'failure',
         },
       },
       attachingCoolZones: {

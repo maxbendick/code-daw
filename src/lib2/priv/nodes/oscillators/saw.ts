@@ -3,9 +3,9 @@ import { EdgeType } from '../../no-sig-types/edge-types'
 import { SuperDef } from '../../no-sig-types/super-def'
 import { injectAudioContext } from '../../webaudio-utils'
 
-const sineNodeType = 'oscillators/sine' as const
+const sawNodeType = 'oscillators/saw' as const
 
-type SineConfig = {}
+type SawConfig = {}
 
 // type SineArgs = [frequency: Signal<number>]
 
@@ -13,20 +13,20 @@ type SineConfig = {}
 //   return (sineRaw(...args) as any) as Signal<number>
 // }
 
-export const superSineDef = {
-  nodeType: sineNodeType,
+export const superSawDef = {
+  nodeType: sawNodeType,
   inputs: { frequency: EdgeType.Signal },
   output: EdgeType.AudioSignal,
   interactable: false,
-  verifyConfig: (config: SineConfig) => {
+  verifyConfig: (config: SawConfig) => {
     if (Object.keys(config).length) {
-      console.error('sine config', config)
-      throw new Error('bad sine config')
+      console.error('saw config', config)
+      throw new Error('bad saw config')
     }
   },
-  makeOutput: (audioContext: AudioContext, config: SineConfig, inputs: any) => {
+  makeOutput: (audioContext: AudioContext, config: SawConfig, inputs: any) => {
     const { makeOscillator } = injectAudioContext(audioContext)
-    const osc = makeOscillator('sine', inputs['frequency'])
+    const osc = makeOscillator('sawtooth', inputs['frequency'])
     return osc
   },
 
@@ -47,7 +47,7 @@ export const superSineDef = {
   },
 
   argsToInputs: (frequency: Signal<number>) => ({ frequency }),
-  argsToConfig: (frequency: Signal<number>): SineConfig => ({}),
+  argsToConfig: (frequency: Signal<number>): SawConfig => ({}),
 } as const
 
-const _proof: SuperDef = superSineDef
+const _proof: SuperDef = superSawDef

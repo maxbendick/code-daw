@@ -30,10 +30,11 @@ export const toMaster = (audioContext: AudioContext, source: AudioNode) => {
 export const injectAudioContext = (audioContext: AudioContext) => {
   const self = {
     makeOscillator: (
+      type: OscillatorNode['type'],
       frequency: AudioNode | Observable<number>,
     ): OscillatorNode => {
       const oscillator = audioContext.createOscillator()
-      oscillator.type = 'sine'
+      oscillator.type = type
       easyConnect(audioContext, frequency, oscillator.frequency)
       return oscillator
     },
