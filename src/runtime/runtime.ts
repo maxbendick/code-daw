@@ -5,11 +5,7 @@ import { EdgeType } from '../lib2/priv/no-sig-types/edge-types'
 import { superMasterOutDef } from '../lib2/priv/nodes/io/master-out'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 import { LifecycleContext } from '../lifecycle/types'
-import {
-  isOscillatorNode,
-  makeObservableFromSend,
-  verifySigType,
-} from './utils'
+import { isOscillatorNode, verifySigType } from './utils'
 
 const MASTER_STOP_DELAY = 300
 // import { makeGain, makeObservableFromSend, makeOscillator } from './utils'
@@ -74,10 +70,6 @@ const evalateGraph = (
 ) => {
   const existingOutputs = {} as { [id: string]: AudioNode | Observable<number> }
 
-  for (const zone of coolZones) {
-    existingOutputs[zone.codeDawVar.id] = makeObservableFromSend(zone) // TODO default value!!
-  }
-
   const rec = (node: NN) => {
     const resolvedInputs = {} as {
       [slot: string]: Observable<number> | AudioNode
@@ -97,17 +89,14 @@ const evalateGraph = (
 
     const superDef = getSuperDef(node.type as any)
 
-    if (superDef.interactable) {
-      throw new Error(
-        'shouldnt be here because interactables are handled with coolzones',
-      )
-    }
+    const send$ = coolZones.find(zone => zone.id === node.id)?.send$
 
     verifyInputs(superDef.inputs, resolvedInputs)
     const output = superDef.makeOutput(
       audioContext,
       node.config,
       resolvedInputs,
+      send$,
     )
     verifyOutput(superDef.output, output)
     existingOutputs[node.id] = output

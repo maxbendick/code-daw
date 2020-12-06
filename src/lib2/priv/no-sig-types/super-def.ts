@@ -1,3 +1,4 @@
+import { Observable } from 'rxjs'
 import { EdgeType } from './edge-types'
 
 /*
@@ -16,7 +17,12 @@ export interface SuperDef {
   inputs: { [k: string]: EdgeType }
   output: EdgeType
   interactable: boolean
-  makeOutput: (audioContext: AudioContext, config: any, inputs: any) => any
+  makeOutput: (
+    audioContext: AudioContext,
+    config: any,
+    inputs: any,
+    send$?: Observable<any>,
+  ) => any
   argsToInputs: (...args: any[]) => any
   argsToConfig: (...args: any[]) => any
 }

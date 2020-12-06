@@ -1,3 +1,5 @@
+import { Observable } from 'rxjs'
+import { startWith } from 'rxjs/operators'
 import { EdgeType } from '../../no-sig-types/edge-types'
 import { ConfigValidationError, SuperDef } from '../../no-sig-types/super-def'
 
@@ -13,8 +15,8 @@ type Args = [config: Config]
 
 export const superDialDef = {
   nodeType: nodeType,
-  inputs: { frequency: EdgeType.Signal },
-  output: EdgeType.AudioSignal,
+  inputs: {},
+  output: EdgeType.Signal,
   interactable: true,
   argsToInputs: (...[config]: Args) => ({}),
   argsToConfig: (...[config]: Args) => {
@@ -25,8 +27,13 @@ export const superDialDef = {
     }
     return config
   },
-  makeOutput: (audioContext: AudioContext, config: Config, inputs: any) => {
-    throw new Error('Interactable doesnt need makeOutput')
+  makeOutput: (
+    audioContext: AudioContext,
+    config: Config,
+    inputs: any,
+    send$?: Observable<any>,
+  ) => {
+    return send$?.pipe(startWith(config.defaultValue))
   },
 } as const
 

@@ -1,12 +1,5 @@
-import { BehaviorSubject, isObservable } from 'rxjs'
-import { CoolZone } from '../editor/cool-zone'
+import { isObservable } from 'rxjs'
 import { EdgeType } from '../lib2/priv/no-sig-types/edge-types'
-
-export const makeObservableFromSend = <A>(coolZone: CoolZone) => {
-  const value$ = new BehaviorSubject<A>(coolZone.initialValue)
-  coolZone.setSend((v: A) => value$.next(v))
-  return value$.asObservable()
-}
 
 export const isOscillatorNode = (o: any): o is OscillatorNode => {
   return o instanceof OscillatorNode

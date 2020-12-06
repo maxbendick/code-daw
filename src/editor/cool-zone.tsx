@@ -1,4 +1,5 @@
 import * as React from 'react'
+import { Subject } from 'rxjs'
 import {
   ZoneComponent,
   ZoneLoadingComponent,
@@ -18,7 +19,6 @@ export const makeCoolZoneFactory = (
   initialNumLines: number,
   ZoneComponentArg: ZoneComponent,
   ZoneLoadingComponentArg: ZoneLoadingComponent,
-  initialValue: any,
 ) => {
   console.log('found var', { token: token, var: codeDawVars?.[token.varName] })
 
@@ -37,7 +37,6 @@ export const makeCoolZoneFactory = (
     ZoneComponentArg,
     ZoneLoadingComponentArg,
     // a => console.log('sent from', token.varName, a),
-    initialValue,
   )
 }
 
@@ -48,7 +47,7 @@ export class CoolZone {
   private contentWidgetResult: ReturnType<typeof addContentWidget>
   private decorationResult: ReturnType<typeof addDecorations>
 
-  private send?: (a: any) => void
+  send$ = new Subject<any>()
 
   constructor(
     monaco: MonacoT,
@@ -58,7 +57,6 @@ export class CoolZone {
     initialNumLines: number,
     ZoneComponentArg: ZoneComponent,
     ZoneLoadingComponentArg: ZoneLoadingComponent,
-    public initialValue: any,
   ) {
     this._lineNumber = token.line + 1
     this.numLines = initialNumLines
@@ -79,7 +77,7 @@ export class CoolZone {
       <ZoneComponentArg
         token={token}
         codeDawVar={codeDawVar}
-        send={v => this.send!(v)}
+        send={v => this.send$.next(v)}
       />,
     )
 
@@ -104,11 +102,11 @@ export class CoolZone {
     this.decorationResult.destroy()
   }
 
-  setSend = (send: (v: any) => void) => {
-    this.send = send
-  }
-
   get id(): string {
     return this.codeDawVar.id
+  }
+
+  get type(): string {
+    return this.codeDawVar.type
   }
 }
