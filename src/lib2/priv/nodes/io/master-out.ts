@@ -1,6 +1,6 @@
 import { AudioSignal } from '../../../sigs'
 import { EdgeType } from '../../no-sig-types/edge-types'
-import { ConfigValidationError, SuperDef } from '../../no-sig-types/super-def'
+import { SuperDef } from '../../no-sig-types/super-def'
 import { toMaster } from '../../webaudio-utils'
 
 const nodeType = 'io/masterOut' as const
@@ -22,11 +22,6 @@ export const superMasterOutDef = {
   inputs: { audioToOutput: EdgeType.AudioSignal },
   output: 'nothing',
   interactable: false,
-  verifyConfig: (config: Config) => {
-    if (Object.keys(config).length !== 0) {
-      throw new ConfigValidationError(nodeType, config)
-    }
-  },
   argsToInputs: (...[signal]: Args) => ({ audioToOutput: signal }),
   argsToConfig: (...[signal]: Args): Config => ({}),
   makeOutput: (audioContext: AudioContext, config: Config, inputs: any) => {

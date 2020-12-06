@@ -16,15 +16,15 @@ export const superDialDef = {
   inputs: { frequency: EdgeType.Signal },
   output: EdgeType.AudioSignal,
   interactable: true,
-  verifyConfig: (config: Config) => {
+  argsToInputs: (...[config]: Args) => ({}),
+  argsToConfig: (...[config]: Args) => {
     for (const k of ['start', 'end', 'defaultValue']) {
       if (typeof (config as any)[k] !== 'number') {
         throw new ConfigValidationError(nodeType, config)
       }
     }
+    return config
   },
-  argsToInputs: (...[config]: Args) => ({}),
-  argsToConfig: (...[config]: Args) => config,
   makeOutput: (audioContext: AudioContext, config: Config, inputs: any) => {
     throw new Error('Interactable doesnt need makeOutput')
   },

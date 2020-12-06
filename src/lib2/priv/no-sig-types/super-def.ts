@@ -16,17 +16,10 @@ export interface SuperDef {
   inputs: { [k: string]: EdgeType }
   output: EdgeType
   interactable: boolean
-  verifyConfig: (config: any) => void
   makeOutput: (audioContext: AudioContext, config: any, inputs: any) => any
   argsToInputs: (...args: any[]) => any
   argsToConfig: (...args: any[]) => any
 }
-
-export type ConfigOf<Def extends SuperDef> = Def['verifyConfig'] extends (
-  config: infer Config,
-) => void
-  ? Config
-  : never
 
 export class ConfigValidationError extends Error {
   constructor(nodeType: string, config: any) {
