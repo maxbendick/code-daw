@@ -78,12 +78,13 @@ const movementsToDialValue = (
   start: number,
   end: number,
   initialValue: number,
+  sampleRate: number,
 ) => (
   event$: Observable<{ down: boolean; movement: [mx: number, my: number] }>,
 ): Observable<{ value: number; dragging: boolean }> => {
   return event$.pipe(
     scan(dialReducer, initialDialState(initialValue)),
-    sampleTime(100),
+    sampleTime(sampleRate),
     map(state => {
       return {
         value: translateDialValue(state.currValue, start, end),
@@ -161,9 +162,10 @@ export const Dial: React.FC<{
   end: number
   send: (a: number) => void
   radius: number
-}> = ({ send, start, end, initialValue, radius }) => {
+  sampleRate?: number // 100 by default
+}> = ({ send, start, end, initialValue, radius, sampleRate }) => {
   const [{ value, dragging }, registerMovement] = useObservableState(
-    movementsToDialValue(start, end, initialValue),
+    movementsToDialValue(start, end, initialValue, sampleRate || 100),
     {
       value: initialValue,
       dragging: false,

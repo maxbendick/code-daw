@@ -1,11 +1,15 @@
 import { Observable } from 'rxjs'
 import { easyConnect } from '../../runtime/easy-connect'
+import { MASTER_VOLUME$ } from './master-volume'
 
 const MASTER_GAIN = 0.05
 const MASTER_FADEOUT = 0.1
 const MASTER_FADEIN = 0.05
 
 export const toMaster = (audioContext: AudioContext, source: AudioNode) => {
+  const volumeGain = audioContext.createGain()
+  easyConnect(audioContext, MASTER_VOLUME$, volumeGain.gain)
+
   const outputGain = audioContext.createGain()
   outputGain.gain.setValueAtTime(0, audioContext.currentTime)
   outputGain.gain.setTargetAtTime(
@@ -13,7 +17,9 @@ export const toMaster = (audioContext: AudioContext, source: AudioNode) => {
     audioContext.currentTime,
     MASTER_FADEIN,
   )
-  source.connect(outputGain)
+
+  source.connect(volumeGain)
+  volumeGain.connect(outputGain)
   outputGain.connect(audioContext.destination)
 
   return {

@@ -1,6 +1,7 @@
 import { useMachine } from '@xstate/react'
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
+import { MASTER_VOLUME$ } from '../../lib2/priv/master-volume'
 import { machine } from '../../lifecycle/machine'
 import { lifecycleServices } from '../../lifecycle/services'
 import { Button } from '../Button'
@@ -85,12 +86,18 @@ function App() {
           </VerticallyCenter>
           <VerticallyCenter style={{ marginLeft: 5 }}>
             <Dial
-              send={s => console.log('send', s)}
-              start={200}
-              end={300}
-              initialValue={230}
-              radius={20}
+              send={volume =>
+                MASTER_VOLUME$.next(Math.max(0, Math.min(1, volume)))
+              }
+              start={0}
+              end={1}
+              initialValue={0.5}
+              radius={15}
+              sampleRate={100}
             />
+            <div style={{ fontSize: 9, color: '#ddd', marginTop: 3 }}>
+              volume
+            </div>
           </VerticallyCenter>
         </div>
       </Header>
