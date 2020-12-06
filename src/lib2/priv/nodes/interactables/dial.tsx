@@ -17,6 +17,8 @@ type Config = {
 
 type Args = [config: Config]
 
+type Send = number
+
 const DialZoneContainer = styled.div`
   height: 100%;
   width: 400px;
@@ -37,12 +39,20 @@ const VerticalAlign = styled.div`
   justify-content: center;
 `
 
-export const DialZoneZooone: ZoneComponent<Config> = ({
+const DialZoneZooone: ZoneComponent<Config, Send> = ({
   token,
   config,
   codeDawVar,
   send,
 }) => {
+  if (
+    config.start >= config.end ||
+    config.defaultValue < config.start ||
+    config.defaultValue > config.end
+  ) {
+    throw new ConfigValidationError(nodeType, config)
+  }
+
   const label = `${token.varName}: { ${config.start} ${config.end} ${config.defaultValue} }`
   console.log('dial zone', { token, codeDawVar, send })
   return (
@@ -65,7 +75,7 @@ export const DialZoneZooone: ZoneComponent<Config> = ({
   )
 }
 
-export const DialZoneLoading: ZoneLoadingComponent = ({ token }) => {
+const DialZoneLoading: ZoneLoadingComponent = ({ token }) => {
   return <div>loading {token.varName}</div>
 }
 
@@ -87,7 +97,7 @@ export const superDialDef = {
     audioContext: AudioContext,
     config: Config,
     inputs: any,
-    send$?: Observable<any>,
+    send$?: Observable<Send>,
   ) => {
     return send$?.pipe(startWith(config.defaultValue))
   },

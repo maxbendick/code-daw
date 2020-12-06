@@ -18,7 +18,7 @@ export const makeCoolZoneFactory = (
 ) => (
   token: TokenPlace,
   initialNumLines: number,
-  ZoneComponentArg: ZoneComponent<any>,
+  ZoneComponentArg: ZoneComponent<any, any>,
   ZoneLoadingComponentArg: ZoneLoadingComponent,
 ) => {
   console.log('found var', { token: token, var: codeDawVars?.[token.varName] })
@@ -56,7 +56,7 @@ export class CoolZone {
     public codeDawVar: Node<any>,
     public token: TokenPlace,
     initialNumLines: number,
-    ZoneComponentArg: ZoneComponent<any>,
+    ZoneComponentArg: ZoneComponent<any, any>,
     ZoneLoadingComponentArg: ZoneLoadingComponent,
   ) {
     this._lineNumber = token.line + 1

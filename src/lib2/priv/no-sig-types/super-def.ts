@@ -17,7 +17,6 @@ export interface SuperDef {
   nodeType: string
   inputs: { [k: string]: EdgeType }
   output: EdgeType
-  interactable: boolean
   makeOutput: (
     audioContext: AudioContext,
     config: any,
@@ -26,7 +25,9 @@ export interface SuperDef {
   ) => any
   argsToInputs: (...args: any[]) => any
   argsToConfig: (...args: any[]) => any
-  zoneComponent?: ZoneComponent<any>
+
+  interactable: boolean
+  zoneComponent?: ZoneComponent<any, any>
   zoneLoadingComponent?: ZoneLoadingComponent
 }
 
