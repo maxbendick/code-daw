@@ -22,6 +22,7 @@ export type NodeType = RegisteredSuperDef['nodeType']
 export const getSuperDef = (nodeType: NodeType): SuperDef => {
   const result = registeredSuperDefs.find(def => def.nodeType === nodeType)
   if (!result) {
+    console.error('node type', nodeType)
     throw new Error(`unexpected node type ${nodeType}`)
   }
   return result

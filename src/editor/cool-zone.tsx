@@ -1,10 +1,11 @@
 import * as React from 'react'
 import { Subject } from 'rxjs'
+import { TokenPlace } from '../editor/parsing/ts-parser'
+import { Node } from '../lib2/priv/node'
 import {
   ZoneComponent,
   ZoneLoadingComponent,
-} from '../components/Editor/zone-component'
-import { TokenPlace } from '../editor/parsing/ts-parser'
+} from '../lib2/priv/zone-component'
 import { addContentWidget } from './add-content-widget'
 import { addDecorations } from './add-decorations'
 import { addViewZone } from './add-view-zone'
@@ -17,7 +18,7 @@ export const makeCoolZoneFactory = (
 ) => (
   token: TokenPlace,
   initialNumLines: number,
-  ZoneComponentArg: ZoneComponent,
+  ZoneComponentArg: ZoneComponent<any>,
   ZoneLoadingComponentArg: ZoneLoadingComponent,
 ) => {
   console.log('found var', { token: token, var: codeDawVars?.[token.varName] })
@@ -52,10 +53,10 @@ export class CoolZone {
   constructor(
     monaco: MonacoT,
     editor: EditorT,
-    public codeDawVar: any,
+    public codeDawVar: Node<any>,
     public token: TokenPlace,
     initialNumLines: number,
-    ZoneComponentArg: ZoneComponent,
+    ZoneComponentArg: ZoneComponent<any>,
     ZoneLoadingComponentArg: ZoneLoadingComponent,
   ) {
     this._lineNumber = token.line + 1
@@ -75,6 +76,7 @@ export class CoolZone {
       this._lineNumber + 1,
       this.numLines,
       <ZoneComponentArg
+        config={codeDawVar.config}
         token={token}
         codeDawVar={codeDawVar}
         send={v => this.send$.next(v)}

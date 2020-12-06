@@ -1,5 +1,4 @@
 import { monaco as monacoReact } from '@monaco-editor/react'
-import { DialZoneLoading, DialZoneZooone } from '../components/Editor/DialZone'
 import {
   evalCompiledUserCode as _evalCompiledUserCode,
   registerAllExports,
@@ -16,6 +15,7 @@ import {
 } from '../editor/load-files'
 import { getAllTokens, TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
+import { getSuperDef } from '../lib2/priv/all-nodes'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 import { startRuntime } from '../runtime/runtime'
 import { LifecycleServices } from './types'
@@ -46,7 +46,19 @@ export const attachCoolZones = async (
       const prevLine = index > 0 ? tokens[index - 1].line : -1
       return token.line !== prevLine
     })
-    .map(token => coolZoneFactory(token, 3, DialZoneZooone, DialZoneLoading))
+    .map(token => {
+      const codeDawVar = codeDawVars?.[token.varName]
+      if (!codeDawVar) {
+        throw new Error('no code daw var!!!')
+      }
+      const superDef = getSuperDef(codeDawVar.type)
+      return coolZoneFactory(
+        token,
+        3,
+        superDef.zoneComponent!,
+        superDef.zoneLoadingComponent!,
+      )
+    })
 }
 
 export const compileAndEval = async (

@@ -1,4 +1,5 @@
 import { Observable } from 'rxjs'
+import { ZoneComponent, ZoneLoadingComponent } from '../zone-component'
 import { EdgeType } from './edge-types'
 
 /*
@@ -25,6 +26,8 @@ export interface SuperDef {
   ) => any
   argsToInputs: (...args: any[]) => any
   argsToConfig: (...args: any[]) => any
+  zoneComponent?: ZoneComponent<any>
+  zoneLoadingComponent?: ZoneLoadingComponent
 }
 
 export class ConfigValidationError extends Error {

@@ -1,6 +1,7 @@
 import { StringKeys } from './no-sig-types/string-keys'
 import { SuperDef } from './no-sig-types/super-def'
-import { Node, SignalGraph } from './signal-graph'
+import { Node } from './node'
+import { SignalGraph } from './signal-graph'
 
 const nodeTypeToNextIndex = new Map<string, number>()
 
