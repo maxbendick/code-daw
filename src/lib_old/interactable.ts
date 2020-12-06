@@ -1,4 +1,4 @@
-import { Bus } from '../connection/bus'
+import { Bus } from './bus'
 import { Number_ } from './utility-types'
 
 export type InteractableType = 'dial' | 'mixer'
