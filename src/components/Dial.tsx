@@ -103,20 +103,15 @@ const DialBase = styled.div<{ radius: number }>`
 
 const DialTickContainer = styled.div<{
   transitions: boolean
-  degrees: number
   hide: boolean
   radius: number
 }>`
   height: ${props => props.radius * 2}px;
   width: ${props => props.radius * 2}px;
   position: absolute;
-  ${({ transitions, degrees }) =>
-    transitions ? `transform: rotate(${degrees}deg);` : ''}
-  transform: rotate(${props => props.degrees}deg);
   transition: transform 0.1s, filter 0.4s;
   display: flex;
   justify-content: center;
-
   filter: opacity(${props => (props.hide ? '0' : '1')});
 `
 const DialTickInner = styled.div<{ color: any; length: any }>`
@@ -142,7 +137,7 @@ const DialTick: React.FC<TickProps> = ({
   radius,
 }) => (
   <DialTickContainer
-    degrees={degrees}
+    style={{ transform: `rotate(${degrees}deg)` }}
     transitions={moveable}
     hide={hide}
     radius={radius}
@@ -170,14 +165,12 @@ export const Dial: React.FC<{
   )
 
   useEffect(() => {
-    console.log('use effect value', value)
-    // get ready to send it here
     try {
       send(value)
     } catch (e) {
       console.warn('sent with an error - send may be undefined')
     }
-  }, [value])
+  }, [send, value])
 
   const bind = useDrag(registerMovement)
 
