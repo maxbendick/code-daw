@@ -1,16 +1,14 @@
 import { SuperDef } from './no-sig-types/super-def'
 import { superDialDef } from './nodes/interactables/dial'
 import { superMasterOutDef } from './nodes/io/master-out'
-import { superSawDef } from './nodes/oscillators/saw'
-import { superSineDef } from './nodes/oscillators/sine'
+import { oscillatorDefs } from './nodes/oscillators'
 
 type ValuesOf<T extends readonly any[]> = T[number]
 
 export const registeredSuperDefs = [
   superDialDef,
   superMasterOutDef,
-  superSineDef,
-  superSawDef,
+  ...oscillatorDefs,
 ] as const
 
 type RegisteredSuperDef = ValuesOf<typeof registeredSuperDefs>
