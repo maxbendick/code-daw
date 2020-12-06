@@ -114,9 +114,13 @@ const DialTickContainer = styled.div<{
   justify-content: center;
   filter: opacity(${props => (props.hide ? '0' : '1')});
 `
-const DialTickInner = styled.div<{ color: any; length: any }>`
+const DialTickInner = styled.div<{
+  thickness: string
+  color: string
+  length: string
+}>`
   height: ${props => props.length};
-  width: 2px;
+  width: ${props => props.thickness};
   background-color: ${props => props.color};
 `
 
@@ -127,6 +131,7 @@ interface TickProps {
   hide: boolean
   length: any
   radius: number
+  thickness: string
 }
 const DialTick: React.FC<TickProps> = ({
   color,
@@ -135,6 +140,7 @@ const DialTick: React.FC<TickProps> = ({
   hide,
   length,
   radius,
+  thickness,
 }) => (
   <DialTickContainer
     style={{ transform: `rotate(${degrees}deg)` }}
@@ -142,7 +148,7 @@ const DialTick: React.FC<TickProps> = ({
     hide={hide}
     radius={radius}
   >
-    <DialTickInner color={color} length={length} />
+    <DialTickInner color={color} length={length} thickness={thickness} />
   </DialTickContainer>
 )
 
@@ -187,28 +193,31 @@ export const Dial: React.FC<{
   return (
     <DialBase radius={radius} {...bind()}>
       <DialTick
-        color={'#666'}
+        color={'#777'}
         degrees={startDegrees}
         moveable={false}
         hide={!showMin}
         length={'20%'}
         radius={radius}
+        thickness={'1px'}
       />
       <DialTick
-        color={'#666'}
+        color={'#777'}
         degrees={endDegrees}
         moveable={false}
         hide={!showMax}
         length={'20%'}
         radius={radius}
+        thickness={'1px'}
       />
       <DialTick
-        color={'#13d' || '#11d'}
+        color={'#13d'}
         degrees={degrees}
         moveable={true}
         hide={false}
         length={'50%'}
         radius={radius}
+        thickness={'2px'}
       />
     </DialBase>
   )
