@@ -1,11 +1,16 @@
 * next steps
 ** DONE global volume dial
 ** DONE pretty dial
-** TODO revisit coolzone attachment
+** DONE revisit coolzone attachment
 ** DONE ctrl/shift-enter to compile, attach elements, run
 ** DONE save code on compile, reset code
 ** DONE runtime creates audio context, which is destroyed without click on exit
 ** DONE can toggle between runtime and editing
+** document (compilation, parsing tokens, attaching zones, codeDawVars)
+** TODO coolzone can choose which components to render
+** TODO map between nodetype and token?
+** TODO consider moving to one namespace only?
+** put coolzone component inside superdef 🤯
 
 * brainstorming next steps
 ** make superdef registry adhoc?
