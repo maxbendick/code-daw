@@ -8,9 +8,8 @@ import {
   addHighlighting,
   addHighlightingToEditor,
 } from '../editor/add-highlighting'
-import { chain } from '../editor/chain'
 import { compileAndEval as _compileAndEval } from '../editor/compilation/compilation'
-import { CoolZone, makeCoolZoneFactory } from '../editor/cool-zone'
+import { makeCoolZoneFactory } from '../editor/cool-zone'
 import {
   loadFiles,
   setCompilerAndDiagnosticOptions,
@@ -42,22 +41,12 @@ export const attachCoolZones = async (
 
   const coolZoneFactory = makeCoolZoneFactory(monaco, editor, codeDawVars)
 
-  return chain()
-    .then(() => {
-      return tokens
-        .map((token, index) => {
-          const prevLine = index > 0 ? tokens[index - 1].line : -1
-
-          if (token.line === prevLine) {
-            return undefined
-          }
-
-          return coolZoneFactory(token, 3, DialZoneZooone, DialZoneLoading)
-        })
-        .filter(a => a) as CoolZone[]
+  return tokens
+    .filter((token, index) => {
+      const prevLine = index > 0 ? tokens[index - 1].line : -1
+      return token.line !== prevLine
     })
-    .tap(result => console.log('big tap', result))
-    .value()
+    .map(token => coolZoneFactory(token, 3, DialZoneZooone, DialZoneLoading))
 }
 
 export const compileAndEval = async (
