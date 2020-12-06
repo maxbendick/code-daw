@@ -1,5 +1,6 @@
 import { isObservable, Observable } from 'rxjs'
 import { skip, take, throttleTime } from 'rxjs/operators'
+import { isAudioNode } from './utils'
 
 const SAFE_MODE_THROTTLE_TIME = 50
 
@@ -16,7 +17,8 @@ export const easyConnect = (
     })
 
     if (typeof initialValue !== 'number') {
-      throw new Error('easy connect missing initial value!')
+      console.error('initialValue is', initialValue)
+      throw new Error('easy connect missing initial number value!')
     }
 
     output.setValueAtTime(initialValue, audioContext.currentTime)
@@ -27,7 +29,9 @@ export const easyConnect = (
         console.log('setting target', currentValue)
         output.setTargetAtTime(currentValue, audioContext.currentTime + 0, 0.1)
       })
-  } else {
+  } else if (isAudioNode(input)) {
     input.connect(output)
+  } else {
+    throw new Error('failed to connect node - not AudioNode or Observable')
   }
 }

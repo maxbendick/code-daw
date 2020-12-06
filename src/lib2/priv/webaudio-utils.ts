@@ -33,28 +33,27 @@ export const toMaster = (audioContext: AudioContext, source: AudioNode) => {
   }
 }
 
-export const injectAudioContext = (audioContext: AudioContext) => {
-  const self = {
-    makeOscillator: (
-      type: OscillatorNode['type'],
-      frequency: AudioNode | Observable<number>,
-    ): OscillatorNode => {
-      const oscillator = audioContext.createOscillator()
-      oscillator.type = type
-      easyConnect(audioContext, frequency, oscillator.frequency)
-      return oscillator
-    },
+interface MakeOscillatorConfig {
+  type: OscillatorNode['type']
+  frequency: AudioNode | Observable<number>
+}
+export const makeOscillator = (
+  audioContext: AudioContext,
+  { type, frequency }: MakeOscillatorConfig,
+): OscillatorNode => {
+  const oscillator = audioContext.createOscillator()
+  oscillator.type = type
+  easyConnect(audioContext, frequency, oscillator.frequency)
+  return oscillator
+}
 
-    makeGain: (
-      source: AudioNode,
-      gainInput: AudioNode | Observable<number>,
-    ): GainNode => {
-      const gainNode = audioContext.createGain()
-      easyConnect(audioContext, gainInput, gainNode.gain)
-      source.connect(gainNode)
-      return gainNode
-    },
-  }
-
-  return self
+export const makeGain = (
+  audioContext: AudioContext,
+  gainValue: Observable<number> | AudioNode,
+  source: AudioNode,
+): AudioNode => {
+  const gainNode = audioContext.createGain()
+  easyConnect(audioContext, gainValue, gainNode.gain)
+  source.connect(gainNode)
+  return gainNode
 }
