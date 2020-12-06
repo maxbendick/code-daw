@@ -1,13 +1,13 @@
 import { AudioSignal } from '../../../sigs'
 import { EdgeType } from '../../no-sig-types/edge-types'
-import { SuperDef } from '../../no-sig-types/super-def'
+import { ConfigValidationError, SuperDef } from '../../no-sig-types/super-def'
 import { toMaster } from '../../webaudio-utils'
 
-const masterOutNodeType = 'io/masterOut' as const
+const nodeType = 'io/masterOut' as const
 
-type MasterOutConfig = {}
+type Config = {}
 
-// type MasterOutArgs = [signal: AudioSignal]
+type Args = [signal: AudioSignal]
 
 // Available for editor
 // const masterOut: (...args: MasterOutArgs) => Signal<number> = (...args) => {
@@ -16,21 +16,20 @@ type MasterOutConfig = {}
 // }
 let _masterOutResult: ReturnType<typeof toMaster> = null as any
 
+// This is a special def. One of a kind
 export const superMasterOutDef = {
-  nodeType: masterOutNodeType,
+  nodeType: nodeType,
   inputs: { audioToOutput: EdgeType.AudioSignal },
   output: 'nothing',
   interactable: false,
-  verifyConfig: (config: MasterOutConfig) => {
+  verifyConfig: (config: Config) => {
     if (Object.keys(config).length !== 0) {
-      throw new Error('bad master out config')
+      throw new ConfigValidationError(nodeType, config)
     }
   },
-  makeOutput: (
-    audioContext: AudioContext,
-    config: MasterOutConfig,
-    inputs: any,
-  ) => {
+  argsToInputs: (...[signal]: Args) => ({ audioToOutput: signal }),
+  argsToConfig: (...[signal]: Args): Config => ({}),
+  makeOutput: (audioContext: AudioContext, config: Config, inputs: any) => {
     if (_masterOutResult) {
       throw new Error('cannot have two master outs')
     }
@@ -44,25 +43,6 @@ export const superMasterOutDef = {
     _masterOutResult.destroy()
     _masterOutResult = null as any
   },
-
-  get publicName() {
-    const result = this.nodeType.split('/')[1]
-    if (!result) {
-      throw new Error('could not get publicName')
-    }
-    return result
-  },
-  get packageName() {
-    const split = this.nodeType.split('/')
-    const result = `code-daw/${split[0]}`
-    if (!result) {
-      throw new Error('could not get publicName')
-    }
-    return result
-  },
-
-  argsToInputs: (signal: AudioSignal) => ({ audioToOutput: signal }),
-  argsToConfig: (signal: AudioSignal): MasterOutConfig => ({}),
 } as const
 
 const _proof: SuperDef = superMasterOutDef

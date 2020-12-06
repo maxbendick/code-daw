@@ -41,11 +41,30 @@ const registerExports = ({ packageName, content }: RegisterArgs) => {
   }
 }
 
+const getPublicName = (superDef: SuperDef) => {
+  const publicName = superDef.nodeType.split('/')[1]
+  if (!publicName) {
+    throw new Error('could not get publicName')
+  }
+  return publicName
+}
+
+const getPackageName = (superDef: SuperDef) => {
+  const split = superDef.nodeType.split('/')
+  // THIS LINE WILL BREAK TYPESCRIPT
+  // const result = `code-daw/${split[0]}` as const
+  const result = `code-daw/${split[0]}`
+  if (!result) {
+    throw new Error('could not get publicName')
+  }
+  return result
+}
+
 const registerSuperDef = (superDef: SuperDef, signalGraph: SignalGraph) => {
   registerExports({
-    packageName: superDef.packageName as any,
+    packageName: getPackageName(superDef) as any,
     content: {
-      [superDef.publicName]: makePublicFunction(superDef, signalGraph),
+      [getPublicName(superDef)]: makePublicFunction(superDef, signalGraph),
     },
   })
 }

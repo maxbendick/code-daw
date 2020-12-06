@@ -1,11 +1,22 @@
 * next steps
-** TODO global volume dial
-** TODO pretty dial
+** DONE global volume dial
+** DONE pretty dial
 ** TODO revisit coolzone attachment
 ** DONE ctrl/shift-enter to compile, attach elements, run
 ** DONE save code on compile, reset code
 ** DONE runtime creates audio context, which is destroyed without click on exit
 ** DONE can toggle between runtime and editing
+
+* brainstorming next steps
+** make superdef registry adhoc?
+** live coding
+** interactables (start with a function)
+*** switch
+*** very basic sequencer
+*** mixer
+** functions
+*** signal map for user
+
 
 * later
 ** hook into devserver refresh for lifecycle?

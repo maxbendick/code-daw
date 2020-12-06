@@ -1,53 +1,31 @@
 import { Signal } from '../../../sigs'
 import { EdgeType } from '../../no-sig-types/edge-types'
-import { SuperDef } from '../../no-sig-types/super-def'
+import { ConfigValidationError, SuperDef } from '../../no-sig-types/super-def'
 import { injectAudioContext } from '../../webaudio-utils'
 
-const sineNodeType = 'oscillators/sine' as const
+const nodeType = 'oscillators/sine' as const
 
-type SineConfig = {}
+type Config = {}
 
-// type SineArgs = [frequency: Signal<number>]
-
-// const sine: (...args: SineArgs) => Signal<number> = (...args) => {
-//   return (sineRaw(...args) as any) as Signal<number>
-// }
+type Args = [frequency: Signal<number>]
 
 export const superSineDef = {
-  nodeType: sineNodeType,
+  nodeType: nodeType,
   inputs: { frequency: EdgeType.Signal },
   output: EdgeType.AudioSignal,
   interactable: false,
-  verifyConfig: (config: SineConfig) => {
+  verifyConfig: (config: Config) => {
     if (Object.keys(config).length) {
-      console.error('sine config', config)
-      throw new Error('bad sine config')
+      throw new ConfigValidationError(nodeType, config)
     }
   },
-  makeOutput: (audioContext: AudioContext, config: SineConfig, inputs: any) => {
+  argsToInputs: (...[frequency]: Args) => ({ frequency }),
+  argsToConfig: (...[frequency]: Args): Config => ({}),
+  makeOutput: (audioContext: AudioContext, config: Config, inputs: any) => {
     const { makeOscillator } = injectAudioContext(audioContext)
     const osc = makeOscillator('sine', inputs['frequency'])
     return osc
   },
-
-  get publicName() {
-    const result = this.nodeType.split('/')[1]
-    if (!result) {
-      throw new Error('could not get publicName')
-    }
-    return result
-  },
-  get packageName() {
-    const split = this.nodeType.split('/')
-    const result = `code-daw/${split[0]}`
-    if (!result) {
-      throw new Error('could not get publicName')
-    }
-    return result
-  },
-
-  argsToInputs: (frequency: Signal<number>) => ({ frequency }),
-  argsToConfig: (frequency: Signal<number>): SineConfig => ({}),
 } as const
 
 const _proof: SuperDef = superSineDef

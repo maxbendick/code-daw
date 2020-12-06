@@ -13,8 +13,6 @@ Example: resolve(args[0].frequency, EdgeType.Signal): AudioNode | Observable<num
 */
 export interface SuperDef {
   nodeType: string
-  publicName: string
-  packageName: string
   inputs: { [k: string]: EdgeType }
   output: EdgeType
   interactable: boolean
@@ -30,16 +28,9 @@ export type ConfigOf<Def extends SuperDef> = Def['verifyConfig'] extends (
   ? Config
   : never
 
-// type Unresolved = { __never: true }
-
-// export type OUTTputMaker = (
-//   injected: {
-//     audioContext: AudioContext
-//     resolveInput: (
-//       value: Unresolved,
-//       edgeType: EdgeType,
-//     ) => number | Observable<number> | AudioNode
-//   },
-
-//   args: any[],
-// ) => any
+export class ConfigValidationError extends Error {
+  constructor(nodeType: string, config: any) {
+    console.error('config', config)
+    super(`${nodeType} config validation error`)
+  }
+}
