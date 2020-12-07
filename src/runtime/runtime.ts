@@ -92,7 +92,10 @@ const evalateGraph = (
 
     const send$ = coolZones.find(zone => zone.id === node.id)?.send$
 
-    verifyInputs(superDef.inputs, resolvedInputs)
+    // TODO make this not a thing
+    if (!superDef.skipInputVerification) {
+      verifyInputs(superDef.inputs, resolvedInputs)
+    }
     const output = superDef.makeOutput(
       audioContext,
       node.config,

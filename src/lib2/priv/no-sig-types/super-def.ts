@@ -32,6 +32,7 @@ export interface SuperDef {
   interactable: boolean
   zoneComponent?: ZoneComponent<any, any>
   zoneLoadingComponent?: ZoneLoadingComponent
+  skipInputVerification?: boolean
 }
 
 export class ConfigValidationError extends Error {

@@ -13,6 +13,8 @@
 *** can have superdef define token?
 *** link with one namespace
 ** TODO consider moving to one namespace only?
+** TODO split frequncy and fm
+** TODO fix dials
 
 * brainstorming next steps
 ** make superdef registry adhoc?

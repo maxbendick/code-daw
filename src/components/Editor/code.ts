@@ -165,9 +165,9 @@ const secondDial = dial({
 })
 
 const gainDial = dial({
-  start: 0,
+  start: 0.98,
   end: 1,
-  defaultValue: 0.5,
+  defaultValue: 0.99,
 })
 
 
@@ -186,7 +186,8 @@ const modulatorOsc = sine({ frequency: modulatorFrequency })
 const modulator = gain(modulatorGain, modulatorOsc)
 
 const mySine = sine({
-  frequency: modulator,
+  frequency: firstDial,
+  fm: modulator,
 })
 
 const gainSine = gain(gainDial, mySine)

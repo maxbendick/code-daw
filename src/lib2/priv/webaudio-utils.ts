@@ -2,7 +2,7 @@ import { Observable, Subscription } from 'rxjs'
 import { easyConnect } from '../../runtime/easy-connect'
 import { MASTER_VOLUME$ } from './master-volume'
 
-const MASTER_GAIN = 0.05
+const MASTER_GAIN = 0.25
 const MASTER_FADEOUT = 0.1
 const MASTER_FADEIN = 0.05
 
@@ -42,10 +42,11 @@ export const toMaster = (audioContext: AudioContext, source: AudioNode) => {
 interface MakeOscillatorConfig {
   type: OscillatorNode['type']
   frequency: AudioNode | Observable<number>
+  fm?: AudioNode
 }
 export const makeOscillator = (
   audioContext: AudioContext,
-  { type, frequency }: MakeOscillatorConfig,
+  { type, frequency, fm }: MakeOscillatorConfig,
 ): { output: OscillatorNode; subscription: Subscription } => {
   const oscillator = audioContext.createOscillator()
   oscillator.type = type
@@ -54,6 +55,13 @@ export const makeOscillator = (
     frequency,
     oscillator.frequency,
   )
+
+  // how to do this right?
+  if (fm) {
+    const sub2 = easyConnect(audioContext, fm, oscillator.detune)
+    subscription.add(sub2)
+  }
+
   return {
     output: oscillator,
     subscription,
