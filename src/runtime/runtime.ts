@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
 import { CoolZone } from '../editor/cool-zone'
 import { getSuperDef } from '../lib2/priv/all-nodes'
 import { EdgeType } from '../lib2/priv/no-sig-types/edge-types'
@@ -46,15 +46,15 @@ export const startRuntime = (context: LifecycleContext) => {
   console.log('graph leaves :0', signalGraph!.leaves)
 
   // should send to master
-  const evaluation = evalateGraph(
-    audioContext,
-    signalGraph!,
-    context.coolZones!,
-  )
+  const {
+    outputs: evaluation,
+    observableSubscriptions: subscription,
+  } = evalateGraph(audioContext, signalGraph!, context.coolZones!)
   console.log('evaluation', evaluation)
 
   return {
     destroy: async () => {
+      subscription.unsubscribe()
       superMasterOutDef.destroy()
       await new Promise(resolve => setTimeout(resolve, MASTER_STOP_DELAY)) // should be enough time to avoid clicks with MASTER_FADEOUT
     },
@@ -102,7 +102,11 @@ const evalateGraph = (
     existingOutputs[node.id] = output
   }
 
-  rec(graph.masterOut)
+  for (const node of graph.nodes) {
+    if (!existingOutputs[node.id]) {
+      rec(node)
+    }
+  }
 
   // STARTS IT
   for (const [id, node] of Object.entries(existingOutputs)) {
@@ -111,7 +115,10 @@ const evalateGraph = (
     }
   }
 
-  return existingOutputs
+  return {
+    outputs: existingOutputs,
+    observableSubscriptions: new Subscription(),
+  }
 }
 
 // note: AudioNode can be AudioScheduledSourceNode. which can be AudioBufferSourceNode,

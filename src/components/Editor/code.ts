@@ -145,10 +145,12 @@ const myXwitcherrr = switcher([
 `
 
 export const code4 = `
+
 import { dial } from 'code-daw/interactables'
 import { sine, saw, triangle, square } from 'code-daw/oscillators'
 import { masterOut } from 'code-daw/io'
 import { gain } from 'code-daw/effects'
+import { analyser } from 'code-daw/testing'
 
 const firstDial = dial({
   start: 200,
@@ -172,7 +174,7 @@ const gainDial = dial({
 
 const modulatorFrequency = dial({
   start: 0.5,
-  end: 2,
+  end: 10,
   defaultValue: 1,
 })
 const modulatorGain = dial({
@@ -187,13 +189,9 @@ const mySine = sine({
   frequency: modulator,
 })
 
-
-
-// const mySine = square({
-//   frequency: firstDial,
-// })
-
 const gainSine = gain(gainDial, mySine)
+
+analyser(gainSine)
 
 masterOut(gainSine)
 

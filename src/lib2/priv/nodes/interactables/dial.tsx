@@ -99,6 +99,7 @@ export const superDialDef = {
     inputs: any,
     send$?: Observable<Send>,
   ) => {
+    // TODO return with empty subscription?
     return send$?.pipe(startWith(config.defaultValue))
   },
   zoneComponent: DialZoneZooone,

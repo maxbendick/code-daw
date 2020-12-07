@@ -32,6 +32,7 @@ export const superMasterOutDef = {
       audioContext,
       inputs['audioToOutput'] as AudioNode,
     )
+    // TODO return with empty subscription?
     return 'nothing'
   },
   destroy: () => {

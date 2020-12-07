@@ -29,11 +29,12 @@ const baseOsc = <NodeT extends string, Osc extends OscillatorType>(
       config: Config,
       { frequency }: Inputs,
     ) => {
-      const osc = makeOscillator(audioContext, {
+      // TODO unsubscribe
+      const { output, subscription } = makeOscillator(audioContext, {
         type: oscillatorType,
         frequency: frequency as any,
       })
-      return osc
+      return output
     },
   } as const)
 

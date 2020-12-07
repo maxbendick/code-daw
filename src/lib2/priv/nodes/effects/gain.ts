@@ -28,6 +28,12 @@ export const superGainDef = {
     config: Config,
     { gainValue, source }: Inputs,
   ) => {
-    return makeGain(audioContext, gainValue as any, source as any)
+    // TODO unsubscribe
+    const { output, subscription } = makeGain(
+      audioContext,
+      gainValue as any,
+      source as any,
+    )
+    return output
   },
 } as const

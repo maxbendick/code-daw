@@ -1,4 +1,5 @@
 import { SuperDef } from './no-sig-types/super-def'
+import { superAnalyserDef } from './nodes/analyser'
 import { superGainDef } from './nodes/effects/gain'
 import { superDialDef } from './nodes/interactables/dial'
 import { superMasterOutDef } from './nodes/io/master-out'
@@ -11,6 +12,7 @@ export const registeredSuperDefs = [
   superMasterOutDef,
   ...oscillatorDefs,
   superGainDef,
+  superAnalyserDef,
 ] as const
 
 type RegisteredSuperDef = ValuesOf<typeof registeredSuperDefs>

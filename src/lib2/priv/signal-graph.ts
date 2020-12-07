@@ -2,7 +2,7 @@ import { SuperDef } from './no-sig-types/super-def'
 import { Node } from './node'
 
 export class SignalGraph<Def extends SuperDef = any> {
-  private nodes = new Set<Node<Def>>()
+  nodes = new Set<Node<Def>>()
 
   addNode = (node: Node<Def>) => {
     if (this.nodes.size > 100) {

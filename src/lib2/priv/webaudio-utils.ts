@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
 import { easyConnect } from '../../runtime/easy-connect'
 import { MASTER_VOLUME$ } from './master-volume'
 
@@ -8,7 +8,13 @@ const MASTER_FADEIN = 0.05
 
 export const toMaster = (audioContext: AudioContext, source: AudioNode) => {
   const volumeGain = audioContext.createGain()
-  easyConnect(audioContext, MASTER_VOLUME$, volumeGain.gain)
+
+  // TODO unsubscribe
+  const masterSubscription = easyConnect(
+    audioContext,
+    MASTER_VOLUME$,
+    volumeGain.gain,
+  )
 
   const outputGain = audioContext.createGain()
   outputGain.gain.setValueAtTime(0, audioContext.currentTime)
@@ -40,20 +46,31 @@ interface MakeOscillatorConfig {
 export const makeOscillator = (
   audioContext: AudioContext,
   { type, frequency }: MakeOscillatorConfig,
-): OscillatorNode => {
+): { output: OscillatorNode; subscription: Subscription } => {
   const oscillator = audioContext.createOscillator()
   oscillator.type = type
-  easyConnect(audioContext, frequency, oscillator.frequency)
-  return oscillator
+  const subscription = easyConnect(
+    audioContext,
+    frequency,
+    oscillator.frequency,
+  )
+  return {
+    output: oscillator,
+    subscription,
+  }
 }
 
 export const makeGain = (
   audioContext: AudioContext,
   gainValue: Observable<number> | AudioNode,
   source: AudioNode,
-): AudioNode => {
+): { output: AudioNode; subscription: Subscription } => {
   const gainNode = audioContext.createGain()
-  easyConnect(audioContext, gainValue, gainNode.gain)
+  // TODO unsubscribe
+  const subscription = easyConnect(audioContext, gainValue, gainNode.gain)
   source.connect(gainNode)
-  return gainNode
+  return {
+    output: gainNode,
+    subscription,
+  }
 }
