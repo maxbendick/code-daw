@@ -3,6 +3,7 @@ import { skip, take, throttleTime } from 'rxjs/operators'
 import { isAudioNode } from './utils'
 
 const SAFE_MODE_THROTTLE_TIME = 50
+const RAMP_TIME_SECONDS = 0.005
 
 // TODO handle subscription mem leak
 export const easyConnect = (
@@ -27,7 +28,11 @@ export const easyConnect = (
       .pipe(skip(1), throttleTime(SAFE_MODE_THROTTLE_TIME))
       .subscribe(currentValue => {
         console.log('setting target', currentValue)
-        output.setTargetAtTime(currentValue, audioContext.currentTime + 0, 0.1)
+        output.setTargetAtTime(
+          currentValue,
+          audioContext.currentTime + 0,
+          RAMP_TIME_SECONDS,
+        )
       })
   } else if (isAudioNode(input)) {
     input.connect(output)

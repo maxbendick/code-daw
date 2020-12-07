@@ -4,6 +4,7 @@ import { superGainDef } from './nodes/effects/gain'
 import { superDialDef } from './nodes/interactables/dial'
 import { superMasterOutDef } from './nodes/io/master-out'
 import { oscillatorDefs } from './nodes/oscillators'
+import { superSequencerDef } from './nodes/simple-sequencer'
 
 type ValuesOf<T extends readonly any[]> = T[number]
 
@@ -13,6 +14,7 @@ export const registeredSuperDefs = [
   ...oscillatorDefs,
   superGainDef,
   superAnalyserDef,
+  superSequencerDef,
 ] as const
 
 type RegisteredSuperDef = ValuesOf<typeof registeredSuperDefs>

@@ -13,8 +13,15 @@
 *** can have superdef define token?
 *** link with one namespace
 ** TODO consider moving to one namespace only?
-** TODO split frequncy and fm
+** DONE split frequncy and fm
 ** TODO fix dials
+** TODO reverb
+** TODO re-eval expressions
+** TODO use exports for dials/interactables? DING DING DING
+** TODO what level do updates happen? Eval everything? Eval expression? Eval export?
+** TODO making interactables in-app?
+** TODO to fill out library - after iterating on basics, bootstrap from low-level?
+** TODO consider plugin architecture? observable<serializable>-based api-clients?
 
 * brainstorming next steps
 ** make superdef registry adhoc?
