@@ -1,6 +1,6 @@
 import { useObservableState } from 'observable-hooks'
 import * as React from 'react'
-import { useEffect } from 'react'
+import { useEffect, useRef } from 'react'
 import { useDrag } from 'react-use-gesture'
 import { Observable } from 'rxjs'
 import { map, sampleTime, scan } from 'rxjs/operators'
@@ -30,13 +30,15 @@ const dialReducer = (state: DialState, movement: Movement): DialState => {
     movement: [, my],
   } = movement
 
+  const deltaY = (movement as any)?.event?.movementY ?? 0
+
   const currDown = movement.down
   const prevDown = state.prevMovement.down
 
   const inBounds = (value: number) =>
     Math.max(DIAL_MIN_VALUE, Math.min(DIAL_MAX_VALUE, value))
 
-  const nextValue = inBounds(state.preDownValue + my)
+  const nextValue = inBounds(state.currValue + deltaY)
 
   if (prevDown && !currDown) {
     // mouse up
@@ -81,7 +83,10 @@ const movementsToDialValue = (
   sampleRate: number,
 ) => (
   event$: Observable<{ down: boolean; movement: [mx: number, my: number] }>,
-): Observable<{ value: number; dragging: boolean }> => {
+): Observable<{
+  value: number
+  dragging: boolean
+}> => {
   return event$.pipe(
     scan(dialReducer, initialDialState(initialValue)),
     sampleTime(sampleRate),
@@ -164,6 +169,8 @@ export const Dial: React.FC<{
   radius: number
   sampleRate?: number // 100 by default
 }> = ({ send, start, end, initialValue, radius, sampleRate }) => {
+  const dialBaseElement = useRef(null)
+
   const [{ value, dragging }, registerMovement] = useObservableState(
     movementsToDialValue(start, end, initialValue, sampleRate || 100),
     {
@@ -171,6 +178,15 @@ export const Dial: React.FC<{
       dragging: false,
     },
   )
+
+  useEffect(() => {
+    const element = (dialBaseElement.current as any) as HTMLElement
+    if (dragging) {
+      element.requestPointerLock()
+    } else {
+      document.exitPointerLock()
+    }
+  }, [dragging])
 
   useEffect(() => {
     try {
@@ -193,24 +209,24 @@ export const Dial: React.FC<{
   const showMax = dragging && endDegrees - degrees < showThreshold
 
   return (
-    <DialBase radius={radius} {...bind()}>
+    <DialBase radius={radius} {...bind()} ref={dialBaseElement}>
       <DialTick
-        color={'#777'}
+        color={'#779'}
         degrees={startDegrees}
         moveable={false}
         hide={!showMin}
         length={'20%'}
         radius={radius}
-        thickness={'1px'}
+        thickness={'2px'}
       />
       <DialTick
-        color={'#777'}
+        color={'#779'}
         degrees={endDegrees}
         moveable={false}
         hide={!showMax}
         length={'20%'}
         radius={radius}
-        thickness={'1px'}
+        thickness={'2px'}
       />
       <DialTick
         color={'#13d'}
@@ -219,7 +235,7 @@ export const Dial: React.FC<{
         hide={false}
         length={'50%'}
         radius={radius}
-        thickness={'2px'}
+        thickness={'3px'}
       />
     </DialBase>
   )
