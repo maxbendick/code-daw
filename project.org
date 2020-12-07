@@ -1,3 +1,23 @@
+* TODO current task
+** working on porting to commonjs modules
+** make attaching coolzones to interactables optional
+* after currentt work
+** get line num by looking for export assignement in sourcemap
+** disallow import errors
+** move to esmodules? need a way to adapt codeDawRequire
+   
+   const codeDawPackage = `
+      export const sine = window.codeDawPackages['sine']
+      export const saw = window.codeDawPackages['saw']
+      export const simpleSequencer = window.codeDawPackages['simpleSequencer']
+   `.encode()
+
+   codeWithImports = code.replace('from "code-daw"', `from "${codeDawPackage}"`)
+
+   import(codeWithImports.encode()).then(module => {
+      console.log('created module!')
+   })
+
 * next steps
 ** DONE global volume dial
 ** DONE pretty dial

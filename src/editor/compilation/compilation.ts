@@ -44,7 +44,9 @@ export const compileAndEval = async (
     .then(code =>
       transpile(
         code, // input code
-        {}, // compilerOptions
+        {
+          // module: 5,
+        }, // compilerOptions
         'filename.ts',
         [], // diagnostics
         'module-name',
@@ -52,10 +54,21 @@ export const compileAndEval = async (
     )
     .then(code => code.replaceAll('require(', 'codeDawRequire('))
     .then(code => {
-      const exports = `var exports = {};`
+      const exports = `var exports = {}; window.codeDawExports = exports;`
       const codeDawVars = `window.codeDawVars = {};`
 
+      // TODO convert es imports to use code-daw window stuff
+
+      // could replace like so:
+      //
+      // encodedCode = "export const xxx = 'triple x is my favorite vinnie d movie'".encode()
+      //
+      // import { sine, saw } from '${encodedCode}'
+      //
+      //
+
       return `${exports}\n${codeDawVars}\n${code}`
+      // return `${codeDawVars}\n${code}`
     })
     .then(code => {
       // add vars to window

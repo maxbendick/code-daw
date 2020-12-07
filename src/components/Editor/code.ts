@@ -152,19 +152,19 @@ import { gain } from 'code-daw/effects'
 import { analyser } from 'code-daw/testing'
 import { simpleSequencer } from 'code-daw/sequencers'
 
-const firstDial = dial({
+export const firstDial = dial({
   start: 200,
   end: 561,
   defaultValue: 207,
 })
 
-const secondDial = dial({
+export const secondDial = dial({
   start: 250,
   end: 350,
   defaultValue: 300,
 })
 
-const gainDial = dial({
+export const gainDial = dial({
   start: 0.98,
   end: 1,
   defaultValue: 0.99,
@@ -172,12 +172,12 @@ const gainDial = dial({
 
 
 
-const modulatorFrequency = dial({
+export const modulatorFrequency = dial({
   start: 0.1,
   end: 6,
   defaultValue: 4.3,
 })
-const modulatorGain = dial({
+export const modulatorGain = dial({
   start: 1,
   end: 1000,
   defaultValue: 850,
@@ -211,5 +211,4 @@ masterOut(sequencedGain)
 console.log('dial1', firstDial)
 console.log('dial2', secondDial)
 console.log('sinee', sine)
-
 `

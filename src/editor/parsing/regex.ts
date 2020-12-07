@@ -33,8 +33,12 @@ const varTokenAssignmentRegex = new RegExp(
 // )
 
 // TODO brittle
+// export const compiledTokenVarNameRegex = new RegExp(
+//   `(?<=(var ))\\w+(?=( = (interactables_1\\.${tokenGroup}\\()))`,
+//   'g',
+// )
 export const compiledTokenVarNameRegex = new RegExp(
-  `(?<=(var ))\\w+(?=( = (interactables_1\\.${tokenGroup}\\()))`,
+  `(?<=(exports\\.))\\w+(?=( = (interactables_1\\.${tokenGroup}\\()))`,
   'g',
 )
 

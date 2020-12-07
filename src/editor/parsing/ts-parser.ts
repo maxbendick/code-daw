@@ -53,8 +53,8 @@ const tokenMatchesToTokenPlaces = (tokenMatches: TokenMatch[]): TokenPlaces => {
       if (line == prev.line) {
         console.error('received token on same line as previous token')
       }
-      if (!lineContent.startsWith('const ')) {
-        console.error('token decl doesnt start with const', tokenMatch)
+      if (!lineContent.startsWith('export const ')) {
+        console.error('token decl doesnt start with "export const"', tokenMatch)
       }
       const currTokenPlace: TokenPlace = {
         token,

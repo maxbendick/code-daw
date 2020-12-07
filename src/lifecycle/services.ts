@@ -72,8 +72,10 @@ export const compileAndEval = async (
 
 export const evalCompiledUserCode = async (code: string) => {
   _evalCompiledUserCode(code)
-  const codeDawVars = (window as any).codeDawVars
-  return { codeDawVars }
+  // const codeDawVars = (window as any).codeDawVars
+  const codeDawExports = (window as any).codeDawExports
+  // console.log('codeDawExports', codeDawExports)
+  return { codeDawVars: codeDawExports }
 }
 
 const getTokensFromEditor = (editor: EditorT) => {
