@@ -1,3 +1,4 @@
+import { Subscription } from 'rxjs'
 import { AudioSignal } from '../../../sigs'
 import { EdgeType } from '../../no-sig-types/edge-types'
 import { SuperDef } from '../../no-sig-types/super-def'
@@ -32,8 +33,8 @@ export const superMasterOutDef = {
       audioContext,
       inputs['audioToOutput'] as AudioNode,
     )
-    // TODO return with empty subscription?
-    return 'nothing'
+    // TODO destroy should be folded into subscription
+    return { output: 'nothing' as const, subscription: new Subscription() }
   },
   destroy: () => {
     _masterOutResult.destroy()

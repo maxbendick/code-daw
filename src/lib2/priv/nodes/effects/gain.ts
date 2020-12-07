@@ -1,5 +1,6 @@
 import { AudioSignal, Signal } from '../../../sigs'
 import { EdgeType } from '../../no-sig-types/edge-types'
+import { SuperDef } from '../../no-sig-types/super-def'
 import { makeGain } from '../../webaudio-utils'
 
 type Config = {}
@@ -28,12 +29,13 @@ export const superGainDef = {
     config: Config,
     { gainValue, source }: Inputs,
   ) => {
-    // TODO unsubscribe
     const { output, subscription } = makeGain(
       audioContext,
       gainValue as any,
       source as any,
     )
-    return output
+    return { output, subscription }
   },
 } as const
+
+const _proof: SuperDef = superGainDef

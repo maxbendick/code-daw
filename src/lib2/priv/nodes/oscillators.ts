@@ -34,7 +34,7 @@ const baseOsc = <NodeT extends string, Osc extends OscillatorType>(
         type: oscillatorType,
         frequency: frequency as any,
       })
-      return output
+      return { output, subscription }
     },
   } as const)
 

@@ -69,6 +69,7 @@ const evalateGraph = (
   coolZones: CoolZone[],
 ) => {
   const existingOutputs = {} as { [id: string]: AudioNode | Observable<number> }
+  const subscription = new Subscription()
 
   const rec = (node: NN) => {
     const resolvedInputs = {} as {
@@ -98,8 +99,10 @@ const evalateGraph = (
       resolvedInputs,
       send$,
     )
-    verifyOutput(superDef.output, output)
-    existingOutputs[node.id] = output
+    verifyOutput(superDef.output, output.output)
+    // TODO typing
+    existingOutputs[node.id] = output.output as any
+    subscription.add(output.subscription)
   }
 
   for (const node of graph.nodes) {
@@ -117,7 +120,7 @@ const evalateGraph = (
 
   return {
     outputs: existingOutputs,
-    observableSubscriptions: new Subscription(),
+    observableSubscriptions: subscription,
   }
 }
 

@@ -1,4 +1,4 @@
-import { Observable } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
 import { ZoneComponent, ZoneLoadingComponent } from '../zone-component'
 import { EdgeType } from './edge-types'
 
@@ -22,7 +22,10 @@ export interface SuperDef {
     config: any,
     inputs: any,
     send$?: Observable<any>,
-  ) => any
+  ) => {
+    output: Observable<any> | AudioNode | 'nothing'
+    subscription: Subscription
+  }
   argsToInputs: (...args: any[]) => any
   argsToConfig: (...args: any[]) => any
 

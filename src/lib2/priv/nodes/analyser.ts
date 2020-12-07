@@ -1,5 +1,4 @@
 import { interval } from 'rxjs'
-import { take } from 'rxjs/operators'
 import { EdgeType } from '../no-sig-types/edge-types'
 import { SuperDef } from '../no-sig-types/super-def'
 
@@ -25,16 +24,14 @@ export const superAnalyserDef = {
     inputs.source.connect(analyser)
 
     // TODO unsubscribe
-    interval(2000)
-      .pipe(take(5))
-      .subscribe(() => {
-        const FFTData = new Float32Array(analyser.frequencyBinCount)
-        analyser.getFloatFrequencyData(FFTData)
-        console.log('fftdata', FFTData[0])
-      })
+    const subscription = interval(2000).subscribe(() => {
+      const FFTData = new Float32Array(analyser.frequencyBinCount)
+      analyser.getFloatFrequencyData(FFTData)
+      console.log('fftdata', FFTData[0])
+    })
 
     // TODO unsubscribe
-    return 'nothing'
+    return { output: 'nothing' as const, subscription }
   },
 } as const
 

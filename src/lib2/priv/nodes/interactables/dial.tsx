@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { Observable } from 'rxjs'
+import { Observable, Subscription } from 'rxjs'
 import { startWith } from 'rxjs/operators'
 import styled from 'styled-components'
 import { Dial } from '../../../../components/Dial'
@@ -99,8 +99,10 @@ export const superDialDef = {
     inputs: any,
     send$?: Observable<Send>,
   ) => {
-    // TODO return with empty subscription?
-    return send$?.pipe(startWith(config.defaultValue))
+    return {
+      output: send$?.pipe(startWith(config.defaultValue))!,
+      subscription: new Subscription(),
+    }
   },
   zoneComponent: DialZoneZooone,
   zoneLoadingComponent: DialZoneLoading,
