@@ -4,12 +4,13 @@
 // const url =
 //   'data:text/javascript;charset=utf-8;base64,ZXhwb3J0IGNvbnN0IG51bWJlciA9IDQyOwpleHBvcnQgY29uc3QgZm4gPSAoKSA9PiAiSGVsbG8gd29ybGQiOw=='
 
+let cacheDestroyer = 1
 const createEncodedPackageCode = (packageName: string) => {
   // const packageContents = (window as any).codeDawRequire(
   //   packageName,
   // )
   const packageContents = (window as any).codeDawPackages[packageName]
-  let code = ''
+  let code = `const count = ${cacheDestroyer++};\n`
   for (const variableName of Object.keys(packageContents)) {
     console.warn('reinstate this:')
     code += `export const ${variableName} = window.codeDawPackages["${packageName}"].${variableName};\n`
