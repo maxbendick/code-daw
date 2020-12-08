@@ -142,7 +142,10 @@ export const machine = Machine<
             target: 'attachingCoolZones',
             actions: assign({
               codeDawVars: (context, event) => {
-                makeJsonStringifySafe(event.data.codeDawVars)
+                console.log('event.data', event.data.codeDawVars)
+                // makeJsonStringifySafe(event.data.codeDawVars)
+                // return event.data.codeDawVars
+                // makeJsonStringifySafe(event.data.codeDawVars)
                 return event.data.codeDawVars
               },
             }),

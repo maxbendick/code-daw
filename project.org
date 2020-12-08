@@ -7,9 +7,9 @@
 ** move to esmodules? need a way to adapt codeDawRequire
    
    const codeDawPackage = `
-      export const sine = window.codeDawPackages['sine']
-      export const saw = window.codeDawPackages['saw']
-      export const simpleSequencer = window.codeDawPackages['simpleSequencer']
+      export const sine = window.codeDawRequire('oscillators').sine
+      export const saw =  window.codeDawRequire('oscillators').saw
+      export const simpleSequencer =  window.codeDawRequire('sequencers').simpleSequencer
    `.encode()
 
    codeWithImports = code.replace('from "code-daw"', `from "${codeDawPackage}"`)

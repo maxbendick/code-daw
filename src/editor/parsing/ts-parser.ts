@@ -1,4 +1,5 @@
 import { chain } from '../chain'
+import { parserExperiment } from './parser-experiment'
 import { constTokenAssignmentRegex } from './regex'
 import { Token } from './tokens'
 
@@ -75,8 +76,56 @@ const tokenMatchesToTokenPlaces = (tokenMatches: TokenMatch[]): TokenPlaces => {
   ).result
 }
 
+// eval(`
+
+// import(
+//   'data:text/javascript;charset=utf-8;base64,ZXhwb3J0IGNvbnN0IG51bWJlciA9IDQyOwpleHBvcnQgY29uc3QgZm4gPSAoKSA9PiAiSGVsbG8gd29ybGQiOw=='
+// ).then(a => {
+//   console.log('base64 import 2', a)
+// })
+
+// `)
+
+// const module = await eval(`
+// import(
+//   'data:text/javascript;charset=utf-8;base64,ZXhwb3J0IGNvbnN0IG51bWJlciA9IDQyOwpleHBvcnQgY29uc3QgZm4gPSAoKSA9PiAiSGVsbG8gd29ybGQiOw=='
+// )
+// `)
+
+// const doImport3 = () => {
+//   import(
+//     'data:text/javascript;charset=utf-8;base64,ZXhwb3J0IGNvbnN0IG51bWJlciA9IDQyOwpleHBvcnQgY29uc3QgZm4gPSAoKSA9PiAiSGVsbG8gd29ybGQiOw=='
+//   ).then(a => {
+//     console.log('base64 import 3', a)
+//   })
+// }
+
 export const getAllTokens = (lines: string[]): TokenPlaces => {
   let allTokenMatches: TokenMatch[] = []
+
+  parserExperiment(lines.join('\n'))
+  // console.log('-------doin---import-------')
+
+  // const doImport2 = async () => {
+  //   const extremelyDangerousImport = (url: string): Promise<any> => {
+  //     return window.eval(`import('${url}')`)
+  //   }
+
+  //   const source = `
+  //     export const sickk = 5;
+  //   `
+  //   // const url =
+  //   //   'data:text/javascript;charset=utf-8;base64,ZXhwb3J0IGNvbnN0IG51bWJlciA9IDQyOwpleHBvcnQgY29uc3QgZm4gPSAoKSA9PiAiSGVsbG8gd29ybGQiOw=='
+
+  //   const url = 'data:text/javascript;base64,' + btoa(source)
+
+  //   const module = await extremelyDangerousImport(url)
+
+  //   console.log('base64 import awaited', module)
+  // }
+  // doImport2()
+
+  console.log('-------doin---import-------')
 
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
     const line = lines[lineIndex]

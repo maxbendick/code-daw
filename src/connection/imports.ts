@@ -1,18 +1,23 @@
 // where am I???
 // import from a honeypot?
 
+import { es6Eval } from '../editor/compilation/es6-eval'
 import { alertFinishedLoadingListeners } from '../editor/finished-loading-listeners'
 import { registeredSuperDefs } from '../lib2/priv/all-nodes'
 import { makePublicFunction } from '../lib2/priv/make-public-function'
 import { SuperDef } from '../lib2/priv/no-sig-types/super-def'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 
-export const evalCompiledUserCode = (code: string) => {
+export const evalCompiledUserCode = async (code: string) => {
   ;(window as any).codeDawInEval = true
-  eval(code)
+  const { codeDawVars } = await es6Eval(code)
+  // await new Promise(resolve => setTimeout(resolve, 2000))
+
+  // eval(code)
   ;(window as any).codeDawInEval = false
 
   alertFinishedLoadingListeners()
+  return { codeDawVars }
 }
 
 interface RegisterArgs {

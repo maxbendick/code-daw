@@ -45,7 +45,7 @@ export const compileAndEval = async (
       transpile(
         code, // input code
         {
-          // module: 5,
+          module: 5,
         }, // compilerOptions
         'filename.ts',
         [], // diagnostics
@@ -67,8 +67,9 @@ export const compileAndEval = async (
       //
       //
 
-      return `${exports}\n${codeDawVars}\n${code}`
+      // return `console.log('window from eval', window)\n${exports}\n${codeDawVars}\n${code}`
       // return `${codeDawVars}\n${code}`
+      return `${code}`
     })
     .then(code => {
       // add vars to window
