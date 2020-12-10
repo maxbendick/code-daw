@@ -1,4 +1,15 @@
-* TODO current task
+* NEXT STEPS
+** save changes
+** in text editor, make code that exports an audionode
+** an audiocontext can be added to window for the editor to use
+** run the audio node
+* after that
+** es import for audiocontext
+** interactables
+** multiple files
+
+
+* current task
 ** working on porting to commonjs modules
 ** make attaching coolzones to interactables optional
 * after currentt work
@@ -17,6 +28,18 @@
    import(codeWithImports.encode()).then(module => {
       console.log('created module!')
    })
+
+
+   const statefulDial = ()
+
+   const myCustomInteractable = createInteractable(
+      (args) => {
+         return {
+            markup: <div>{args.myName}</div>
+            output: Signal.of(args.myConstant)
+         }
+      },
+   )
 
 * next steps
 ** DONE global volume dial
