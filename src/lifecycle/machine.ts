@@ -10,15 +10,13 @@ import {
 import { makeJsonStringifySafe, waitForShiftEnter } from './util'
 
 const defaultServices: LifecycleServices = {
-  preEditorSetup: () =>
+  loadMonaco: () =>
     new Promise(resolve => {
-      setTimeout(
-        () =>
-          resolve({
-            monaco: 'maocnaooooo' as any,
-          }),
-        1000,
-      )
+      setTimeout(() => resolve('maocnaooooo' as any), 1000)
+    }),
+  monacoSetup: () =>
+    new Promise(resolve => {
+      setTimeout(() => resolve(), 1000)
     }),
   attachCoolZones: () =>
     new Promise(resolve => {
@@ -67,7 +65,21 @@ export const machine = Machine<
           REACT_MOUNTED: 'preEditorSetup',
         },
       },
-      preEditorSetup: {
+      loadingMonaco: {
+        invoke: {
+          src: 'loadMonaco',
+          onDone: {
+            target: 'preEditorSetup',
+            actions: assign({
+              monaco: (context, event) => {
+                return event.data as any
+              },
+            }),
+          },
+          onError: 'failure',
+        },
+      },
+      monacoSetup: {
         invoke: {
           id: 'preEditorSetupInvoke',
           src: 'preEditorSetup',

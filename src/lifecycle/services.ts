@@ -4,13 +4,13 @@ import {
   registerAllExports,
 } from '../connection/imports'
 import {
-  addHighlighting,
+  // addHighlighting,
   addHighlightingToEditor,
 } from '../editor/add-highlighting'
 import { compileAndEval as _compileAndEval } from '../editor/compilation/compilation'
 import { makeCoolZoneFactory } from '../editor/cool-zone'
 import {
-  loadFiles,
+  // loadFiles,
   setCompilerAndDiagnosticOptions,
 } from '../editor/load-files'
 import { getAllTokens, TokenPlaces } from '../editor/parsing/ts-parser'
@@ -21,13 +21,15 @@ import { startRuntime } from '../runtime/runtime'
 import { LifecycleServices } from './types'
 import { waitForShiftEnter } from './util'
 
-export const preEditorSetup = async (getTokens: () => TokenPlaces) => {
-  const monaco: MonacoT = await monacoReact.init()
+export const monacoSetup = async (
+  monaco: MonacoT,
+  getTokens: () => TokenPlaces,
+) => {
+  // const monaco: MonacoT = await monacoReact.init()
   setCompilerAndDiagnosticOptions(monaco)
-  addHighlighting(monaco, getTokens)
-  await loadFiles(monaco)
-
-  return { monaco }
+  // addHighlighting(monaco, getTokens)
+  // await loadFiles(monaco)
+  // return { monaco }
 }
 
 // rename to attach cool zones
@@ -86,9 +88,10 @@ const getTokensFromEditor = (editor: EditorT) => {
 }
 
 export const lifecycleServices: LifecycleServices = {
-  preEditorSetup: (context, ...args) => {
+  loadMonaco: () => monacoReact.init(),
+  monacoSetup: (context, ...args) => {
     console.log('preeditor setup args', context, ...args)
-    return preEditorSetup(() => context.tokens!)
+    return monacoSetup(context.monaco!, () => context.tokens!)
   },
   compileCode: context =>
     compileAndEval(context.signalGraph!, context.editor!, context.tokens!),

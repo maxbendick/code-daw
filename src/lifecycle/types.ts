@@ -12,7 +12,8 @@ export type LifecycleEvent =
 export interface LifecycleStateSchema {
   states: {
     preMount: {}
-    preEditorSetup: {}
+    loadingMonaco: {}
+    monacoSetup: {}
     creatingEditor: {}
     editing: {}
     parsingTokens: {}
@@ -50,11 +51,8 @@ export interface LifecycleContextWithCompiledCode
 }
 
 export type LifecycleServices = {
-  preEditorSetup: (
-    context: LifecycleContext,
-  ) => Promise<{
-    monaco: MonacoT
-  }>
+  loadMonaco: () => Promise<MonacoT>
+  monacoSetup: (context: LifecycleContext) => Promise<void>
   parseTokens: (context: LifecycleContext) => Promise<TokenPlaces>
   compileCode: (context: LifecycleContext) => Promise<string>
   evalCompiledUserCode: (
