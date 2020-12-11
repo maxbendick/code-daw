@@ -1,4 +1,4 @@
-import { BehaviorSubject } from 'rxjs'
+import { BehaviorSubject, Subscription } from 'rxjs'
 
 export type Signal<A> = BehaviorSubject<A>
 export type Audio = AudioNode
@@ -12,3 +12,10 @@ export type ResolveFn = <Packaged>(
 export type PackagedForUser<A> = A
 
 export type UnpackagedForUser<A> = A
+
+export interface Node<Output> {
+  id: string
+  type: string
+  output: Promise<Output>
+  subscription: Subscription
+}

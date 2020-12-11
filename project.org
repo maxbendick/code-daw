@@ -1,5 +1,8 @@
 * NEXT STEPS
-** save changes
+** I'm involuntarily delaying. Editor first.
+** start with all code evalled directly (no lib!)
+** build a lib in the editor
+
 ** in text editor, make code that exports an audionode
 ** an audiocontext can be added to window for the editor to use
 ** run the audio node

@@ -1,12 +1,5 @@
 import { Subscription } from 'rxjs'
-import { PackagedForUser, ResolveFn, UnpackagedForUser } from './types'
-
-interface Node<Output> {
-  id: string
-  type: string
-  output: Output
-  subscription: Subscription
-}
+import { Node, PackagedForUser, ResolveFn, UnpackagedForUser } from './types'
 
 type RawOperatorInputFn<Args extends any[], Output> = (a: {
   args: Args
@@ -18,7 +11,7 @@ type RawOperatorInputFn<Args extends any[], Output> = (a: {
 
 type RawOperatorResultFn<Args extends any[], Output> = (
   ...args: Args
-) => Promise<{ output: PackagedForUser<Output>; subscription: Subscription }>
+) => { output: PackagedForUser<Output>; subscription: Subscription }
 
 const resolveFn: ResolveFn = <A>(a: A) =>
   Promise.resolve(a as UnpackagedForUser<A>)
@@ -39,6 +32,19 @@ interface Config<Args extends any[], Output> {
 
 let count = 1
 
+const deferSub = (promise: Promise<Subscription>): Subscription => {
+  const safeSub = new Subscription()
+
+  promise.then(subscription => {
+    if (safeSub.closed) {
+      subscription.unsubscribe()
+    }
+    safeSub.add(subscription)
+  })
+
+  return safeSub
+}
+
 export const createRawOperatorFactory = (audioContext: AudioContext) => <
   Args extends any[],
   Output
@@ -46,9 +52,9 @@ export const createRawOperatorFactory = (audioContext: AudioContext) => <
   config: Config<Args, Output>,
 ): RawOperatorResultFn<Args, Output> => {
   const { type, fn } = config
-  return async (...args: Args) => {
+  return (...args: Args) => {
     const id = `${Math.random().toString(36).substring(7)}-${count++}`
-    const { output, subscription } = await fn({
+    const fnResult = fn({
       type,
       id,
       args,
@@ -59,8 +65,8 @@ export const createRawOperatorFactory = (audioContext: AudioContext) => <
     return {
       type,
       id,
-      output,
-      subscription,
+      output: fnResult.then(value => value.output) as any,
+      subscription: deferSub(fnResult.then(({ subscription }) => subscription)),
     }
   }
 }
