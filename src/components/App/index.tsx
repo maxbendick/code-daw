@@ -53,7 +53,7 @@ function App() {
     console.log('--state:', state.value, state)
   }, [state])
 
-  const inRuntime = state.matches('runtime')
+  const inRuntime = state.matches('runtime') || state.matches('lightRuntime')
   const inEditing = state.matches('editing')
 
   const showEditor =

@@ -9,7 +9,7 @@ import {
   LifecycleEvent,
   LifecycleStateSchema,
 } from '../../lifecycle/types'
-import { code4 } from './code'
+import { code5 } from './code'
 import './Editor.css'
 
 interface Props {
@@ -24,7 +24,7 @@ interface Props {
   >
 }
 
-const defaultCode = code4 // .substring(1) need some padding
+const defaultCode = code5 // .substring(1) need some padding
 
 const codeLocalStorageKey = 'code-daw/code'
 
@@ -48,7 +48,10 @@ export const Editor: React.FC<Props> = ({ lifecycleService }) => {
     if (state.event.type === 'RESET_CODE') {
       editor.setValue(defaultCode)
     }
-    if (state.matches('runtime') && state.changed) {
+    if (
+      (state.matches('runtime') || state.matches('lightRuntime')) &&
+      state.changed
+    ) {
       localStorage.setItem(codeLocalStorageKey, editor.getValue())
     }
   }, [state])

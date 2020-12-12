@@ -10,6 +10,9 @@ import {
 import { makeJsonStringifySafe, waitForShiftEnter } from './util'
 
 const defaultServices: LifecycleServices = {
+  startLightRuntime: async context => {
+    return
+  },
   loadMonaco: () =>
     new Promise(resolve => {
       setTimeout(() => resolve('maocnaooooo' as any), 1000)
@@ -62,16 +65,17 @@ export const machine = Machine<
     states: {
       preMount: {
         on: {
-          REACT_MOUNTED: 'preEditorSetup',
+          REACT_MOUNTED: 'loadingMonaco',
         },
       },
       loadingMonaco: {
         invoke: {
           src: 'loadMonaco',
           onDone: {
-            target: 'preEditorSetup',
+            target: 'monacoSetup',
             actions: assign({
               monaco: (context, event) => {
+                console.log('monaco setup invoke doen', event)
                 return event.data as any
               },
             }),
@@ -82,15 +86,15 @@ export const machine = Machine<
       monacoSetup: {
         invoke: {
           id: 'preEditorSetupInvoke',
-          src: 'preEditorSetup',
+          src: 'monacoSetup',
           onDone: {
             target: 'creatingEditor',
-            actions: assign({
-              monaco: (context, event) => {
-                makeJsonStringifySafe(event.data.monaco)
-                return event.data.monaco
-              },
-            }),
+            // actions: assign({
+            //   monaco: (context, event) => {
+            //     makeJsonStringifySafe(event.data.monaco)
+            //     return event.data.monaco
+            //   },
+            // }),
           },
           onError: 'failure',
         },
@@ -112,10 +116,20 @@ export const machine = Machine<
         invoke: {
           id: 'editingInvoke',
           src: (context, event) => waitForShiftEnter(),
-          onDone: 'parsingTokens',
+          onDone: 'lightRuntime',
           onError: 'failure',
         },
       },
+      lightRuntime: {
+        // want to wait until shiftenter
+        // eventually, stop audiocontext
+        invoke: {
+          src: 'startLightRuntime',
+          onDone: 'editing',
+          onError: 'failure',
+        },
+      },
+
       parsingTokens: {
         invoke: {
           id: 'parsingTokensInvoke',

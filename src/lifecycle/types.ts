@@ -16,6 +16,8 @@ export interface LifecycleStateSchema {
     monacoSetup: {}
     creatingEditor: {}
     editing: {}
+    lightRuntime: {}
+
     parsingTokens: {}
     attachingCoolZones: {}
     compilingCode: {}
@@ -53,6 +55,8 @@ export interface LifecycleContextWithCompiledCode
 export type LifecycleServices = {
   loadMonaco: () => Promise<MonacoT>
   monacoSetup: (context: LifecycleContext) => Promise<void>
+  startLightRuntime: (context: LifecycleContext) => Promise<void>
+
   parseTokens: (context: LifecycleContext) => Promise<TokenPlaces>
   compileCode: (context: LifecycleContext) => Promise<string>
   evalCompiledUserCode: (

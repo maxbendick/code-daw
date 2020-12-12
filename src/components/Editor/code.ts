@@ -212,3 +212,23 @@ console.log('dial1', firstDial)
 console.log('dial2', secondDial)
 console.log('sinee', sine)
 `
+
+export const code5 = `
+import * as React from 'https://cdn.skypack.dev/react';
+import * as ReactDOM from 'https://cdn.skypack.dev/react-dom';
+import { getAudioContext, interactable } from '!internal'
+
+console.log('code 5 baby')
+
+export const another = interactable('another export')
+
+export const nodeHandler = (domNode) => 
+  ReactDOM.render(
+    <div>hello react</div>,
+    domNode
+  );
+
+export default getAudioContext().createOscillator()
+
+console.log('audiocontext', getAudioContext())
+`

@@ -17,6 +17,7 @@ import { getAllTokens, TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
 import { getSuperDef } from '../lib2/priv/all-nodes'
 import { SignalGraph } from '../lib2/priv/signal-graph'
+import { startLightRuntime } from '../light-runtime/light-runtime'
 import { startRuntime } from '../runtime/runtime'
 import { LifecycleServices } from './types'
 import { waitForShiftEnter } from './util'
@@ -93,6 +94,10 @@ export const lifecycleServices: LifecycleServices = {
     console.log('preeditor setup args', context, ...args)
     return monacoSetup(context.monaco!, () => context.tokens!)
   },
+  startLightRuntime: async context => {
+    await startLightRuntime(context, waitForShiftEnter())
+  },
+
   compileCode: context =>
     compileAndEval(context.signalGraph!, context.editor!, context.tokens!),
   evalCompiledUserCode: context => evalCompiledUserCode(context.compiledCode!),
