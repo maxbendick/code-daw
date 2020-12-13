@@ -1,4 +1,3 @@
-import ReactDOM from 'react-dom'
 import { Subject } from 'rxjs'
 import { addDecorations } from '../editor/add-decorations'
 import { addViewZone } from '../editor/add-view-zone'
@@ -19,6 +18,7 @@ export const addContentWidget = (
   initialLineNumber: number,
   numLines: number,
   node: HTMLElement,
+  onDestroy: () => void,
 ) => {
   const id = Math.random().toString(36).substring(7)
 
@@ -60,8 +60,9 @@ export const addContentWidget = (
       editor.layoutContentWidget(contentWidget)
     },
     destroy: () => {
-      ReactDOM.unmountComponentAtNode(domNode)
+      // ReactDOM.unmountComponentAtNode(domNode)
       editor.removeContentWidget(contentWidget)
+      onDestroy()
     },
   }
 }
@@ -109,6 +110,7 @@ export class Zone {
     lineNumber: number,
     initialNumLines: number,
     domNode: HTMLElement,
+    onDestroy: () => void,
   ) {
     this._lineNumber = lineNumber
     this.numLines = initialNumLines
@@ -126,6 +128,7 @@ export class Zone {
       this._lineNumber + 1,
       this.numLines,
       domNode,
+      onDestroy,
     )
 
     this.decorationResult = addDecorations(monaco, editor, this._lineNumber)

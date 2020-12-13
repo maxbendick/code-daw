@@ -11,6 +11,15 @@ const extremelyDangerousImport = (url: string): Promise<any> => {
   return window.eval(`import('${url}')`)
 }
 
+const interactableSymbol = 'interactable-symbol' // Symbol('interactable')
+
+interface Interactable {
+  [interactableSymbol]: true
+  value: any
+  domNode: HTMLElement
+  onDestroy: () => void
+}
+
 const getExports = (source: string) => {
   const exportLines = source
     .split('\n')
@@ -54,21 +63,25 @@ export const startLightRuntime = async (
     ;(window as any).codeDaw = {}
   }
 
-  const interactableSymbol = Symbol('interactable')
   ;(window as any).codeDaw.audioContext = new AudioContext()
   ;(window as any).codeDaw.interactableSymbol = interactableSymbol
 
   // replace internal import
   const internalPackage = encodeToUrl(`
     export const getAudioContext = () => window.codeDaw.audioContext;
-    export const interactable = (value) => {
-      return { value: value, [window.codeDaw.interactableSymbol]: true };
+    export const interactable = ({ value, domNode, onDestroy }) => {
+      return { 
+        [window.codeDaw.interactableSymbol]: true,
+        value,
+        domNode,
+        onDestroy,
+      };
     };
   `)
   source = source.replace(`from "!internal"`, `from '${internalPackage}'`)
   source = source.replace(`from '!internal'`, `from '${internalPackage}'`)
 
-  const transpiled = transpile(
+  let transpiled = transpile(
     source,
     {
       target: ScriptTarget.ES2020,
@@ -108,7 +121,9 @@ export const startLightRuntime = async (
     },
   )
 
-  const userMadeModule = await extremelyDangerousImport(encodeToUrl(transpiled))
+  const userMadeModule = await extremelyDangerousImport(
+    encodeToUrl(transpiled + `\nconst randommmmm = ${Math.random()}`),
+  )
 
   let processedExports: {
     exportName: string
@@ -141,12 +156,19 @@ export const startLightRuntime = async (
     })
     .map(exportt => {
       console.log('asdlkjfalkserhjlksaehrr')
+      const element = document.createElement('div')
+      element.style.width = '500px'
+      element.innerHTML = 'hello from the grabe'
+      console.log('element donm', element)
       return new Zone(
         context.monaco!,
         context.editor!,
         exportt.lineNumber,
         3,
-        document.createElement('div'),
+        element,
+        () => {
+          console.log('can destroy element now')
+        },
       )
     })
 
