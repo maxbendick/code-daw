@@ -1,4 +1,12 @@
 * NEXT STEPS
+// todo - for dev, save fs periodically
+// bundle through urls
+// can have a dev server that saves files to /public as defaults
+// file is either from localstorage or /public
+//
+// edit once, refresh both?
+//
+
 ** I'm involuntarily delaying. Editor first.
 ** start with all code evalled directly (no lib!)
 ** build a lib in the editor
