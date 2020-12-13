@@ -235,6 +235,7 @@ const myDomNode = document.createElement('div')
 nodeHandler(myDomNode)
 
 export const another = interactable({
+  value: ['asdkjfjskdfmnvn']
   domNode: myDomNode,
   onDestroy: () => {
     ReactDOM.unmountComponentAtNode(myDomNode)
@@ -246,7 +247,7 @@ export default getAudioContext().createOscillator()
 console.log('audiocontext', getAudioContext())
 
 
-const reactInteractable = (Component) => {
+const reactInteractable = (value, Component) => {
   const domNode = document.createElement('div');
   ReactDOM.render(
     <Component />,
@@ -254,6 +255,7 @@ const reactInteractable = (Component) => {
   );
 
   return interactable({
+    value: ['asdjfksdf sj'],
     domNode,
     onDestroy: () => {
       ReactDOM.unmountComponentAtNode(domNode)
@@ -269,6 +271,8 @@ const reactInteractable = (Component) => {
 //  can create empty node at start, then fill it!!
 
 export const aReactInteractable = reactInteractable(
-  () => <div>hello my interactable</div>
+  { some: 'value' },
+  () => <div>hello asdfasdfinteractable</div>
 )
+
 `

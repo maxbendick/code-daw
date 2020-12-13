@@ -14,9 +14,10 @@ const extremelyDangerousImport = (url: string): Promise<any> => {
 const interactableSymbol = 'interactable-symbol' // Symbol('interactable')
 
 interface Interactable {
-  [interactableSymbol]: true
-  domNode: HTMLElement
-  onDestroy: () => void
+  [interactableSymbol]: {
+    domNode: HTMLElement
+    onDestroy: () => void
+  }
 }
 
 const getExports = (source: string) => {
@@ -68,9 +69,15 @@ export const startLightRuntime = async (
   // replace internal import
   const internalPackage = encodeToUrl(`
     export const getAudioContext = () => window.codeDaw.audioContext;
-    export const interactable = (configPromise) => {
-      configPromise[window.codeDaw.interactableSymbol] = true;
-      return configPromise;
+    export const interactable = ({ value, domNode, onDestroy }) => {
+      if (typeof value === 'string') {
+        throw new Error('cant have string interactable');
+      }
+      value[window.codeDaw.interactableSymbol] = {
+        domNode,
+        onDestroy,
+      };
+      return value;
     };
   `)
   source = source.replace(`from "!internal"`, `from '${internalPackage}'`)
@@ -155,7 +162,9 @@ export const startLightRuntime = async (
       parentElement.style.width = '500px'
       // element.innerHTML = 'hello from the grabe'
       // const element =;
-      const interactableConfig = exportt.exportValue as Interactable
+      const interactableConfig = (exportt.exportValue as Interactable)[
+        interactableSymbol
+      ]
       const element = interactableConfig.domNode
 
       // TODO make exportValue a Promise<Interactable>
