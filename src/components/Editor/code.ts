@@ -218,9 +218,16 @@ import * as React from 'https://cdn.skypack.dev/react';
 import * as ReactDOM from 'https://cdn.skypack.dev/react-dom';
 import { getAudioContext, interactable } from '!internal'
 
+console.log('code 5 baby')
+
+
+for (let i = 0; i < 10; i++)  {
+  // do something
+}
+
 export const nodeHandler = (domNode) => 
   ReactDOM.render(
-    <div>hello react</div>,
+    <div>hello dddreact</div>,
     domNode
   );
 
@@ -228,7 +235,6 @@ const myDomNode = document.createElement('div')
 nodeHandler(myDomNode)
 
 export const another = interactable({
-  value: 'another export',
   domNode: myDomNode,
   onDestroy: () => {
     ReactDOM.unmountComponentAtNode(myDomNode)
@@ -239,4 +245,30 @@ export default getAudioContext().createOscillator()
 
 console.log('audiocontext', getAudioContext())
 
+
+const reactInteractable = (Component) => {
+  const domNode = document.createElement('div');
+  ReactDOM.render(
+    <Component />,
+    domNode
+  );
+
+  return interactable({
+    domNode,
+    onDestroy: () => {
+      ReactDOM.unmountComponentAtNode(domNode)
+    }
+  })
+}
+
+
+
+// solution:
+//  value must return synchronously
+//  can have promise for node?
+//  can create empty node at start, then fill it!!
+
+export const aReactInteractable = reactInteractable(
+  () => <div>hello my interactable</div>
+)
 `

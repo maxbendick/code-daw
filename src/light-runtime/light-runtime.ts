@@ -13,13 +13,11 @@ const extremelyDangerousImport = (url: string): Promise<any> => {
 
 const interactableSymbol = 'interactable-symbol' // Symbol('interactable')
 
-// TODO change to accept promises?
-interface InteractableConfig {
-  value: any
+interface Interactable {
+  [interactableSymbol]: true
   domNode: HTMLElement
   onDestroy: () => void
 }
-type Interactable = Promise<InteractableConfig> & { [interactableSymbol]: true }
 
 const getExports = (source: string) => {
   const exportLines = source
@@ -147,17 +145,17 @@ export const startLightRuntime = async (
     }
   }
 
-  const zonesP = processedExports
+  const zones = processedExports
     .filter(exportt => {
       return exportt.exportValue[interactableSymbol]
     })
-    .map(async exportt => {
+    .map(exportt => {
       console.log('asdlkjfalkserhjlksaehrr')
       const parentElement = document.createElement('div')
       parentElement.style.width = '500px'
       // element.innerHTML = 'hello from the grabe'
       // const element =;
-      const interactableConfig = await (exportt.exportValue as Interactable)
+      const interactableConfig = exportt.exportValue as Interactable
       const element = interactableConfig.domNode
 
       // TODO make exportValue a Promise<Interactable>
@@ -174,8 +172,6 @@ export const startLightRuntime = async (
         interactableConfig.onDestroy,
       )
     })
-
-  const zones = await Promise.all(zonesP)
 
   zones.forEach(zone => {
     console.log('zone!', zone)
