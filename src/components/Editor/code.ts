@@ -218,17 +218,25 @@ import * as React from 'https://cdn.skypack.dev/react';
 import * as ReactDOM from 'https://cdn.skypack.dev/react-dom';
 import { getAudioContext, interactable } from '!internal'
 
-console.log('code 5 baby')
-
-export const another = interactable('another export')
-
 export const nodeHandler = (domNode) => 
   ReactDOM.render(
     <div>hello react</div>,
     domNode
   );
 
+const myDomNode = document.createElement('div')
+nodeHandler(myDomNode)
+
+export const another = interactable({
+  value: 'another export',
+  domNode: myDomNode,
+  onDestroy: () => {
+    ReactDOM.unmountComponentAtNode(myDomNode)
+  }
+})
+
 export default getAudioContext().createOscillator()
 
 console.log('audiocontext', getAudioContext())
+
 `

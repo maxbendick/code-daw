@@ -13,12 +13,13 @@ const extremelyDangerousImport = (url: string): Promise<any> => {
 
 const interactableSymbol = 'interactable-symbol' // Symbol('interactable')
 
-interface Interactable {
-  [interactableSymbol]: true
+// TODO change to accept promises?
+interface InteractableConfig {
   value: any
   domNode: HTMLElement
   onDestroy: () => void
 }
+type Interactable = Promise<InteractableConfig> & { [interactableSymbol]: true }
 
 const getExports = (source: string) => {
   const exportLines = source
@@ -69,13 +70,9 @@ export const startLightRuntime = async (
   // replace internal import
   const internalPackage = encodeToUrl(`
     export const getAudioContext = () => window.codeDaw.audioContext;
-    export const interactable = ({ value, domNode, onDestroy }) => {
-      return { 
-        [window.codeDaw.interactableSymbol]: true,
-        value,
-        domNode,
-        onDestroy,
-      };
+    export const interactable = (configPromise) => {
+      configPromise[window.codeDaw.interactableSymbol] = true;
+      return configPromise;
     };
   `)
   source = source.replace(`from "!internal"`, `from '${internalPackage}'`)
@@ -150,17 +147,20 @@ export const startLightRuntime = async (
     }
   }
 
-  const zones = processedExports
+  const zonesP = processedExports
     .filter(exportt => {
       return exportt.exportValue[interactableSymbol]
     })
-    .map(exportt => {
+    .map(async exportt => {
       console.log('asdlkjfalkserhjlksaehrr')
       const parentElement = document.createElement('div')
       parentElement.style.width = '500px'
       // element.innerHTML = 'hello from the grabe'
       // const element =;
-      const element = (exportt.exportValue as Interactable).domNode
+      const interactableConfig = await (exportt.exportValue as Interactable)
+      const element = interactableConfig.domNode
+
+      // TODO make exportValue a Promise<Interactable>
 
       parentElement.appendChild(element)
 
@@ -171,11 +171,11 @@ export const startLightRuntime = async (
         exportt.lineNumber,
         3,
         parentElement,
-        () => {
-          console.log('can destroy element now')
-        },
+        interactableConfig.onDestroy,
       )
     })
+
+  const zones = await Promise.all(zonesP)
 
   zones.forEach(zone => {
     console.log('zone!', zone)
