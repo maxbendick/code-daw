@@ -10,6 +10,38 @@ const extremelyDangerousImport = (url: string): Promise<any> => {
   return window.eval(`import('${url}')`)
 }
 
+const getExports = (source: string) => {
+  const exportLines = source
+    .split('\n')
+    .map((line, lineIndex) => {
+      // console.log('line', i, line)
+      const exportStatements = ['export var ', 'export const ', 'expoort let ']
+
+      let exportName: string | null = null
+      for (const exportStatement of exportStatements) {
+        if (line.startsWith(exportStatement)) {
+          exportName = line.split(' ')[2]
+        }
+      }
+
+      if (line.startsWith('export default')) {
+        exportName = 'default'
+      }
+
+      const result = {
+        lineNumber: lineIndex + 1,
+        exportName: exportName,
+      }
+
+      console.log('getExports returning', result)
+
+      return result
+    })
+    .filter(({ exportName }) => exportName)
+
+  return exportLines
+}
+
 export const startLightRuntime = async (
   context: LifecycleContext,
   stopSignal: Promise<void>,
@@ -41,6 +73,11 @@ export const startLightRuntime = async (
   `)
   source = source.replace(`from "!internal"`, `from '${internalPackage}'`)
   source = source.replace(`from '!internal'`, `from '${internalPackage}'`)
+
+  // console.log('sourcee', source)
+  // source.split('\n').forEach((line, i) => {
+  //   console.log('source line', i, line)
+  // })
 
   const transpiled = transpile(
     source,
@@ -74,70 +111,57 @@ export const startLightRuntime = async (
     'lib/mappings.wasm': process.env.PUBLIC_URL + '/mappings.wasm',
   })
 
-  const whatever = await SourceMapConsumer.with(json, null, consumer => {
-    // consumer
+  const transpiledExportLines = await SourceMapConsumer.with(
+    json,
+    null,
+    consumer => {
+      console.log('consumer.sources', consumer.sources)
 
-    console.log(consumer.sources)
-    // [ 'http://example.com/www/js/one.js',
-    //   'http://example.com/www/js/two.js' ]
+      return getExports(transpiled)
+        .map(l => {
+          console.log('current l', l)
+          return l
+        })
+        .map(transpiledLine => ({
+          ...transpiledLine,
+          originalPosition: consumer.originalPositionFor({
+            line: transpiledLine.lineNumber,
+            column: 0,
+          }),
+        }))
+    },
+  )
 
-    const lines = transpiled
-      .split('\n')
-      .map((line, i) => {
-        return {
-          index: i,
-          match: line.match(/(export ((var)|(const)|(let)))+/g),
-        }
-      })
-      .filter(({ match }) => match)
-      .forEach(({ index, match }) => {
-        console.log('line match', index, match)
-      })
-    // for (let i = 0; i < lines.length; i++) {
-    //   const line = lines[i]
-    //   console.log('line match', line.match(/(export ((var)|(const)|(let)))+/g))
-    // }
-
-    const matches = transpiled.matchAll(/(export ((var)|(const)))+/g)
-    // [...str.matchAll(regexp)];
-    console.log('matches!', [...matches])
-
-    console.log(
-      'originalPositionFor',
-      consumer.originalPositionFor({
-        line: 2,
-        column: 28,
-      }),
-    )
-    // { source: 'http://example.com/www/js/two.js',
-    //   line: 2,
-    //   column: 10,
-    //   name: 'n' }
-
-    // console.log(
-    //   consumer.generatedPositionFor({
-    //     source: 'http://example.com/www/js/two.js',
-    //     line: 2,
-    //     column: 10,
-    //   }),
-    // )
-    // // { line: 2, column: 28 }
-
-    consumer.eachMapping(function (m) {
-      // ...
-    })
-
-    // return computeWhatever();
-  })
+  console.error('winkkkk', transpiledExportLines)
 
   const userMadeModule = await extremelyDangerousImport(encodeToUrl(transpiled))
 
-  for (const [k, v] of Object.entries(userMadeModule)) {
-    console.log({ k, v })
-    if ((v as any)[interactableSymbol]) {
-      console.log('interactalbe!', k, v)
+  // for (const [k, v] of Object.entries(userMadeModule)) {
+  //   console.log({ k, v })
+  //   if ((v as any)[interactableSymbol]) {
+  //     console.log('interactalbe!', k, v)
+  //   }
+  // }
+
+  let processedExports: {
+    exportName: string
+    exportValue: any
+    lineNumber: number
+  }[] = []
+  for (const [exportName, exportValue] of Object.entries(userMadeModule)) {
+    for (const transpiledExportLine of transpiledExportLines) {
+      if (exportName === transpiledExportLine.exportName) {
+        console.log('MATCH', exportName, transpiledExportLine)
+        processedExports.push({
+          exportName: exportName,
+          exportValue: exportValue,
+          lineNumber: transpiledExportLine.originalPosition.line!,
+        })
+      }
     }
   }
+
+  console.log('originaldss', processedExports)
 
   // todo tomorrow - cross reference parsed line numbers (fed through sourcemap) with module export names
   // todo attach cool zones, attach audionode default exports to audiocontext.destination
