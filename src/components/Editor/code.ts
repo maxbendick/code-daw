@@ -254,9 +254,18 @@ const reactInteractable = (value, Component) => {
     domNode
   );
 
+
+  const parent = document.createElement('div')
+
+  parent.setAttribute("style", "width: 500px; height: 71px; background: black");
+
+  parent.appendChild(domNode)
+
+  console.log('reactInteractable parent', parent)
+
   return interactable({
-    value: ['asdjfksdf sj'],
-    domNode,
+    value,
+    domNode: parent,
     onDestroy: () => {
       ReactDOM.unmountComponentAtNode(domNode)
     }
@@ -275,4 +284,6 @@ export const aReactInteractable = reactInteractable(
   () => <div>hello asdfasdfinteractable</div>
 )
 
+
+console.log('value of aReactInteractable', aReactInteractable)
 `

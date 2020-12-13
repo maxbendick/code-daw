@@ -171,6 +171,10 @@ export const startLightRuntime = async (
 
       parentElement.appendChild(element)
 
+      // element.style.width = '500px'
+      // element.style.height = '100px'
+      // element.style.background = 'black'
+
       console.log('element donm', element)
       return new Zone(
         context.monaco!,
@@ -205,7 +209,7 @@ export const startLightRuntime = async (
 
   await stopSignal
   ;(window as any).codeDaw.audioContext.close()
-  ;(window as any).codeDaw = undefined
+  // ;(window as any).codeDaw = undefined
 
   zones.forEach(zone => {
     zone.destroy()
