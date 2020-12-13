@@ -156,16 +156,21 @@ export const startLightRuntime = async (
     })
     .map(exportt => {
       console.log('asdlkjfalkserhjlksaehrr')
-      const element = document.createElement('div')
-      element.style.width = '500px'
-      element.innerHTML = 'hello from the grabe'
+      const parentElement = document.createElement('div')
+      parentElement.style.width = '500px'
+      // element.innerHTML = 'hello from the grabe'
+      // const element =;
+      const element = (exportt.exportValue as Interactable).domNode
+
+      parentElement.appendChild(element)
+
       console.log('element donm', element)
       return new Zone(
         context.monaco!,
         context.editor!,
         exportt.lineNumber,
         3,
-        element,
+        parentElement,
         () => {
           console.log('can destroy element now')
         },
