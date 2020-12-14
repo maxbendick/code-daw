@@ -1,6 +1,8 @@
 * NEXT STEPS
-** separate out top bar
-** app layout frid
+** create a VirtualFileSystem class (1st: localstorage, 2nd and 3rd: http, disc)
+** connect filebrowser+editor to a storage system
+** DONE separate out top bar
+** DONE app layout grid
 // todo - for dev, save fs periodically
 // bundle through urls
 // can have a dev server that saves files to /public as defaults
