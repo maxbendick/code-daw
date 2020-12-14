@@ -7,6 +7,7 @@ import { lifecycleServices } from '../../lifecycle/services'
 import { Button } from '../Button'
 import { Dial } from '../Dial'
 import { Editor } from '../Editor'
+import { FileBrowser } from '../FileBrowser'
 import { PlayButton } from '../PlayButton'
 import './App.css'
 import logo from './logo.svg'
@@ -61,6 +62,7 @@ function App() {
 
   return (
     <div>
+      <FileBrowser />
       <Header>
         <div style={{ display: 'flex' }}>
           <VerticallyCenter>

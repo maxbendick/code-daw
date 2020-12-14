@@ -7,6 +7,11 @@
 // edit once, refresh both?
 //
 
+* notes on art collab tools
+** How much is dynamic in performance? None? A little? All?
+** Mechanisms for communicating intent
+** improv at same time? one after another?
+
 ** I'm involuntarily delaying. Editor first.
 ** start with all code evalled directly (no lib!)
 ** build a lib in the editor
