@@ -49,12 +49,13 @@ export const makeLocalStorageVfs = async (
 }
 
 interface VfsFile {
+  path: string
   content: string
 }
 
 export interface VirtualFileSystem {
   get: (path: string) => Promise<VfsFile>
-  set: (path: string, content: string) => Promise<void>
+  set: (path: string, content: string) => Promise<VfsFile>
   getAllPaths: () => Promise<string[]>
 }
 
@@ -84,11 +85,12 @@ class LocalStorageVfs implements VirtualFileSystem {
       throw new Error(`couldnt find localstorage item for path ${path}`)
     }
     return {
+      path,
       content: result,
     }
   }
 
-  set = async (path: string, content: string): Promise<void> => {
+  set = async (path: string, content: string): Promise<VfsFile> => {
     if (!path.startsWith('/')) {
       throw new Error(`path must start with / - ${path}`)
     }
@@ -96,15 +98,17 @@ class LocalStorageVfs implements VirtualFileSystem {
     // make sure present - this may throw!!!
     await this.get(path)
 
-    return this.storage.setItem(pathToLocalStorageKey(path), content)
+    this.storage.setItem(pathToLocalStorageKey(path), content)
+    return { path, content }
   }
 
-  setNoPropogate = async (path: string, content: string): Promise<void> => {
+  setNoPropogate = async (path: string, content: string): Promise<VfsFile> => {
     if (!path.startsWith('/')) {
       throw new Error(`path must start with / - ${path}`)
     }
 
-    return this.storage.setItem(pathToLocalStorageKey(path), content)
+    this.storage.setItem(pathToLocalStorageKey(path), content)
+    return { path, content }
   }
 
   getAllPaths = async (): Promise<string[]> => {
