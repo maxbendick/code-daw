@@ -1,6 +1,7 @@
 import * as React from 'react'
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 import styled from 'styled-components'
+import { makeLocalStorageVfs } from '../../virtual-file-system'
 
 const files = {
   'index.tsx': 'askdfjskdf',
@@ -62,10 +63,26 @@ const FileItem: React.FC<{
 
 export const FileBrowser: React.FC = () => {
   const [activeFileName, setActiveFileName] = useState('index.tsx')
+  const [allPaths, setAllPaths] = useState<string[]>()
+
+  useEffect(() => {
+    const doEffect = async () => {
+      const vfs = await makeLocalStorageVfs()
+      const initialAllPaths = await vfs.getAllPaths()
+      setAllPaths(initialAllPaths)
+    }
+    doEffect()
+  }, [])
+
+  const fileNames = allPaths
+
+  if (!fileNames) {
+    return <div />
+  }
 
   return (
     <Container>
-      {Object.entries(files).map(([fileName, fileContent]) => (
+      {fileNames.map(fileName => (
         <FileItem
           key={fileName}
           fileName={fileName}

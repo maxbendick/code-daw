@@ -1,6 +1,9 @@
 * NEXT STEPS
 ** create a VirtualFileSystem class (1st: localstorage, 2nd and 3rd: http, disc)
 ** connect filebrowser+editor to a storage system
+
+Sync browser fs with localstorage and/or websocket backed by disc
+
 ** DONE separate out top bar
 ** DONE app layout grid
 // todo - for dev, save fs periodically
