@@ -12,19 +12,20 @@ for (let i = 0; i < 10; i++) {
 }
 
 const Container = styled.div`
-  background-color: #411;
+  // background: rgba(0, 0, 0, 0.9);
   display: flex;
   flex-direction: column;
-  width: 500px;
-  height: 500px;
+  width: 100%;
 `
+
+const borderStyle = '1px solid #333'
 
 const FileItemContainer = styled.div<{ active: boolean }>`
   display: block;
-  border: 1px solid #811;
+  border: ${borderStyle};
   border-bottom: none;
   &:last-child {
-    border-bottom: 1px solid #811;
+    border-bottom: ${borderStyle};
   }
   height: 35px;
 
@@ -33,7 +34,14 @@ const FileItemContainer = styled.div<{ active: boolean }>`
   justify-content: center;
   padding-left: 5px;
 
-  ${props => (props.active ? 'background-color: #2f1111' : '')}
+  user-select: none;
+  cursor: pointer;
+
+  &:hover {
+    ${props => (props.active ? '' : 'background: rgba(0, 0, 0, 0.25);')}
+  }
+
+  ${props => (props.active ? 'background: rgba(0, 0, 0, 0.3);' : '')}
 `
 
 const FileItemLabel = styled.div<{ active: boolean }>`

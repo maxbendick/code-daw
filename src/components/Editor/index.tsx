@@ -58,7 +58,7 @@ export const Editor: React.FC<Props> = ({ lifecycleService }) => {
 
   return (
     <MonacoEditor
-      height="calc(100vh - 100px)"
+      height="calc(100vh - 150px)"
       language="typescript"
       theme="dark"
       options={{

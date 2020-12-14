@@ -1,4 +1,6 @@
 * NEXT STEPS
+** separate out top bar
+** app layout frid
 // todo - for dev, save fs periodically
 // bundle through urls
 // can have a dev server that saves files to /public as defaults

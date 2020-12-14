@@ -1,44 +1,40 @@
 import { useMachine } from '@xstate/react'
 import React, { useEffect } from 'react'
 import styled from 'styled-components'
-import { MASTER_VOLUME$ } from '../../lib2/priv/master-volume'
 import { machine } from '../../lifecycle/machine'
 import { lifecycleServices } from '../../lifecycle/services'
-import { Button } from '../Button'
-import { Dial } from '../Dial'
 import { Editor } from '../Editor'
 import { FileBrowser } from '../FileBrowser'
-import { PlayButton } from '../PlayButton'
+import { AppHeader } from '../Header'
 import './App.css'
-import logo from './logo.svg'
 
 const configgedMachine = machine.withConfig({
   services: lifecycleServices,
 })
 
-const headerBackgroundColor = '#282c34'
-
-const Header = styled.header`
-  background-color: ${headerBackgroundColor};
-  padding: 10px;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(20px);
-  color: white;
+const AppContainer = styled.div`
+  display: grid;
+  grid-template-columns: 140px 1fr;
+  grid-template-rows: auto 1fr;
+  grid-template-areas:
+    'header header'
+    'filebrowser editor';
 `
-
-const VerticallyCenter = styled.div`
-  height: 50px;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
+const HeaderContainer = styled.div`
+  grid-area: header;
+  width: 100%;
+  height: 100%;
 `
-
-const Logo = styled.img`
-  height: 50px;
-  pointer-events: none;
+const FileBrowserContainer = styled.div`
+  grid-area: filebrowser;
+  width: 100%;
+  height: 100%;
+`
+const EditorContainer = styled.div`
+  grid-area: editor;
+  width: 100%;
+  height: 100%;
+  padding-top: 5px;
 `
 
 function App() {
@@ -61,51 +57,21 @@ function App() {
     !state.matches('preMount') && !state.matches('preEditorSetup')
 
   return (
-    <div>
-      <FileBrowser />
-      <Header>
-        <div style={{ display: 'flex' }}>
-          <VerticallyCenter>
-            <Logo
-              src={logo}
-              className={inRuntime ? 'App-spinning' : ''}
-              alt="logo"
-            />
-          </VerticallyCenter>
-          <VerticallyCenter>
-            <PlayButton
-              disabled={!inRuntime && !inEditing}
-              playing={inRuntime}
-              toggle={() => {
-                ;(window.onkeydown as any)({ key: 'Enter', shiftKey: true })
-              }}
-            />
-          </VerticallyCenter>
-          <VerticallyCenter style={{ marginLeft: 5 }}>
-            <Button onClick={() => send('RESET_CODE')} disabled={!inEditing}>
-              reset
-            </Button>
-          </VerticallyCenter>
-          <VerticallyCenter style={{ marginLeft: 5 }}>
-            <Dial
-              send={volume =>
-                MASTER_VOLUME$.next(Math.max(0, Math.min(1, volume)))
-              }
-              start={0}
-              end={1}
-              initialValue={0.5}
-              radius={15}
-              sampleRate={100}
-            />
-            <div style={{ fontSize: 9, color: '#ddd', marginTop: 3 }}>
-              volume
-            </div>
-          </VerticallyCenter>
-        </div>
-      </Header>
-
-      {showEditor ? <Editor lifecycleService={service} /> : 'loading...'}
-    </div>
+    <AppContainer>
+      <HeaderContainer>
+        <AppHeader
+          inEditing={inEditing}
+          inRuntime={inRuntime}
+          resetCode={() => send('RESET_CODE')}
+        />
+      </HeaderContainer>
+      <FileBrowserContainer>
+        <FileBrowser />
+      </FileBrowserContainer>
+      <EditorContainer>
+        {showEditor ? <Editor lifecycleService={service} /> : 'loading...'}
+      </EditorContainer>
+    </AppContainer>
   )
 }
 
