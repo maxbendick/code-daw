@@ -107,11 +107,13 @@ class LocalStorageVfs implements VirtualFileSystem {
     if (!path.startsWith('/')) {
       throw new Error(`bad path ${path}`)
     }
-    try {
-      this.storageGet(path)
-    } catch (e) {
-      throw new Error('storageSet can only be called on existing storage items')
-    }
+    // try {
+    //   this.storageGet(path)
+    // } catch (e) {
+    //   throw new Error(
+    //     `storageSet can only be called on existing storage items - ${path}`,
+    //   )
+    // }
 
     this.storage.setItem(pathToLocalStorageKey(path), content)
   }

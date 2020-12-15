@@ -3,6 +3,7 @@ import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { machine } from '../../lifecycle/machine'
 import { lifecycleServices } from '../../lifecycle/services'
+import { makeVfsMachine } from '../../virtual-file-system/vfs-machine'
 import { Editor } from '../Editor'
 import { FileBrowser } from '../FileBrowser'
 import { AppHeader } from '../Header'
@@ -38,23 +39,33 @@ const EditorContainer = styled.div`
 `
 
 function App() {
-  const [state, send, service] = useMachine(configgedMachine, {
-    devTools: true,
-  })
+  const [lifecycleState, lifecycleSend, lifecycleService] = useMachine(
+    configgedMachine,
+    {
+      devTools: true,
+    },
+  )
+  const [vfsState, vfsSend, vfsService] = useMachine(makeVfsMachine())
 
   useEffect(() => {
-    send('REACT_MOUNTED')
-  }, [send])
+    lifecycleSend('REACT_MOUNTED')
+  }, [lifecycleSend])
 
   useEffect(() => {
-    console.log('--state:', state.value, state)
-  }, [state])
+    console.log('--lifecycle state:', lifecycleState.value, lifecycleState)
+  }, [lifecycleState])
 
-  const inRuntime = state.matches('runtime') || state.matches('lightRuntime')
-  const inEditing = state.matches('editing')
+  useEffect(() => {
+    console.log('--vfs state:', vfsState.value, vfsState)
+  }, [vfsState])
+
+  const inRuntime =
+    lifecycleState.matches('runtime') || lifecycleState.matches('lightRuntime')
+  const inEditing = lifecycleState.matches('editing')
 
   const showEditor =
-    !state.matches('preMount') && !state.matches('preEditorSetup')
+    !lifecycleState.matches('preMount') &&
+    !lifecycleState.matches('preEditorSetup')
 
   return (
     <AppContainer>
@@ -62,14 +73,18 @@ function App() {
         <AppHeader
           inEditing={inEditing}
           inRuntime={inRuntime}
-          resetCode={() => send('RESET_CODE')}
+          resetCode={() => lifecycleSend('RESET_CODE')}
         />
       </HeaderContainer>
       <FileBrowserContainer>
-        <FileBrowser />
+        <FileBrowser vfsService={vfsService} />
       </FileBrowserContainer>
       <EditorContainer>
-        {showEditor ? <Editor lifecycleService={service} /> : 'loading...'}
+        {showEditor ? (
+          <Editor lifecycleService={lifecycleService} vfsService={vfsService} />
+        ) : (
+          'loading...'
+        )}
       </EditorContainer>
     </AppContainer>
   )

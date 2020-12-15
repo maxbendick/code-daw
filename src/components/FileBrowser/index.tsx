@@ -1,7 +1,7 @@
+import { useService } from '@xstate/react'
 import * as React from 'react'
-import { useEffect, useState } from 'react'
 import styled from 'styled-components'
-import { makeLocalStorageVfs } from '../../virtual-file-system'
+import { VfsService } from '../../virtual-file-system/vfs-machine'
 
 const files = {
   'index.tsx': 'askdfjskdf',
@@ -61,33 +61,27 @@ const FileItem: React.FC<{
   )
 }
 
-export const FileBrowser: React.FC = () => {
-  const [activeFileName, setActiveFileName] = useState('index.tsx')
-  const [allPaths, setAllPaths] = useState<string[]>()
+export const FileBrowser: React.FC<{ vfsService: VfsService }> = ({
+  vfsService,
+}) => {
+  const [vfsState, vfsSend] = useService(vfsService)
 
-  useEffect(() => {
-    const doEffect = async () => {
-      const vfs = await makeLocalStorageVfs()
-      const initialAllPaths = await vfs.getAllPaths()
-      setAllPaths(initialAllPaths)
-    }
-    doEffect()
-  }, [])
+  const paths = Object.keys(vfsState.context.pathToContent).sort()
 
-  const fileNames = allPaths
+  const activePath = vfsState.context.activePath
 
-  if (!fileNames) {
-    return <div />
+  const setActivePath = (path: string) => {
+    vfsSend({ type: 'SET_ACTIVE', path })
   }
 
   return (
     <Container>
-      {fileNames.map(fileName => (
+      {paths.map(path => (
         <FileItem
-          key={fileName}
-          fileName={fileName}
-          active={fileName === activeFileName}
-          onClick={() => setActiveFileName(fileName)}
+          key={path}
+          fileName={path}
+          active={path === activePath}
+          onClick={() => setActivePath(path)}
         />
       ))}
     </Container>

@@ -1,4 +1,4 @@
-import { assign, Machine, spawn } from 'xstate'
+import { assign, Interpreter, Machine, spawn } from 'xstate'
 import { makeLocalStorageVfs, VfsFile, VirtualFileSystem } from '.'
 
 interface VfsContext {
@@ -41,6 +41,16 @@ export interface VfsStateSchema {
 
 let nextId = 1
 
+export type VfsService = Interpreter<
+  VfsContext,
+  VfsStateSchema,
+  VfsEvent,
+  {
+    value: any
+    context: VfsContext
+  }
+>
+
 export const makeVfsMachine = (
   storage: Storage = window.localStorage,
   fetchFn: typeof window.fetch = window.fetch,
@@ -54,13 +64,23 @@ export const makeVfsMachine = (
         setup: {
           invoke: {
             src: async (context, event) => {
-              return await makeLocalStorageVfs(storage, fetchFn)
+              const vfs = await makeLocalStorageVfs(storage, fetchFn)
+              const paths = await vfs.getAllPaths()
+              const pathToContent: { [path: string]: VfsFile } = {}
+              for (const path of paths) {
+                pathToContent[path] = await vfs.get(path)
+              }
+
+              return { vfs, pathToContent }
             },
             onDone: {
               target: 'ready' as const,
-              actions: assign({
-                vfs: (context, event) => event.data as VirtualFileSystem,
-              }),
+              actions: [
+                assign({
+                  vfs: (context, event) => event.data.vfs as VirtualFileSystem,
+                  pathToContent: (context, event) => event.data.pathToContent,
+                }),
+              ],
             },
           },
         },

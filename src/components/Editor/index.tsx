@@ -1,5 +1,5 @@
 import MonacoEditor from '@monaco-editor/react'
-import { useMachine, useService } from '@xstate/react'
+import { useService } from '@xstate/react'
 import { useEffect } from 'react'
 import { Interpreter } from 'xstate'
 import * as Config from '../../config'
@@ -9,7 +9,7 @@ import {
   LifecycleEvent,
   LifecycleStateSchema,
 } from '../../lifecycle/types'
-import { makeVfsMachine } from '../../virtual-file-system/vfs-machine'
+import { VfsService } from '../../virtual-file-system/vfs-machine'
 import { code5 } from './code'
 import './Editor.css'
 
@@ -23,6 +23,7 @@ interface Props {
       context: LifecycleContext
     }
   >
+  vfsService: VfsService
 }
 
 const defaultCode = code5 // .substring(1) need some padding
@@ -33,23 +34,9 @@ const initialCode = localStorage.getItem(codeLocalStorageKey) ?? defaultCode
 
 let didd = false
 
-export const Editor: React.FC<Props> = ({ lifecycleService }) => {
+export const Editor: React.FC<Props> = ({ lifecycleService, vfsService }) => {
   const [state, send] = useService(lifecycleService)
-  const [vfsState, vfsSend] = useMachine(makeVfsMachine())
-
-  useEffect(() => {
-    console.log('vfs state!', vfsState)
-
-    const doEffect = async () => {
-      if (vfsState.matches('present') && !didd) {
-        didd = true
-        await new Promise(resolve => setTimeout(resolve, 1000))
-        vfsSend({ type: 'GET', path: '/index.tsx' })
-      }
-    }
-
-    doEffect()
-  }, [vfsState])
+  const [vfsState, vfsSend] = useService(vfsService)
 
   const handleEditorDidMount = (_: any, editor: EditorT) => {
     send({
