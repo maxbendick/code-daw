@@ -18,14 +18,8 @@ const getDefaultPathlist = async (
   fetchFn: typeof window.fetch,
 ): Promise<string[]> => {
   const response = await fetchFn(pathlistUrl)
-
   const responseBody = await response.text()
-
-  const result = JSON.parse(responseBody) as string[]
-
-  console.log('get default pathlist result', result)
-
-  return result
+  return JSON.parse(responseBody) as string[]
 }
 
 const getDefaultFile = async (
@@ -48,7 +42,7 @@ export const makeLocalStorageVfs = async (
   return vfs
 }
 
-interface VfsFile {
+export interface VfsFile {
   path: string
   content: string
 }
@@ -77,39 +71,18 @@ class LocalStorageVfs implements VirtualFileSystem {
   }
 
   get = async (path: string): Promise<VfsFile> => {
-    if (!path.startsWith('/')) {
-      throw new Error(`path must start with / - ${path}`)
-    }
-    const result = this.storage.getItem(pathToLocalStorageKey(path))!
-    if (!result) {
-      throw new Error(`couldnt find localstorage item for path ${path}`)
-    }
     return {
       path,
-      content: result,
+      content: this.storageGet(path),
     }
   }
 
   set = async (path: string, content: string): Promise<VfsFile> => {
-    if (!path.startsWith('/')) {
-      throw new Error(`path must start with / - ${path}`)
-    }
-
-    // make sure present - this may throw!!!
-    await this.get(path)
-
-    this.storage.setItem(pathToLocalStorageKey(path), content)
+    this.storageSet(path, content)
     return { path, content }
   }
 
-  setNoPropogate = async (path: string, content: string): Promise<VfsFile> => {
-    if (!path.startsWith('/')) {
-      throw new Error(`path must start with / - ${path}`)
-    }
-
-    this.storage.setItem(pathToLocalStorageKey(path), content)
-    return { path, content }
-  }
+  setNoPropogate = this.set
 
   getAllPaths = async (): Promise<string[]> => {
     return Object.entries(this.storage)
@@ -117,5 +90,29 @@ class LocalStorageVfs implements VirtualFileSystem {
       .filter(key => key.startsWith(vfsFileLocalStoragePrefix))
       .map(key => key.substring(vfsFileLocalStoragePrefix.length))
       .sort()
+  }
+
+  private storageGet = (path: string): string => {
+    if (!path.startsWith('/')) {
+      throw new Error(`bad path ${path}`)
+    }
+    const result = this.storage.getItem(pathToLocalStorageKey(path))
+    if (!result) {
+      throw new Error(`no item in storage: ${path}`)
+    }
+    return result
+  }
+
+  private storageSet = (path: string, content: string) => {
+    if (!path.startsWith('/')) {
+      throw new Error(`bad path ${path}`)
+    }
+    try {
+      this.storageGet(path)
+    } catch (e) {
+      throw new Error('storageSet can only be called on existing storage items')
+    }
+
+    this.storage.setItem(pathToLocalStorageKey(path), content)
   }
 }

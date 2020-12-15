@@ -7,10 +7,11 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 test('vfs machine general function', async () => {
   const machine = makeVfsMachine(makeLocalStorageMock(), makeFetchMock() as any)
 
-  const service = interpret(machine).onTransition(state => {
-    console.log('state.event', state.event)
-    console.log(state.value)
-  })
+  const service = interpret(machine)
+  // .onTransition(state => {
+  //   // console.log('state.event', state.event)
+  //   // console.log(state.value)
+  // })
 
   service.start()
 

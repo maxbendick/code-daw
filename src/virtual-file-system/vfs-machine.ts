@@ -1,7 +1,5 @@
 import { assign, Machine, spawn } from 'xstate'
-import { makeLocalStorageVfs, VirtualFileSystem } from '.'
-
-type FileStatus = 'loading' | 'saving' | 'present'
+import { makeLocalStorageVfs, VfsFile, VirtualFileSystem } from '.'
 
 interface VfsContext {
   vfs?: VirtualFileSystem
@@ -16,28 +14,30 @@ interface VfsContext {
 // activeFileContent$ = vfsService => Observable<string | null>
 // activeFilePath$ = vfsService => Observable<string | null>
 
+type VfsActorEvent =
+  | { type: `done.invoke.get-${string}`; data: VfsFile }
+  | { type: `done.invoke.set-${string}`; data: VfsFile }
+
+const isVfsActorEvent = (event: VfsEvent): event is VfsActorEvent => {
+  return (
+    event.type.startsWith('done.invoke.get-') ||
+    event.type.startsWith('done.invoke.set-')
+  )
+}
+
 type VfsEvent =
   | { type: 'GET'; path: string }
   | { type: 'SET'; path: string; content: string }
   | { type: 'SET_ACTIVE'; path: string }
+  | { type: 'LOAD_ALL' }
+  | VfsActorEvent
 
 export interface VfsStateSchema {
   states: {
     setup: {}
-    present: {}
+    ready: {}
   }
 }
-
-// onDone: {
-//   target: 'compilingCode',
-//   actions: assign({
-//     tokens: (context, event) => {
-//       makeJsonStringifySafe(event.data)
-//       return event.data
-//     },
-//   }),
-// },
-// onError: 'failure',
 
 let nextId = 1
 
@@ -57,21 +57,18 @@ export const makeVfsMachine = (
               return await makeLocalStorageVfs(storage, fetchFn)
             },
             onDone: {
-              target: 'present',
+              target: 'ready' as const,
               actions: assign({
                 vfs: (context, event) => event.data as VirtualFileSystem,
               }),
             },
           },
         },
-        present: {
+        ready: {
           on: {
             GET: {
-              // could make simpler by extracting from machine
-              // TODO look for 'done.invoke.<ID>' event for result
               actions: assign({
                 requestRefs: (context, event) => {
-                  // const name =
                   return [
                     ...context.requestRefs,
                     spawn(context.vfs?.get(event.path)!, `get-${nextId++}`),
@@ -81,7 +78,6 @@ export const makeVfsMachine = (
             },
             SET: {
               actions: assign({
-                // id: '',
                 requestRefs: (context, event) => {
                   return [
                     ...context.requestRefs,
@@ -95,13 +91,14 @@ export const makeVfsMachine = (
             },
             SET_ACTIVE: {
               actions: assign({
-                activePath: (context, event) => (event as any).path,
+                activePath: (context, event) => event.path,
               }),
             },
             '*': {
               actions: assign({
-                requestRefs: (context, event) => {
-                  if (!event.type.startsWith('done.invoke.')) {
+                requestRefs: (context, _event) => {
+                  const event = _event as VfsActorEvent
+                  if (!isVfsActorEvent(event)) {
                     return context.requestRefs
                   }
                   return context.requestRefs.filter(
@@ -109,32 +106,13 @@ export const makeVfsMachine = (
                   )
                 },
                 pathToContent: (context, event) => {
-                  if (event.type.startsWith('done.invoke.get-')) {
+                  if (isVfsActorEvent(event)) {
                     return {
                       ...context.pathToContent,
-                      [(event as any).data.path]: (event as any).data.content,
-                    }
-                  }
-                  if (event.type.startsWith('done.invoke.set-')) {
-                    console.log('its a set fn!')
-                    return {
-                      ...context.pathToContent,
-                      [(event as any).data.path]: (event as any).data.content,
+                      [event.data.path]: event.data.content,
                     }
                   }
                   return context.pathToContent
-                },
-                activePath: (context, event) => {
-                  if (event.type.startsWith('done.invoke.get-')) {
-                    console.log('its a get fn!')
-                  }
-                  if (event.type.startsWith('done.invoke.set-')) {
-                    console.log('its a set fn!')
-                  }
-
-                  console.log('refs', context.requestRefs)
-                  console.log('wildcard event', event)
-                  return context.activePath
                 },
               }),
             },
@@ -142,9 +120,9 @@ export const makeVfsMachine = (
         },
       },
     },
-    {
-      activities: {
-        get: () => {},
-      },
-    },
+    // {
+    //   activities: {
+    //     get: () => {},
+    //   },
+    // },
   )
