@@ -1,5 +1,18 @@
-import { assign, Interpreter, Machine, spawn } from 'xstate'
+import { Actor, assign, Interpreter, Machine, spawn, State } from 'xstate'
 import { makeLocalStorageVfs, VfsFile, VirtualFileSystem } from '.'
+
+export type VfsActor = Actor<
+  State<
+    VfsContext,
+    VfsEvent,
+    any,
+    {
+      value: any
+      context: VfsContext
+    }
+  >,
+  VfsEvent
+>
 
 interface VfsContext {
   vfs?: VirtualFileSystem
@@ -20,16 +33,16 @@ type VfsActorEvent =
 
 const isVfsActorEvent = (event: VfsEvent): event is VfsActorEvent => {
   return (
-    event.type.startsWith('done.invoke.get-') ||
-    event.type.startsWith('done.invoke.set-')
+    event.type.startsWith('done.invoke.vfs-get-') ||
+    event.type.startsWith('done.invoke.vfs-set-')
   )
 }
 
-type VfsEvent =
-  | { type: 'GET'; path: string }
-  | { type: 'SET'; path: string; content: string }
-  | { type: 'SET_ACTIVE'; path: string }
-  | { type: 'LOAD_ALL' }
+export type VfsEvent =
+  | { type: 'VFS_GET'; path: string }
+  | { type: 'VFS_SET'; path: string; content: string }
+  | { type: 'VFS_SET_ACTIVE'; path: string }
+  | { type: 'VFS_LOAD_ALL' }
   | VfsActorEvent
 
 export interface VfsStateSchema {
@@ -86,30 +99,30 @@ export const makeVfsMachine = (
         },
         ready: {
           on: {
-            GET: {
+            VFS_GET: {
               actions: assign({
                 requestRefs: (context, event) => {
                   return [
                     ...context.requestRefs,
-                    spawn(context.vfs?.get(event.path)!, `get-${nextId++}`),
+                    spawn(context.vfs?.get(event.path)!, `vfs-get-${nextId++}`),
                   ]
                 },
               }),
             },
-            SET: {
+            VFS_SET: {
               actions: assign({
                 requestRefs: (context, event) => {
                   return [
                     ...context.requestRefs,
                     spawn(
                       context.vfs?.set(event.path, event.content)!,
-                      `set-${nextId++}`,
+                      `vfs-set-${nextId++}`,
                     ),
                   ]
                 },
               }),
             },
-            SET_ACTIVE: {
+            VFS_SET_ACTIVE: {
               actions: assign({
                 activePath: (context, event) => event.path,
               }),

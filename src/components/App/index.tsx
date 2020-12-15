@@ -3,7 +3,6 @@ import React, { useEffect } from 'react'
 import styled from 'styled-components'
 import { machine } from '../../lifecycle/machine'
 import { lifecycleServices } from '../../lifecycle/services'
-import { makeVfsMachine } from '../../virtual-file-system/vfs-machine'
 import { Editor } from '../Editor'
 import { FileBrowser } from '../FileBrowser'
 import { AppHeader } from '../Header'
@@ -45,7 +44,6 @@ function App() {
       devTools: true,
     },
   )
-  const [vfsState, vfsSend, vfsService] = useMachine(makeVfsMachine())
 
   useEffect(() => {
     lifecycleSend('REACT_MOUNTED')
@@ -55,17 +53,16 @@ function App() {
     console.log('--lifecycle state:', lifecycleState.value, lifecycleState)
   }, [lifecycleState])
 
-  useEffect(() => {
-    console.log('--vfs state:', vfsState.value, vfsState)
-  }, [vfsState])
-
   const inRuntime =
     lifecycleState.matches('runtime') || lifecycleState.matches('lightRuntime')
   const inEditing = lifecycleState.matches('editing')
 
   const showEditor =
     !lifecycleState.matches('preMount') &&
-    !lifecycleState.matches('preEditorSetup')
+    !lifecycleState.matches('preEditorSetup') &&
+    lifecycleState.context.vfsActor
+
+  const vfsActor = lifecycleState.context.vfsActor!
 
   return (
     <AppContainer>
@@ -77,11 +74,11 @@ function App() {
         />
       </HeaderContainer>
       <FileBrowserContainer>
-        <FileBrowser vfsService={vfsService} />
+        <FileBrowser vfsActor={vfsActor} />
       </FileBrowserContainer>
       <EditorContainer>
         {showEditor ? (
-          <Editor lifecycleService={lifecycleService} vfsService={vfsService} />
+          <Editor lifecycleService={lifecycleService} vfsActor={vfsActor} />
         ) : (
           'loading...'
         )}

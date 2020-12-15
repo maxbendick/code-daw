@@ -2,6 +2,7 @@ import { CoolZone } from '../editor/cool-zone'
 import { TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
 import { SignalGraph } from '../lib2/priv/signal-graph'
+import { VfsActor } from '../virtual-file-system/vfs-machine'
 
 export type LifecycleEvent =
   | { type: 'REACT_MOUNTED' }
@@ -36,6 +37,7 @@ export interface LifecycleContext {
   coolZones?: CoolZone[]
   signalGraph?: SignalGraph
   audioContext?: AudioContext
+  vfsActor?: VfsActor
 }
 
 export interface LifecycleContextWithMonaco {

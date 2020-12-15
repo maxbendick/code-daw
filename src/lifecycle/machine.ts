@@ -1,6 +1,7 @@
 // import { assign as _assign, Machine } from 'xstate'
-import { assign, Machine } from 'xstate'
+import { assign, Machine, spawn } from 'xstate'
 import { SignalGraph } from '../lib2/priv/signal-graph'
+import { makeVfsMachine } from '../virtual-file-system/vfs-machine'
 import {
   LifecycleContext,
   LifecycleEvent,
@@ -65,8 +66,13 @@ export const machine = Machine<
     states: {
       preMount: {
         on: {
-          REACT_MOUNTED: 'loadingMonaco',
+          REACT_MOUNTED: {
+            target: 'loadingMonaco',
+          },
         },
+        entry: assign({
+          vfsActor: () => spawn(makeVfsMachine()),
+        }) as any,
       },
       loadingMonaco: {
         invoke: {

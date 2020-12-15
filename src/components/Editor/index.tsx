@@ -9,7 +9,7 @@ import {
   LifecycleEvent,
   LifecycleStateSchema,
 } from '../../lifecycle/types'
-import { VfsService } from '../../virtual-file-system/vfs-machine'
+import { VfsActor } from '../../virtual-file-system/vfs-machine'
 import { code5 } from './code'
 import './Editor.css'
 
@@ -23,7 +23,7 @@ interface Props {
       context: LifecycleContext
     }
   >
-  vfsService: VfsService
+  vfsActor: VfsActor
 }
 
 const defaultCode = code5 // .substring(1) need some padding
@@ -34,9 +34,9 @@ const initialCode = localStorage.getItem(codeLocalStorageKey) ?? defaultCode
 
 let didd = false
 
-export const Editor: React.FC<Props> = ({ lifecycleService, vfsService }) => {
+export const Editor: React.FC<Props> = ({ lifecycleService, vfsActor }) => {
   const [state, send] = useService(lifecycleService)
-  const [vfsState, vfsSend] = useService(vfsService)
+  // const [vfsState, vfsSend] = useService(vfsService)
 
   const handleEditorDidMount = (_: any, editor: EditorT) => {
     send({
