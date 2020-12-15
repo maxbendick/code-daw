@@ -71,8 +71,8 @@ export const machine = Machine<
           },
         },
         entry: assign({
-          vfsActor: () => spawn(makeVfsMachine()),
-        }) as any,
+          vfsActor: (context, event) => spawn(makeVfsMachine()),
+        }),
       },
       loadingMonaco: {
         invoke: {

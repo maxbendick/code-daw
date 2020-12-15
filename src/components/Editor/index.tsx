@@ -36,7 +36,7 @@ let didd = false
 
 export const Editor: React.FC<Props> = ({ lifecycleService, vfsActor }) => {
   const [state, send] = useService(lifecycleService)
-  // const [vfsState, vfsSend] = useService(vfsService)
+  // const [vfsState, vfsSend] = useActor(vfsActor)
 
   const handleEditorDidMount = (_: any, editor: EditorT) => {
     send({
