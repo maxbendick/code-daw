@@ -1,4 +1,4 @@
-import { Actor, assign, Interpreter, Machine, send, spawn, State } from 'xstate'
+import { Actor, assign, Interpreter, Machine, spawn, State } from 'xstate'
 import { makeLocalStorageVfs, VfsFile, VirtualFileSystem } from '.'
 import { EditorT } from '../editor/types'
 
@@ -19,7 +19,8 @@ interface VfsContext {
   vfs?: VirtualFileSystem
   activePath?: string | null
   requestRefs: any[]
-  pathToContent: { [path: string]: string }
+  pathToFile: { [path: string]: VfsFile }
+  editor?: EditorT
 }
 
 // getActiveFileContentFromContext = (context: VfsContext) => string | null
@@ -76,12 +77,16 @@ export const makeVfsMachine = (
   const machine = Machine<VfsContext, VfsStateSchema, VfsEvent>({
     id: 'vfs',
     initial: 'preSetup',
-    context: { requestRefs: [], pathToContent: {} },
+    context: { requestRefs: [], pathToFile: {} },
     states: {
       preSetup: {
-        entry: send('VFS_DO_SETUP'),
         on: {
-          VFS_DO_SETUP: 'setup',
+          VFS_SET_EDITOR: {
+            target: 'setup',
+            actions: assign({
+              editor: (context, event) => event.editor,
+            }),
+          },
         },
       },
       setup: {
@@ -92,20 +97,20 @@ export const makeVfsMachine = (
             console.error('got vfs client', vfs)
             const paths = await vfs.getAllPaths()
             console.error('got all paths', paths)
-            const pathToContent: { [path: string]: VfsFile } = {}
+            const pathToFile: { [path: string]: VfsFile } = {}
             for (const path of paths) {
-              pathToContent[path] = await vfs.get(path)
+              pathToFile[path] = await vfs.get(path)
             }
 
             console.log('in vfs setup at end of vfs')
-            return { vfs, pathToContent }
+            return { vfs, pathToFile: pathToFile }
           },
           onDone: {
             target: 'ready' as const,
             actions: [
               assign({
                 vfs: (context, event) => event.data.vfs as VirtualFileSystem,
-                pathToContent: (context, event) => event.data.pathToContent,
+                pathToFile: (context, event) => event.data.pathToFile,
               }),
             ],
           },
@@ -137,9 +142,19 @@ export const makeVfsMachine = (
             }),
           },
           VFS_SET_ACTIVE: {
-            actions: assign({
-              activePath: (context, event) => event.path,
-            }),
+            actions: [
+              assign({
+                activePath: (context, event) => event.path,
+              }),
+              (context, event) => {
+                console.log('set active!', event)
+                // const { path, content } = event
+                // const content = context.pathToFile[path]
+                console.warn('loading', { event, context })
+                const { content } = context.pathToFile[event.path]
+                context.editor?.setValue(content)
+              },
+            ],
           },
           '*': {
             actions: assign({
@@ -151,14 +166,15 @@ export const makeVfsMachine = (
                   ref => !event.type.endsWith(ref.id),
                 )
               },
-              pathToContent: (context, event) => {
+              pathToFile: (context, event) => {
                 if (isVfsActorEvent(event)) {
-                  return {
-                    ...context.pathToContent,
-                    [event.data.path]: event.data.content,
-                  }
+                  // return {
+                  //   ...context.pathToFile,
+                  //   [event.data.path]: event.data.content,
+                  // }
+                  throw new Error('need to handle this, or stop supporting it')
                 }
-                return context.pathToContent
+                return context.pathToFile
               },
             }),
           },

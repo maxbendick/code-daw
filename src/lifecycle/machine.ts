@@ -116,11 +116,18 @@ export const machine = Machine<
                   return event.editor
                 },
               }),
-              send((context, event) => ({
-                type: 'VFS_SET_EDITOR',
-                editor: event.editor,
-                to: 'vfsActor',
-              })),
+              // send('VFS_SET_EDITOR', {
+              //   to: context => context.vfsActor as any,
+              // }),
+              send(
+                (context, event) =>
+                  ({
+                    type: 'VFS_SET_EDITOR',
+                    editor: event.editor,
+                    // to: 'vfsActor',
+                  } as any),
+                { to: 'vfsActor' },
+              ),
             ],
           },
         },

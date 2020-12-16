@@ -38,7 +38,7 @@ test('vfs machine general function', async () => {
   await wait(10)
   expect(service.state.context.requestRefs.length).toBe(0)
 
-  expect(service.state.context.pathToContent).toEqual({
+  expect(service.state.context.pathToFile).toEqual({
     '/index.tsx': 'the new index content',
   })
 

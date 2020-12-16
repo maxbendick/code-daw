@@ -65,11 +65,16 @@ export const FileBrowser: React.FC<{ vfsActor: VfsActor }> = ({ vfsActor }) => {
   // TODO typing
   const [vfsState, vfsSend] = useActor(vfsActor as any) as any
 
-  // React.useEffect(() => {
-  //   console.log('---x-x-x-x- vfsState', vfsState)
-  // }, [vfsState])
+  React.useEffect(() => {
+    console.log('---x-x-x-x- vfsState', vfsState)
+  }, [vfsState])
 
-  const paths = Object.keys(vfsState.context.pathToContent).sort()
+  if (!vfsState.context.pathToFile) {
+    console.error('vfs context has no pathToContent!')
+    return <div />
+  }
+
+  const paths = Object.keys(vfsState.context.pathToFile).sort()
 
   const activePath = vfsState.context.activePath
 
