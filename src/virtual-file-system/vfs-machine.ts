@@ -17,7 +17,7 @@ export type VfsActor = Actor<
 
 interface VfsContext {
   vfs?: VirtualFileSystem
-  activePath?: string | null
+  activePath: string
   requestRefs: any[]
   pathToFile: { [path: string]: VfsFile }
   editor?: EditorT
@@ -33,11 +33,14 @@ type VfsActorEvent =
   | { type: `done.invoke.get-${string}`; data: VfsFile }
   | { type: `done.invoke.set-${string}`; data: VfsFile }
 
+const isVfsSaveEvent = (
+  event: VfsEvent,
+): event is { type: 'VFS_SET'; path: string; content: string } => {
+  return event.type.startsWith('done.invoke.vfs-set-')
+}
+
 const isVfsActorEvent = (event: VfsEvent): event is VfsActorEvent => {
-  return (
-    event.type.startsWith('done.invoke.vfs-get-') ||
-    event.type.startsWith('done.invoke.vfs-set-')
-  )
+  return event.type.startsWith('done.invoke.vfs-get-') || isVfsSaveEvent(event)
 }
 
 export type VfsEvent =
@@ -47,6 +50,7 @@ export type VfsEvent =
   | { type: 'VFS_LOAD_ALL' }
   | { type: 'VFS_SET_EDITOR'; editor: EditorT }
   | { type: 'VFS_DO_SETUP' }
+  | { type: 'VFS_SAVE_ACTIVE' }
   | VfsActorEvent
 
 export interface VfsStateSchema {
@@ -77,7 +81,7 @@ export const makeVfsMachine = (
   const machine = Machine<VfsContext, VfsStateSchema, VfsEvent>({
     id: 'vfs',
     initial: 'preSetup',
-    context: { requestRefs: [], pathToFile: {} },
+    context: { activePath: '/index.tsx', requestRefs: [], pathToFile: {} },
     states: {
       preSetup: {
         on: {
@@ -129,12 +133,37 @@ export const makeVfsMachine = (
             }),
           },
           VFS_SET: {
+            actions: [
+              assign({
+                requestRefs: (context, event) => {
+                  console.log('saving!!!')
+                  return [
+                    ...context.requestRefs,
+                    spawn(
+                      context.vfs?.set(event.path, event.content)!,
+                      `vfs-set-${nextId++}`,
+                    ),
+                  ]
+                },
+              }),
+            ],
+          },
+          VFS_SAVE_ACTIVE: {
             actions: assign({
               requestRefs: (context, event) => {
+                console.log('saving!!!')
+                const path = context.activePath
+                const content = context.editor?.getValue()
+
+                if (!content) {
+                  console.error(context, event)
+                  throw new Error('no content to save')
+                }
+
                 return [
                   ...context.requestRefs,
                   spawn(
-                    context.vfs?.set(event.path, event.content)!,
+                    context.vfs?.set(path, content)!,
                     `vfs-set-${nextId++}`,
                   ),
                 ]
@@ -168,11 +197,13 @@ export const makeVfsMachine = (
               },
               pathToFile: (context, event) => {
                 if (isVfsActorEvent(event)) {
-                  // return {
-                  //   ...context.pathToFile,
-                  //   [event.data.path]: event.data.content,
-                  // }
-                  throw new Error('need to handle this, or stop supporting it')
+                  return {
+                    ...context.pathToFile,
+                    [event.data.path]: {
+                      path: event.data.path,
+                      content: event.data.content,
+                    },
+                  }
                 }
                 return context.pathToFile
               },

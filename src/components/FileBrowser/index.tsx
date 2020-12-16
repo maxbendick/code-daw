@@ -92,6 +92,12 @@ export const FileBrowser: React.FC<{ vfsActor: VfsActor }> = ({ vfsActor }) => {
           onClick={() => setActivePath(path)}
         />
       ))}
+      <button
+        onClick={() => vfsSend('VFS_SAVE_ACTIVE')}
+        style={{ color: '#bbb', background: 'transparent' }}
+      >
+        SAVE CURRENT
+      </button>
     </Container>
   )
 }
