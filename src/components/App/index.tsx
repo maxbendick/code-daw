@@ -57,12 +57,16 @@ function App() {
     lifecycleState.matches('runtime') || lifecycleState.matches('lightRuntime')
   const inEditing = lifecycleState.matches('editing')
 
-  const showEditor =
+  const vfsActor = lifecycleState.context.vfsActor
+
+  const ready =
     !lifecycleState.matches('preMount') &&
     !lifecycleState.matches('preEditorSetup') &&
-    lifecycleState.context.vfsActor
+    vfsActor
 
-  const vfsActor = lifecycleState.context.vfsActor!
+  if (!ready) {
+    return <div />
+  }
 
   return (
     <AppContainer>
@@ -74,11 +78,11 @@ function App() {
         />
       </HeaderContainer>
       <FileBrowserContainer>
-        <FileBrowser vfsActor={vfsActor} />
+        <FileBrowser vfsActor={vfsActor!} />
       </FileBrowserContainer>
       <EditorContainer>
-        {showEditor ? (
-          <Editor lifecycleService={lifecycleService} vfsActor={vfsActor} />
+        {ready ? (
+          <Editor lifecycleService={lifecycleService} vfsActor={vfsActor!} />
         ) : (
           'loading...'
         )}

@@ -1,5 +1,5 @@
 // import { assign as _assign, Machine } from 'xstate'
-import { assign, Machine, spawn } from 'xstate'
+import { assign, Machine, send, spawn } from 'xstate'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 import { makeVfsMachine } from '../virtual-file-system/vfs-machine'
 import {
@@ -65,14 +65,14 @@ export const machine = Machine<
     context: {},
     states: {
       preMount: {
+        entry: assign({
+          vfsActor: (context, event) => spawn(makeVfsMachine(), 'vfsActor'),
+        }),
         on: {
           REACT_MOUNTED: {
             target: 'loadingMonaco',
           },
         },
-        entry: assign({
-          vfsActor: (context, event) => spawn(makeVfsMachine()),
-        }),
       },
       loadingMonaco: {
         invoke: {
@@ -109,12 +109,19 @@ export const machine = Machine<
         on: {
           EDITOR_CREATED: {
             target: 'editing',
-            actions: assign({
-              editor: (context, event) => {
-                makeJsonStringifySafe(event.editor)
-                return event.editor
-              },
-            }),
+            actions: [
+              assign({
+                editor: (context, event) => {
+                  makeJsonStringifySafe(event.editor)
+                  return event.editor
+                },
+              }),
+              send((context, event) => ({
+                type: 'VFS_SET_EDITOR',
+                editor: event.editor,
+                to: 'vfsActor',
+              })),
+            ],
           },
         },
       },

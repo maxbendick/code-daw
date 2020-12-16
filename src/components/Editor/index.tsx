@@ -1,5 +1,5 @@
 import MonacoEditor from '@monaco-editor/react'
-import { useService } from '@xstate/react'
+import { useActor, useService } from '@xstate/react'
 import { useEffect } from 'react'
 import { Interpreter } from 'xstate'
 import * as Config from '../../config'
@@ -36,7 +36,7 @@ let didd = false
 
 export const Editor: React.FC<Props> = ({ lifecycleService, vfsActor }) => {
   const [state, send] = useService(lifecycleService)
-  // const [vfsState, vfsSend] = useActor(vfsActor)
+  const [vfsState, vfsSend] = useActor(vfsActor as any) as any
 
   const handleEditorDidMount = (_: any, editor: EditorT) => {
     send({

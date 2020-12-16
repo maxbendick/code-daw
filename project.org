@@ -1,6 +1,7 @@
 * NEXT STEPS
-** create a VirtualFileSystem class (1st: localstorage, 2nd and 3rd: http, disc)
-** connect filebrowser+editor to a storage system
+** in lifecycle, on vfs set active, load content into editor
+** DONE create a VirtualFileSystem class (1st: localstorage, 2nd and 3rd: http, disc)
+** TODO connect filebrowser+editor to a storage system
 
 Sync browser fs with localstorage and/or websocket backed by disc
 
