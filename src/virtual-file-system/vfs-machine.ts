@@ -6,7 +6,7 @@ export type VfsActor = Actor<
   State<
     VfsContext,
     VfsEvent,
-    any,
+    VfsStateSchema,
     {
       value: any
       context: VfsContext
@@ -15,7 +15,7 @@ export type VfsActor = Actor<
   VfsEvent
 >
 
-interface VfsContext {
+export interface VfsContext {
   vfs?: VirtualFileSystem
   activePath: string
   requestRefs: any[]
@@ -51,6 +51,7 @@ export type VfsEvent =
   | { type: 'VFS_SET_EDITOR'; editor: EditorT }
   | { type: 'VFS_DO_SETUP' }
   | { type: 'VFS_SAVE_ACTIVE' }
+  | { type: 'VFS_GET_ALL'; id: string | number }
   | VfsActorEvent
 
 export interface VfsStateSchema {

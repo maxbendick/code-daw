@@ -66,7 +66,8 @@ export const machine = Machine<
     states: {
       preMount: {
         entry: assign({
-          vfsActor: (context, event) => spawn(makeVfsMachine(), 'vfsActor'),
+          vfsActor: (context, event) =>
+            spawn(makeVfsMachine(), { name: 'vfsActor', sync: true }),
         }),
         on: {
           REACT_MOUNTED: {
@@ -136,6 +137,20 @@ export const machine = Machine<
         },
       },
       lightRuntime: {
+        // entry: send(
+        //   (context, event) => {
+        //     const result: VfsEvent = {
+        //       type: 'VFS_GET_ALL',
+        //       id: Math.random(),
+        //     }
+        //     return result
+        //   },
+        //   { to: 'vfsActor' },
+        // ),
+        // on: {
+        //   VFS_GET_ALL_RESPONSE: null as any,
+        // },
+
         // want to wait until shiftenter
         // eventually, stop audiocontext
         invoke: {

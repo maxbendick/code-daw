@@ -1,6 +1,7 @@
 import { SourceMapConsumer } from 'source-map'
 import { JsxEmit, ModuleKind, ScriptTarget, transpile } from 'typescript'
 import { LifecycleContext } from '../lifecycle/types'
+import { VfsContext } from '../virtual-file-system/vfs-machine'
 import { Zone } from './zone'
 
 const encodeToUrl = (code: string) => {
@@ -51,6 +52,10 @@ export const startLightRuntime = async (
   context: LifecycleContext,
   stopSignal: Promise<void>,
 ) => {
+  const vfsContext = context.vfsActor?.state.context as VfsContext
+
+  console.error('path to file!', vfsContext.pathToFile)
+
   const editor = context?.editor
   if (!editor) {
     throw new Error('Light runtime needs editor')
