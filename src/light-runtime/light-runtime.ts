@@ -49,8 +49,34 @@ const getExports = (source: string) => {
   return exportLines
 }
 
+const transpileFile = (source: string) =>
+  transpile(
+    source,
+    {
+      target: ScriptTarget.ES2020,
+      module: ModuleKind.ES2020,
+      jsx: JsxEmit.React,
+      jsxFactory: 'React.createElement',
+      sourceMap: true,
+      inlineSourceMap: true,
+    },
+    'filename.tsx',
+    [],
+    'filename',
+  )
+
 const objectValues = <A>(o: { [k: string]: A }): A[] =>
   Object.entries(o).map(([k, v]) => v)
+
+const mapValues = <A, B>(
+  o: { [k: string]: A },
+  f: (originalValue: A, index: number, key: string) => B,
+) => {
+  Object.entries(o).reduce((result, [key, originalValue], index) => {
+    result[key] = f(originalValue, index, key)
+    return result
+  }, {} as { [k: string]: B })
+}
 
 export const startLightRuntime = async (
   context: LifecycleContext,
@@ -60,8 +86,15 @@ export const startLightRuntime = async (
 
   console.error('path to file!', vfsContext.pathToFile)
   console.error('bundling...')
-  const bundled = await bundle(objectValues(vfsContext.pathToFile))
-  console.warn('bundled!', bundled)
+
+  const runnableJs = await bundle(
+    objectValues(vfsContext.pathToFile).map(file => ({
+      ...file,
+      content: transpileFile(file.content),
+    })),
+  )
+
+  console.warn('bundled!', runnableJs)
 
   const editor = context?.editor
   if (!editor) {
@@ -78,37 +111,8 @@ export const startLightRuntime = async (
   ;(window as any).codeDaw.audioContext = new AudioContext()
   ;(window as any).codeDaw.interactableSymbol = interactableSymbol
 
-  // replace internal import
-  // const internalPackage = encodeToUrl(`
-  //   export const getAudioContext = () => window.codeDaw.audioContext;
-  //   export const interactable = ({ value, domNode, onDestroy }) => {
-  //     if (typeof value === 'string') {
-  //       throw new Error('cant have string interactable');
-  //     }
-  //     value[window.codeDaw.interactableSymbol] = {
-  //       domNode,
-  //       onDestroy,
-  //     };
-  //     return value;
-  //   };
-  // `)
-  // source = source.replace(`from "!internal"`, `from '${internalPackage}'`)
-  // source = source.replace(`from '!internal'`, `from '${internalPackage}'`)
-
-  let transpiled = transpile(
-    source,
-    {
-      target: ScriptTarget.ES2020,
-      module: ModuleKind.ES2020,
-      jsx: JsxEmit.React,
-      jsxFactory: 'React.createElement',
-      sourceMap: true,
-      inlineSourceMap: true,
-    },
-    'filename.tsx',
-    [],
-    'filename',
-  )
+  // let transpiled = transpileFile(source)
+  let transpiled = runnableJs
 
   const sourceMapPreceding = '//# sourceMappingURL='
   const sourceMapStart =

@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { BehaviorSubject } from 'rxjs'
 
-// import { globalAudioContext, someFnToCallWheneverMakingNewNodeType, someFnToCallWheneverMakingNewNodeInstance } from '!internal'
+// import { globalAudioContext, someFnToCallWheneverMakingNewNodeType, someFnToCallWheneverMakingNewNodeInstance } from './internal'
 
 const createInteractable = null as any
 const useSignal = null as any
