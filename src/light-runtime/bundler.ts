@@ -74,7 +74,9 @@ const getByPath = (files: BundlerFile[], path: string): BundlerFile => {
 
   const file = files.find(f => f.path === safePath)
   if (!file) {
-    throw new Error('tried to get path for bad path ' + path)
+    throw new Error(
+      `tried to get path for bad path - ${path} - ${safePath} - ${files}`,
+    )
   }
   return file
 }

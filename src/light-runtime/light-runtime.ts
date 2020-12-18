@@ -2,6 +2,7 @@ import { SourceMapConsumer } from 'source-map'
 import { JsxEmit, ModuleKind, ScriptTarget, transpile } from 'typescript'
 import { LifecycleContext } from '../lifecycle/types'
 import { VfsContext } from '../virtual-file-system/vfs-machine'
+import { bundle } from './bundler'
 import { Zone } from './zone'
 
 const encodeToUrl = (code: string) => {
@@ -48,6 +49,9 @@ const getExports = (source: string) => {
   return exportLines
 }
 
+const objectValues = <A>(o: { [k: string]: A }): A[] =>
+  Object.entries(o).map(([k, v]) => v)
+
 export const startLightRuntime = async (
   context: LifecycleContext,
   stopSignal: Promise<void>,
@@ -55,6 +59,9 @@ export const startLightRuntime = async (
   const vfsContext = context.vfsActor?.state.context as VfsContext
 
   console.error('path to file!', vfsContext.pathToFile)
+  console.error('bundling...')
+  const bundled = await bundle(objectValues(vfsContext.pathToFile))
+  console.warn('bundled!', bundled)
 
   const editor = context?.editor
   if (!editor) {
@@ -72,21 +79,21 @@ export const startLightRuntime = async (
   ;(window as any).codeDaw.interactableSymbol = interactableSymbol
 
   // replace internal import
-  const internalPackage = encodeToUrl(`
-    export const getAudioContext = () => window.codeDaw.audioContext;
-    export const interactable = ({ value, domNode, onDestroy }) => {
-      if (typeof value === 'string') {
-        throw new Error('cant have string interactable');
-      }
-      value[window.codeDaw.interactableSymbol] = {
-        domNode,
-        onDestroy,
-      };
-      return value;
-    };
-  `)
-  source = source.replace(`from "!internal"`, `from '${internalPackage}'`)
-  source = source.replace(`from '!internal'`, `from '${internalPackage}'`)
+  // const internalPackage = encodeToUrl(`
+  //   export const getAudioContext = () => window.codeDaw.audioContext;
+  //   export const interactable = ({ value, domNode, onDestroy }) => {
+  //     if (typeof value === 'string') {
+  //       throw new Error('cant have string interactable');
+  //     }
+  //     value[window.codeDaw.interactableSymbol] = {
+  //       domNode,
+  //       onDestroy,
+  //     };
+  //     return value;
+  //   };
+  // `)
+  // source = source.replace(`from "!internal"`, `from '${internalPackage}'`)
+  // source = source.replace(`from '!internal'`, `from '${internalPackage}'`)
 
   let transpiled = transpile(
     source,

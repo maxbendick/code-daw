@@ -1,8 +1,8 @@
 /// @ts-nocheck
 
-import { getAudioContext, interactable } from '!internal'
 import * as React from 'https://cdn.skypack.dev/react'
 import * as ReactDOM from 'https://cdn.skypack.dev/react-dom'
+import { getAudioContext, interactable } from './internal'
 
 console.log('code 5 baby')
 
