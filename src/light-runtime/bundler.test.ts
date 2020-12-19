@@ -1,5 +1,10 @@
 import '@testing-library/jest-dom'
-import { bundle, _mapImports, _urlEncodeJavaScript } from './bundler'
+import {
+  bundle,
+  importEsmFile,
+  _mapImports,
+  _urlEncodeJavaScript,
+} from './bundler'
 
 test('bundle without import', async () => {
   const files: { path: string; content: string }[] = [
@@ -21,7 +26,14 @@ test('bundle with some imports', async () => {
       import * from './hello'
       import * from 'https://somewebsite.com'
 
-      hello world :)`,
+      hello world :)
+      
+      testtext
+
+      askdfjksjdk
+
+      opoioukfhh
+      `,
   }
   const helloFile = {
     path: '/hello.tsx',
@@ -33,12 +45,40 @@ test('bundle with some imports', async () => {
 
   const result = await bundle(files)
 
+  // check that relative imports replaced with url-encoded content
   expect(result).toEqual(
     files[0].content.replace(
       './hello',
       _urlEncodeJavaScript(helloFile.content),
     ),
   )
+
+  // check that everything after import lines is same
+  expect(startingFromLine(result, 3)).toEqual(
+    startingFromLine(indexFile.content, 3),
+  )
+})
+
+test.skip('bundle and dynamic import', async () => {
+  const indexFile = {
+    path: '/index.tsx',
+    content: `
+      import * from './hello'
+      import * from 'https://somewebsite.com'
+
+      export const helloWorld = 666
+      `,
+  }
+  const helloFile = {
+    path: '/hello.tsx',
+    content: `
+      export const zzzz = 5
+    `,
+  }
+  const bundled = await bundle([indexFile, helloFile])
+  const createdModule = await importEsmFile(bundled)
+  // const stuff = eval(bundled)
+  expect(createdModule.helloWorld).toEqual(666)
 })
 
 test('urlEncodeJavaScript', () => {
@@ -64,6 +104,14 @@ import * from "https://fromtheweb.com"
 import myfile from './myfile'
 
 hello from test
+
+askdfkskdf
+
+
+lakssk
+
+asldfljsdk
+
 `
 
 const sourceCodeConstReplaced = `
@@ -72,6 +120,14 @@ import * from "replaced2"
 import myfile from 'replaced3'
 
 hello from test
+
+askdfkskdf
+
+
+lakssk
+
+asldfljsdk
+
 `
 
 test('mapImports identity', () => {
@@ -106,4 +162,51 @@ test('mapImports to const', () => {
   expect(fn).toHaveBeenCalledWith('some-package')
   expect(fn).toHaveBeenCalledWith('https://fromtheweb.com')
   expect(fn).toHaveBeenCalledWith('./myfile')
+})
+
+const getLines = (source: string) => {
+  const spacer = '}}||{{'
+  return source
+    .replaceAll('\n', '\n' + spacer)
+    .split(spacer)
+    .map(line => line.replace('\n', ''))
+}
+
+test('getLines idempotent', () => {
+  const source = `
+  asdkfjsdf
+
+  askdfjdf
+
+  ddddd
+  
+  `
+
+  expect(getLines(source).join('\n')).toEqual(source)
+})
+
+const startingFromLine = (text: string, start: number) => {
+  return getLines(text).slice(start).join('\n')
+}
+
+test('startingFromLine', () => {
+  const text1 = `
+    imprrot { asdf } from 'sdkjdj'
+    imprrot { asdf } from 'sdkjdj'
+
+    ksjksjas
+
+    djdksahn
+
+    gkjsksg
+  `
+  const expected = `
+    ksjksjas
+
+    djdksahn
+
+    gkjsksg
+  `
+
+  expect(startingFromLine(text1, 3)).toEqual(expected)
 })

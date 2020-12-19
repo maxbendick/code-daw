@@ -102,3 +102,11 @@ const translateImports = (files: BundlerFile[]): string => {
 
   return translateImportsRec(getByPath(files, '/index.tsx'))
 }
+
+export const importEsmFile = (esmCode: string) => {
+  return extremelyDangerousImport(_urlEncodeJavaScript(esmCode))
+}
+
+const extremelyDangerousImport = (url: string): Promise<any> => {
+  return window.eval(`import('${url}')`)
+}
