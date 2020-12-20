@@ -71,7 +71,7 @@ export const Editor: React.FC<Props> = ({ lifecycleService, vfsActor }) => {
         lineHeight: Config.lineHeight,
         ['semanticHighlighting.enabled' as any]: true,
       }}
-      value={initialCode}
+      value={''}
       editorDidMount={handleEditorDidMount}
     />
   )

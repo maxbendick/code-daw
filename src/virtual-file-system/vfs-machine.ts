@@ -117,6 +117,11 @@ export const makeVfsMachine = (
                 vfs: (context, event) => event.data.vfs as VirtualFileSystem,
                 pathToFile: (context, event) => event.data.pathToFile,
               }),
+              (context, event) => {
+                context.editor?.setValue(
+                  context.pathToFile[context.activePath].content,
+                )
+              },
             ],
           },
         },
