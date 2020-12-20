@@ -39,6 +39,16 @@ export const Editor: React.FC<Props> = ({ lifecycleService, vfsActor }) => {
   const [vfsState, vfsSend] = useActor(vfsActor as any) as any
 
   const handleEditorDidMount = (_: any, editor: EditorT) => {
+    const monaco = state.context.monaco
+    if (!monaco) {
+      throw new Error('expected monaco')
+    }
+    const newModel = monaco.editor.createModel(
+      '',
+      'typescript',
+      monaco.Uri.file('/placer-file.tsx'),
+    )
+    editor.setModel(newModel)
     send({
       type: 'EDITOR_CREATED',
       editor: editor,

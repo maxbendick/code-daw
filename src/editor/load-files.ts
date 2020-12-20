@@ -166,8 +166,13 @@ export const setCompilerAndDiagnosticOptions = (monaco: MonacoT) => {
     moduleResolution: monaco.languages.typescript.ModuleResolutionKind.NodeJs,
     module: monaco.languages.typescript.ModuleKind.CommonJS,
     noEmit: true,
-    noLib: true,
+    // jsx: monaco.languages.typescript.JsxEmit.React,
+    // noLib: true,
     typeRoots: ['node_modules/@types'],
+    jsx: monaco.languages.typescript.JsxEmit.React,
+    jsxFactory: 'React.createElement',
+    reactNamespace: 'React',
+    // allowNonTsExtensions: true,
   })
   // monaco.languages.typescript.typescriptDefaults.setDiagnosticsOptions({
   //   noSemanticValidation: false,
