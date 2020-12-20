@@ -104,9 +104,5 @@ const translateImports = (files: BundlerFile[]): string => {
 }
 
 export const importEsmFile = (esmCode: string) => {
-  return extremelyDangerousImport(_urlEncodeJavaScript(esmCode))
-}
-
-const extremelyDangerousImport = (url: string): Promise<any> => {
-  return window.eval(`import('${url}')`)
+  return import(/* webpackIgnore: true */ _urlEncodeJavaScript(esmCode))
 }
