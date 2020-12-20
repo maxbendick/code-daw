@@ -78,7 +78,6 @@ export const makeVfsMachine = (
   storage: Storage = window.localStorage,
   fetchFn: typeof window.fetch = window.fetch,
 ) => {
-  console.error('makin mahcine')
   const machine = Machine<VfsContext, VfsStateSchema, VfsEvent>({
     id: 'vfs',
     initial: 'preSetup',
@@ -97,17 +96,13 @@ export const makeVfsMachine = (
       setup: {
         invoke: {
           src: async (context, event) => {
-            console.error('in vfs setup')
             const vfs = await makeLocalStorageVfs(storage, fetchFn)
-            console.error('got vfs client', vfs)
             const paths = await vfs.getAllPaths()
-            console.error('got all paths', paths)
             const pathToFile: { [path: string]: VfsFile } = {}
             for (const path of paths) {
               pathToFile[path] = await vfs.get(path)
             }
 
-            console.log('in vfs setup at end of vfs')
             return { vfs, pathToFile: pathToFile }
           },
           onDone: {
@@ -142,7 +137,6 @@ export const makeVfsMachine = (
             actions: [
               assign({
                 requestRefs: (context, event) => {
-                  console.log('saving!!!')
                   return [
                     ...context.requestRefs,
                     spawn(
@@ -157,7 +151,6 @@ export const makeVfsMachine = (
           VFS_SAVE_ACTIVE: {
             actions: assign({
               requestRefs: (context, event) => {
-                console.log('saving!!!')
                 const path = context.activePath
                 const content = context.editor?.getValue()
 
@@ -182,10 +175,6 @@ export const makeVfsMachine = (
                 activePath: (context, event) => event.path,
               }),
               (context, event) => {
-                console.log('set active!', event)
-                // const { path, content } = event
-                // const content = context.pathToFile[path]
-                console.warn('loading', { event, context })
                 const { content } = context.pathToFile[event.path]
                 context.editor?.setValue(content)
               },

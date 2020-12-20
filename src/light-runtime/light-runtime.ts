@@ -84,17 +84,12 @@ export const startLightRuntime = async (
 ) => {
   const vfsContext = context.vfsActor?.state.context as VfsContext
 
-  console.error('path to file!', vfsContext.pathToFile)
-  console.error('bundling...')
-
   const runnableJs = await bundle(
     objectValues(vfsContext.pathToFile).map(file => ({
       ...file,
       content: transpileFile(file.content),
     })),
   )
-
-  console.warn('bundled!', runnableJs)
 
   const editor = context?.editor
   if (!editor) {
@@ -160,38 +155,24 @@ export const startLightRuntime = async (
     }
   }
 
-  console.log('processedExports', processedExports)
-
-  for (const exportt of processedExports) {
-    if (exportt.exportValue[interactableSymbol]) {
-      console.log('interactable!!', exportt)
-    }
-  }
+  console.log('exports', processedExports)
 
   const zones = processedExports
     .filter(exportt => {
       return exportt.exportValue[interactableSymbol]
     })
     .map(exportt => {
-      console.log('asdlkjfalkserhjlksaehrr')
       const parentElement = document.createElement('div')
       parentElement.style.width = '500px'
-      // element.innerHTML = 'hello from the grabe'
-      // const element =;
       const interactableConfig = (exportt.exportValue as Interactable)[
         interactableSymbol
       ]
       const element = interactableConfig.domNode
 
-      // TODO make exportValue a Promise<Interactable>
+      // TODO some way to make exportValue a Promise<Interactable>?
 
       parentElement.appendChild(element)
 
-      // element.style.width = '500px'
-      // element.style.height = '100px'
-      // element.style.background = 'black'
-
-      console.log('element donm', element)
       return new Zone(
         context.monaco!,
         context.editor!,
@@ -201,10 +182,6 @@ export const startLightRuntime = async (
         interactableConfig.onDestroy,
       )
     })
-
-  zones.forEach(zone => {
-    console.log('zone!', zone)
-  })
 
   // monaco: MonacoT,
   // editor: EditorT,
