@@ -2,7 +2,9 @@ import '@testing-library/jest-dom'
 import {
   bundle,
   importEsmFile,
+  _getSkypackModule,
   _mapImports,
+  _urlDecodeJavaScript,
   _urlEncodeJavaScript,
 } from './bundler'
 
@@ -59,6 +61,51 @@ test('bundle with some imports', async () => {
   )
 })
 
+test('bundle deep', async () => {
+  // TODO
+  // create import something that imports something
+  // decode the import
+  // ensure the imported file's imports look good
+  const indexFile = {
+    path: '/index.tsx',
+    content: `
+      import { a } from './a'
+      console.log('a should equal 7')
+    `,
+  }
+  const fileA = {
+    path: '/a.tsx',
+    content: `
+      import { b } from './b'
+      export const a = b + 2
+    `,
+  }
+  const fileB = {
+    path: '/b.tsx',
+    content: `
+      export const b = 5
+    `,
+  }
+  const bundled = await bundle([indexFile, fileA, fileB])
+
+  const importInIndex = bundled
+    .split('\n')[1]
+    .slice("      import { a } from '".length, -1)
+
+  console.log(bundled)
+  console.log(importInIndex)
+
+  const decodedImportInIndex = _urlDecodeJavaScript(importInIndex)
+  console.log(decodedImportInIndex)
+
+  expect(decodedImportInIndex).not.toContain('./b')
+  expect(decodedImportInIndex).toContain(_urlEncodeJavaScript(fileB.content))
+})
+
+const decodeJsUrl = (importUrl: string): string => {
+  throw new Error('todo')
+}
+
 test.skip('bundle and dynamic import', async () => {
   const indexFile = {
     path: '/index.tsx',
@@ -82,9 +129,12 @@ test.skip('bundle and dynamic import', async () => {
 })
 
 test('urlEncodeJavaScript', () => {
-  expect(_urlEncodeJavaScript('hello from a test')).toEqual(
+  const original = 'hello from a test'
+  const encoded = _urlEncodeJavaScript('hello from a test')
+  expect(encoded).toEqual(
     'data:text/javascript;base64,aGVsbG8gZnJvbSBhIHRlc3Q=',
   )
+  expect(_urlDecodeJavaScript(encoded)).toEqual(original)
 })
 
 // idk how to do this right
@@ -209,4 +259,16 @@ test('startingFromLine', () => {
   `
 
   expect(startingFromLine(text1, 3)).toEqual(expected)
+})
+
+test('skypack', () => {
+  expect(_getSkypackModule('react')).toEqual(`https://cdn.skypack.dev/react`)
+  expect(_getSkypackModule('react-dom')).toEqual(
+    `https://cdn.skypack.dev/react-dom`,
+  )
+  expect(_getSkypackModule('react-dom/whatever')).toEqual(
+    `https://cdn.skypack.dev/react-dom/whatever`,
+  )
+  expect(() => _getSkypackModule('not-a-supported-lib')).toThrow()
+  expect(() => _getSkypackModule('react-but-not')).toThrow()
 })

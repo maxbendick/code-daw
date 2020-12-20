@@ -62,6 +62,10 @@ export const _urlEncodeJavaScript = (source: string): string => {
   return 'data:text/javascript;base64,' + btoa(source)
 }
 
+export const _urlDecodeJavaScript = (encoded: string): string => {
+  return atob(encoded.split('data:text/javascript;base64,')[1])
+}
+
 const getByPath = (files: BundlerFile[], path: string): BundlerFile => {
   const pathWithRelativeResolution = path.startsWith('./')
     ? path.substring(1)
@@ -81,6 +85,34 @@ const getByPath = (files: BundlerFile[], path: string): BundlerFile => {
   return file
 }
 
+const skypackModules = new Set([
+  'react',
+  'react-dom',
+  'rxjs',
+  'styled-components',
+  'react-use-gesture',
+  'observable-hooks',
+])
+
+const isSkypackModule = (originalImport: string) => {
+  for (const skypackModule of skypackModules) {
+    if (
+      originalImport === skypackModule ||
+      originalImport.startsWith(skypackModule + '/')
+    ) {
+      return true
+    }
+  }
+  return false
+}
+
+export const _getSkypackModule = (originalImport: string) => {
+  if (isSkypackModule(originalImport)) {
+    return `https://cdn.skypack.dev/${originalImport}`
+  }
+  throw new Error(`not a supported external module: ${originalImport}`)
+}
+
 const translateImports = (files: BundlerFile[]): string => {
   const translatedImports: { [originalImport: string]: string } = {}
 
@@ -91,9 +123,20 @@ const translateImports = (files: BundlerFile[]): string => {
         return fromMem
       }
 
-      if (originalImport === 'react' || originalImport === 'react-dom') {
-        return `https://cdn.skypack.dev/${originalImport}`
+      if (isSkypackModule(originalImport)) {
+        const result = _getSkypackModule(originalImport)
+        translatedImports[originalImport] = result
+        return result
       }
+
+      // try {
+      //   const result = _getSkypackModule(originalImport)
+      //   translatedImports[originalImport] = result
+      // } catch (e) {
+      //   if (!e.message.includes('not a supported external module')) {
+      //     throw e
+      //   }
+      // }
 
       const translatedImport = originalImport.startsWith('./')
         ? _urlEncodeJavaScript(getByPath(files, originalImport).content)
