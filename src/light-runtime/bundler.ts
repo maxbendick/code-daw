@@ -90,6 +90,11 @@ const translateImports = (files: BundlerFile[]): string => {
       if (fromMem) {
         return fromMem
       }
+
+      if (originalImport === 'react' || originalImport === 'react-dom') {
+        return `https://cdn.skypack.dev/${originalImport}`
+      }
+
       const translatedImport = originalImport.startsWith('./')
         ? _urlEncodeJavaScript(getByPath(files, originalImport).content)
         : originalImport

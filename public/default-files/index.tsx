@@ -1,10 +1,6 @@
-/// @ts-nocheck
-
-import * as React from 'https://cdn.skypack.dev/react'
-import * as ReactDOM from 'https://cdn.skypack.dev/react-dom'
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 import { getAudioContext, interactable } from './internal'
-
-console.log('code 5 baby')
 
 for (let i = 0; i < 10; i++) {
   // do something
