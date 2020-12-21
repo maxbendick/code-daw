@@ -2,6 +2,7 @@ import { SourceMapConsumer } from 'source-map'
 import { JsxEmit, ModuleKind, ScriptTarget, transpile } from 'typescript'
 import { LifecycleContext } from '../lifecycle/types'
 import { VfsContext } from '../virtual-file-system/vfs-machine'
+import { AudioContextManager } from './audio-context-manager'
 import { bundle } from './bundler'
 import { Zone } from './zone'
 
@@ -103,7 +104,8 @@ export const startLightRuntime = async (
     ;(window as any).codeDaw = {}
   }
 
-  ;(window as any).codeDaw.audioContext = new AudioContext()
+  const audioContextManager = new AudioContextManager()
+
   ;(window as any).codeDaw.interactableSymbol = interactableSymbol
 
   // let transpiled = transpileFile(source)
@@ -197,12 +199,14 @@ export const startLightRuntime = async (
     throw new Error('user-made module default export not instance of AudioNode')
   }
 
+  audioContextManager.attachUserOutput(userMadeModule.default)
+
   console.log('user-made module', userMadeModule)
   ;(window as any).userMadeModule = userMadeModule
 
   await stopSignal
-  ;(window as any).codeDaw.audioContext.close()
-  // ;(window as any).codeDaw = undefined
+
+  await audioContextManager.destroy()
 
   zones.forEach(zone => {
     zone.destroy()
