@@ -115,13 +115,19 @@ export const _getSkypackModule = (originalImport: string) => {
 
 const translateImports = (files: BundlerFile[]): string => {
   const translatedImports: { [originalImport: string]: string } = {}
+  const recCalledOn = new Set<any>()
 
-  const translateImportsRec = (file: BundlerFile) => {
+  const translateImportsRec = (file: BundlerFile): string => {
     return _mapImports(file.content, (originalImport: string) => {
       const fromMem = translatedImports[originalImport]
       if (fromMem) {
         return fromMem
       }
+
+      if (recCalledOn.has(originalImport)) {
+        throw new Error('Circular reference!')
+      }
+      recCalledOn.add(originalImport)
 
       if (isSkypackModule(originalImport)) {
         const result = _getSkypackModule(originalImport)
@@ -129,17 +135,10 @@ const translateImports = (files: BundlerFile[]): string => {
         return result
       }
 
-      // try {
-      //   const result = _getSkypackModule(originalImport)
-      //   translatedImports[originalImport] = result
-      // } catch (e) {
-      //   if (!e.message.includes('not a supported external module')) {
-      //     throw e
-      //   }
-      // }
-
       const translatedImport = originalImport.startsWith('./')
-        ? _urlEncodeJavaScript(getByPath(files, originalImport).content)
+        ? _urlEncodeJavaScript(
+            translateImportsRec(getByPath(files, originalImport)),
+          )
         : originalImport
 
       translatedImports[originalImport] = translatedImport
@@ -148,7 +147,8 @@ const translateImports = (files: BundlerFile[]): string => {
     })
   }
 
-  return translateImportsRec(getByPath(files, '/index.tsx'))
+  const result = translateImportsRec(getByPath(files, '/index.tsx'))
+  return result
 }
 
 export const importEsmFile = (esmCode: string) => {

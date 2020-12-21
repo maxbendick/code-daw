@@ -1,3 +1,8 @@
+write blog posts eventually!
+* from source to zones
+* bundler
+* transpile and user sourcemaps
+
 * NEXT STEPS
 ** in lifecycle, on vfs set active, load content into editor
 ** DONE create a VirtualFileSystem class (1st: localstorage, 2nd and 3rd: http, disc)

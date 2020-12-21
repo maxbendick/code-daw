@@ -61,6 +61,30 @@ test('bundle with some imports', async () => {
   )
 })
 
+test('errors on circular references', async () => {
+  const indexFile = {
+    path: '/index.tsx',
+    content: `
+      import { a } from './a'
+
+      console.log('a should equal 7')
+
+      export const anIndexImport = 4
+    `,
+  }
+  const fileA = {
+    path: '/a.tsx',
+    content: `
+      import { anIndexExport } from './index'
+      export const a = 5 + 2
+    `,
+  }
+
+  expect(bundle([indexFile, fileA])).rejects.toMatchObject({
+    message: expect.stringContaining('Circular reference!'),
+  })
+})
+
 test('bundle deep', async () => {
   // TODO
   // create import something that imports something
@@ -92,19 +116,11 @@ test('bundle deep', async () => {
     .split('\n')[1]
     .slice("      import { a } from '".length, -1)
 
-  console.log(bundled)
-  console.log(importInIndex)
-
   const decodedImportInIndex = _urlDecodeJavaScript(importInIndex)
-  console.log(decodedImportInIndex)
 
   expect(decodedImportInIndex).not.toContain('./b')
   expect(decodedImportInIndex).toContain(_urlEncodeJavaScript(fileB.content))
 })
-
-const decodeJsUrl = (importUrl: string): string => {
-  throw new Error('todo')
-}
 
 test.skip('bundle and dynamic import', async () => {
   const indexFile = {
