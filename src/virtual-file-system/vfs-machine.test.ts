@@ -1,11 +1,17 @@
 import { interpret } from 'xstate'
+import { EditorT } from '../editor/types'
 import { makeFetchMock, makeLocalStorageMock } from './test-utils'
 import { makeVfsMachine } from './vfs-machine'
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 test('vfs machine general function', async () => {
-  const machine = makeVfsMachine(makeLocalStorageMock(), makeFetchMock() as any)
+  const config = {
+    storage: makeLocalStorageMock(),
+    fetchFn: makeFetchMock() as any,
+  }
+
+  const machine = makeVfsMachine(config)
 
   const service = interpret(machine)
   // .onTransition(state => {
@@ -17,29 +23,34 @@ test('vfs machine general function', async () => {
 
   await wait(10)
 
-  service.send({ type: 'GET', path: '/index.tsx' })
-  expect(service.state.context.requestRefs.length).toBe(1)
+  expect(service.state.matches('preSetup')).toBeTruthy()
 
-  await wait(10)
-  expect(service.state.context.requestRefs.length).toBe(0)
+  const mockEditor = {
+    getValue: () => 'editor value',
+    setValue: () => {},
+  }
 
   service.send({
-    type: 'SET',
-    path: '/index.tsx',
-    content: 'the new index content',
+    type: 'VFS_SET_EDITOR',
+    editor: (mockEditor as any) as EditorT,
   })
-  expect(service.state.context.requestRefs.length).toBe(1)
 
-  expect(service.state.context.activePath).toBeUndefined()
-  service.send({ type: 'SET_ACTIVE', path: '/index.tsx' })
-  await wait(10)
-  expect(service.state.context.activePath).toEqual('/index.tsx')
+  expect(service.state.matches('setup')).toBeTruthy()
 
   await wait(10)
-  expect(service.state.context.requestRefs.length).toBe(0)
 
-  expect(service.state.context.pathToFile).toEqual({
-    '/index.tsx': 'the new index content',
+  expect(service.state.context).toMatchObject({
+    editor: mockEditor,
+    pathToFile: {
+      '/dial.tsx': {
+        content: 'diefault dial content',
+        path: '/dial.tsx',
+      },
+      '/index.tsx': {
+        content: 'default index content',
+        path: '/index.tsx',
+      },
+    },
   })
 
   service.stop()

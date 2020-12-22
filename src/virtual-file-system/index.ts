@@ -33,11 +33,18 @@ const getDefaultFile = async (
   return await response.text()
 }
 
-export const makeLocalStorageVfs = async (
-  storage: Storage = window.localStorage,
-  fetchFn: typeof window.fetch = window.fetch,
-) => {
-  const vfs = new LocalStorageVfs(storage, fetchFn)
+interface SimpleStorage {
+  getItem: typeof localStorage.getItem
+  setItem: typeof localStorage.setItem
+}
+
+export interface LocalStorageVfsConfig {
+  storage: SimpleStorage
+  fetchFn: typeof window.fetch
+}
+
+export const makeLocalStorageVfs = async (config: LocalStorageVfsConfig) => {
+  const vfs = new LocalStorageVfs(config)
   await vfs.init()
   return vfs
 }
@@ -50,22 +57,31 @@ export interface VfsFile {
 export interface VirtualFileSystem {
   get: (path: string) => Promise<VfsFile>
   set: (path: string, content: string) => Promise<VfsFile>
-  getAllPaths: () => Promise<string[]>
+  // getAllPaths: () => Promise<string[]>
 }
 
 class LocalStorageVfs implements VirtualFileSystem {
-  constructor(private storage: Storage, private fetchFn: typeof window.fetch) {}
+  _storage: LocalStorageVfsConfig['storage']
+  _fetchFn: LocalStorageVfsConfig['fetchFn']
+  paths?: string[]
+
+  constructor(config: LocalStorageVfsConfig) {
+    this._storage = config.storage
+    this._fetchFn = config.fetchFn
+  }
 
   init = async () => {
     const paths = await this.getAllPaths()
     if (paths.length) {
+      this.paths = paths
       return
     }
 
-    const pathlist = await getDefaultPathlist(this.fetchFn)
+    const pathlist = await getDefaultPathlist(this._fetchFn)
+    this.paths = paths
 
     for (const path of pathlist) {
-      const fileContent = await getDefaultFile(this.fetchFn, path)
+      const fileContent = await getDefaultFile(this._fetchFn, path)
       await this.setNoPropogate(path, fileContent)
     }
   }
@@ -78,14 +94,22 @@ class LocalStorageVfs implements VirtualFileSystem {
   }
 
   set = async (path: string, content: string): Promise<VfsFile> => {
+    if (!this.paths) {
+      throw new Error('tried to set without paths')
+    }
+    if (!this.paths.includes(path)) {
+      throw new Error(
+        'cant save to a path not in paths ' + JSON.stringify(this.paths),
+      )
+    }
     this.storageSet(path, content)
     return { path, content }
   }
 
   setNoPropogate = this.set
 
-  getAllPaths = async (): Promise<string[]> => {
-    return Object.entries(this.storage)
+  private getAllPaths = async (): Promise<string[]> => {
+    return Object.entries(this._storage)
       .map(([key, v]) => key)
       .filter(key => key.startsWith(vfsFileLocalStoragePrefix))
       .map(key => key.substring(vfsFileLocalStoragePrefix.length))
@@ -96,7 +120,7 @@ class LocalStorageVfs implements VirtualFileSystem {
     if (!path.startsWith('/')) {
       throw new Error(`bad path ${path}`)
     }
-    const result = this.storage.getItem(pathToLocalStorageKey(path))
+    const result = this._storage.getItem(pathToLocalStorageKey(path))
     if (!result) {
       throw new Error(`no item in storage: ${path}`)
     }
@@ -115,6 +139,6 @@ class LocalStorageVfs implements VirtualFileSystem {
     //   )
     // }
 
-    this.storage.setItem(pathToLocalStorageKey(path), content)
+    this._storage.setItem(pathToLocalStorageKey(path), content)
   }
 }

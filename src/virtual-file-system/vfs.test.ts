@@ -10,11 +10,13 @@ const vfsFileLocalStoragePrefix = 'code-daw/vfs/files'
 const pathToLocalStorageKey = (path: string) =>
   `${vfsFileLocalStoragePrefix}${path}`
 
+const paths = ['/index.tsx', '/dial.tsx']
+
 const makeFetchMock = () => async (path: string) => {
   if (path === `${defaultFilesDirectoryUrl}/pathlist.json`) {
     return {
       json: async () => {
-        return JSON.stringify(['/index.tsx', '/dial.tsx'])
+        return JSON.stringify(paths)
       },
     }
   } else if (path === `${defaultFilesDirectoryUrl}/index.tsx`) {
@@ -74,18 +76,23 @@ const makeLocalStorageMock = () => {
 
 test('LocalStorageVfs general function', async () => {
   const storage = await makeLocalStorageMock()
-  ;(window as any).fetch = (global as any).fetch = makeFetchMock()
+  // ;(window as any).fetch = (global as any).fetch = makeFetchMock()
 
-  const vfs = await makeLocalStorageVfs(storage)
+  const vfs = await makeLocalStorageVfs({
+    storage,
+    fetchFn: makeFetchMock() as any,
+  })
 
-  const allPaths = await vfs.getAllPaths()
-  expect(allPaths).toEqual(['/dial.tsx', '/index.tsx'])
+  // const allPaths = await vfs.getAllPaths()
+  expect(vfs.paths?.sort()).toEqual(paths.sort())
 
   const dialContent = (await vfs.get('/dial.tsx')).content
   expect(dialContent).toEqual(defaultDialContent)
 
   const indexContent = (await vfs.get('/index.tsx')).content
   expect(indexContent).toEqual(defaultIndexContent)
+
+  expect(vfs.paths).toEqual(paths)
 
   await vfs.set('/dial.tsx', 'new dial content')
   const newDialContent = (await vfs.get('/dial.tsx')).content

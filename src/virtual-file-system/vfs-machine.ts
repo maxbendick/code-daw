@@ -1,5 +1,10 @@
 import { Actor, assign, Interpreter, Machine, spawn, State } from 'xstate'
-import { makeLocalStorageVfs, VfsFile, VirtualFileSystem } from '.'
+import {
+  LocalStorageVfsConfig,
+  makeLocalStorageVfs,
+  VfsFile,
+  VirtualFileSystem,
+} from '.'
 import { EditorT } from '../editor/types'
 
 export type VfsActor = Actor<
@@ -29,30 +34,22 @@ export interface VfsContext {
 // activeFileContent$ = vfsService => Observable<string | null>
 // activeFilePath$ = vfsService => Observable<string | null>
 
-type VfsActorEvent =
+type VfsInvokeEvent =
   | { type: `done.invoke.get-${string}`; data: VfsFile }
   | { type: `done.invoke.set-${string}`; data: VfsFile }
 
-const isVfsSaveEvent = (
-  event: VfsEvent,
-): event is { type: 'VFS_SET'; path: string; content: string } => {
-  return event.type.startsWith('done.invoke.vfs-set-')
-}
-
-const isVfsActorEvent = (event: VfsEvent): event is VfsActorEvent => {
-  return event.type.startsWith('done.invoke.vfs-get-') || isVfsSaveEvent(event)
+const isVfsActorEvent = (event: VfsEvent): event is VfsInvokeEvent => {
+  return (
+    event.type.startsWith('done.invoke.vfs-get-') ||
+    event.type.startsWith('done.invoke.vfs-set-')
+  )
 }
 
 export type VfsEvent =
-  | { type: 'VFS_GET'; path: string }
-  | { type: 'VFS_SET'; path: string; content: string }
   | { type: 'VFS_SET_ACTIVE'; path: string }
-  | { type: 'VFS_LOAD_ALL' }
   | { type: 'VFS_SET_EDITOR'; editor: EditorT }
-  | { type: 'VFS_DO_SETUP' }
   | { type: 'VFS_SAVE_ACTIVE' }
-  | { type: 'VFS_GET_ALL'; id: string | number }
-  | VfsActorEvent
+  | VfsInvokeEvent
 
 export interface VfsStateSchema {
   states: {
@@ -74,10 +71,7 @@ export type VfsService = Interpreter<
   }
 >
 
-export const makeVfsMachine = (
-  storage: Storage = window.localStorage,
-  fetchFn: typeof window.fetch = window.fetch,
-) => {
+export const makeVfsMachine = ({ storage, fetchFn }: LocalStorageVfsConfig) => {
   const machine = Machine<VfsContext, VfsStateSchema, VfsEvent>({
     id: 'vfs',
     initial: 'preSetup',
@@ -96,10 +90,9 @@ export const makeVfsMachine = (
       setup: {
         invoke: {
           src: async (context, event) => {
-            const vfs = await makeLocalStorageVfs(storage, fetchFn)
-            const paths = await vfs.getAllPaths()
+            const vfs = await makeLocalStorageVfs({ storage, fetchFn })
             const pathToFile: { [path: string]: VfsFile } = {}
-            for (const path of paths) {
+            for (const path of vfs.paths!) {
               pathToFile[path] = await vfs.get(path)
             }
 
@@ -123,31 +116,6 @@ export const makeVfsMachine = (
       },
       ready: {
         on: {
-          VFS_GET: {
-            actions: assign({
-              requestRefs: (context, event) => {
-                return [
-                  ...context.requestRefs,
-                  spawn(context.vfs?.get(event.path)!, `vfs-get-${nextId++}`),
-                ]
-              },
-            }),
-          },
-          VFS_SET: {
-            actions: [
-              assign({
-                requestRefs: (context, event) => {
-                  return [
-                    ...context.requestRefs,
-                    spawn(
-                      context.vfs?.set(event.path, event.content)!,
-                      `vfs-set-${nextId++}`,
-                    ),
-                  ]
-                },
-              }),
-            ],
-          },
           VFS_SAVE_ACTIVE: {
             actions: assign({
               requestRefs: (context, event) => {

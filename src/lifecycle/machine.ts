@@ -54,6 +54,9 @@ const makeAudioContext = () => {
   return result
 }
 
+const vfsStorage =
+  process.env.NODE_ENV === 'development' ? sessionStorage : localStorage
+
 export const machine = Machine<
   LifecycleContext,
   LifecycleStateSchema,
@@ -67,7 +70,16 @@ export const machine = Machine<
       preMount: {
         entry: assign({
           vfsActor: (context, event) =>
-            spawn(makeVfsMachine(), { name: 'vfsActor', sync: true }),
+            spawn(
+              makeVfsMachine({
+                storage: vfsStorage,
+                fetchFn: fetch,
+              }),
+              {
+                name: 'vfsActor',
+                sync: true,
+              },
+            ),
         }),
         on: {
           REACT_MOUNTED: {

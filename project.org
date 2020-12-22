@@ -1,7 +1,22 @@
-write blog posts eventually!
-* from source to zones
-* bundler
-* transpile and user sourcemaps
+
+* Now/soon
+** build up a library in user-land
+** make library dev flow better
+** fix bugs/semantics around resetting
+** typings for blessed libraries
+
+* Eventually
+** less dependence on index
+*** support index output is master output
+*** support current file output is master output
+*** brainstorm how to make these modes simple?
+** editor - destroy when switching files?
+** launch into cyberspace *rocket*
+** livecoding *sunglasses-smiley*
+** write blog posts
+*** from source to zones
+*** bundler
+*** transpile and user sourcemaps
 
 * NEXT STEPS
 ** in lifecycle, on vfs set active, load content into editor

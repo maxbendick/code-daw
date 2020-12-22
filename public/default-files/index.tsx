@@ -3,6 +3,10 @@ import * as ReactDOM from 'react-dom'
 import { Dial } from './dial'
 import { getAudioContext, interactable } from './internal'
 
+// hello hello
+
+const audioContext: AudioContext = getAudioContext()
+
 for (let i = 0; i < 10; i++) {
   // do something
 }
@@ -23,9 +27,11 @@ export const another = interactable({
   },
 })
 
-export default getAudioContext().createOscillator()
+const masterOutOsc: OscillatorNode = audioContext.createOscillator()
+masterOutOsc.start()
+export default masterOutOsc
 
-console.log('audiocontext', getAudioContext())
+console.log('audiocontext', audioContext)
 
 const reactInteractable = (value, Component) => {
   const domNode = document.createElement('div')
