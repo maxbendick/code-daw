@@ -6,6 +6,8 @@
 ** typings for blessed libraries
 
 * Eventually
+** CUSTOM EDITOR IN VSCODE INSTEAD OF IDE ?????
+** test public default sources?
 ** less dependence on index
 *** support index output is master output
 *** support current file output is master output

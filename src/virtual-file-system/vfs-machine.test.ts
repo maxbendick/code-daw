@@ -41,6 +41,7 @@ test('vfs machine general function', async () => {
 
   expect(service.state.context).toMatchObject({
     editor: mockEditor,
+    activePath: '/index.tsx',
     pathToFile: {
       '/dial.tsx': {
         content: 'diefault dial content',
