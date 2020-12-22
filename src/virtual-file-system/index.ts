@@ -78,7 +78,7 @@ class LocalStorageVfs implements VirtualFileSystem {
     }
 
     const pathlist = await getDefaultPathlist(this._fetchFn)
-    this.paths = paths
+    this.paths = pathlist
 
     for (const path of pathlist) {
       const fileContent = await getDefaultFile(this._fetchFn, path)

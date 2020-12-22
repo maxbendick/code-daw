@@ -14,10 +14,6 @@ test('vfs machine general function', async () => {
   const machine = makeVfsMachine(config)
 
   const service = interpret(machine)
-  // .onTransition(state => {
-  //   // console.log('state.event', state.event)
-  //   // console.log(state.value)
-  // })
 
   service.start()
 
@@ -25,8 +21,10 @@ test('vfs machine general function', async () => {
 
   expect(service.state.matches('preSetup')).toBeTruthy()
 
+  const contentFromEditor = 'fake editor content'
+
   const mockEditor = {
-    getValue: () => 'editor value',
+    getValue: () => contentFromEditor,
     setValue: () => {},
   }
 
@@ -54,28 +52,41 @@ test('vfs machine general function', async () => {
     },
   })
 
+  service.send({ type: 'VFS_SET_ACTIVE', path: '/dial.tsx' })
+
+  expect(service.state.context).toMatchObject({
+    editor: mockEditor,
+    activePath: '/dial.tsx',
+    pathToFile: {
+      '/dial.tsx': {
+        content: 'diefault dial content',
+        path: '/dial.tsx',
+      },
+      '/index.tsx': {
+        content: 'default index content',
+        path: '/index.tsx',
+      },
+    },
+  })
+
+  service.send({ type: 'VFS_SAVE_ACTIVE' })
+
+  await wait(10)
+
+  expect(service.state.context).toMatchObject({
+    editor: mockEditor,
+    activePath: '/dial.tsx',
+    pathToFile: {
+      '/dial.tsx': {
+        content: contentFromEditor,
+        path: '/dial.tsx',
+      },
+      '/index.tsx': {
+        content: 'default index content',
+        path: '/index.tsx',
+      },
+    },
+  })
+
   service.stop()
-
-  // const storage = await makeLocalStorageMock()
-  // ;(window as any).fetch = (global as any).fetch = makeFetchMock()
-
-  // const vfs = await makeLocalStorageVfs(storage)
-
-  // const allPaths = await vfs.getAllPaths()
-  // expect(allPaths).toEqual(['/dial.tsx', '/index.tsx'])
-
-  // const dialContent = (await vfs.get('/dial.tsx')).content
-  // expect(dialContent).toEqual(defaultDialContent)
-
-  // const indexContent = (await vfs.get('/index.tsx')).content
-  // expect(indexContent).toEqual(defaultIndexContent)
-
-  // await vfs.set('/dial.tsx', 'new dial content')
-  // const newDialContent = (await vfs.get('/dial.tsx')).content
-  // expect(newDialContent).toEqual('new dial content')
-
-  // await expect(vfs.get('/fail.tsx')).rejects.toThrow()
-  // await expect(
-  //   vfs.set('/fail.tsx', 'some content that will fail'),
-  // ).rejects.toThrow()
 })

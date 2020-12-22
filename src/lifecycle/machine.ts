@@ -1,4 +1,3 @@
-// import { assign as _assign, Machine } from 'xstate'
 import { assign, Machine, send, spawn } from 'xstate'
 import { SignalGraph } from '../lib2/priv/signal-graph'
 import { makeVfsMachine } from '../virtual-file-system/vfs-machine'
@@ -54,8 +53,34 @@ const makeAudioContext = () => {
   return result
 }
 
+class DevStorage {
+  getItem(key: string): string {
+    console.log('InMemStorage: get', key, this)
+    if (typeof key !== 'string') {
+      throw new Error(`key must be string - ${key}`)
+    }
+    const result = (this as any)[key]
+
+    if (!result) {
+      throw new Error(`couldnt find for - ${key}`)
+    }
+
+    return result
+  }
+  setItem(key: string, value: string) {
+    console.log('InMemStorage: set', key, value.substring(0, 20), this)
+    if (typeof key !== 'string') {
+      throw new Error(`key must be string - ${key}`)
+    }
+    if (typeof value !== 'string') {
+      throw new Error(`value must be string - ${value}`)
+    }
+    ;(this as any)[key] = value
+  }
+}
+
 const vfsStorage =
-  process.env.NODE_ENV === 'development' ? sessionStorage : localStorage
+  process.env.NODE_ENV === 'development' ? new DevStorage() : localStorage
 
 export const machine = Machine<
   LifecycleContext,

@@ -3,8 +3,6 @@ import * as ReactDOM from 'react-dom'
 import { Dial } from './dial'
 import { getAudioContext, interactable } from './internal'
 
-// hello hello
-
 const audioContext: AudioContext = getAudioContext()
 
 for (let i = 0; i < 10; i++) {
