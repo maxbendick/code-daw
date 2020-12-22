@@ -11,10 +11,11 @@ const encodeToUrl = (code: string) => {
 }
 
 const extremelyDangerousImport = (url: string): Promise<any> => {
+  // eslint-disable-next-line no-eval
   return window.eval(`import('${url}')`)
 }
 
-const interactableSymbol = 'interactable-symbol' // Symbol('interactable')
+const interactableSymbol = 'interactable-symbol'
 
 interface Interactable {
   [interactableSymbol]: {

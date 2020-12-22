@@ -81,11 +81,7 @@ function App() {
         <FileBrowser vfsActor={vfsActor!} />
       </FileBrowserContainer>
       <EditorContainer>
-        {ready ? (
-          <Editor lifecycleService={lifecycleService} vfsActor={vfsActor!} />
-        ) : (
-          'loading...'
-        )}
+        {ready ? <Editor lifecycleService={lifecycleService} /> : 'loading...'}
       </EditorContainer>
     </AppContainer>
   )

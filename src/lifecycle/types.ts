@@ -28,6 +28,7 @@ export interface LifecycleStateSchema {
   }
 }
 
+// TODO can probably remove some of these
 export interface LifecycleContext {
   monaco?: MonacoT
   editor?: EditorT
@@ -36,7 +37,7 @@ export interface LifecycleContext {
   codeDawVars?: any
   coolZones?: CoolZone[]
   signalGraph?: SignalGraph
-  audioContext?: AudioContext
+  audioContext?: AudioContext // TODO remove
   vfsActor?: VfsActor
 }
 

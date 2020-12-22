@@ -82,6 +82,10 @@ class DevStorage {
 const vfsStorage =
   process.env.NODE_ENV === 'development' ? new DevStorage() : localStorage
 
+// TODO test
+// TODO remove cruft
+// TODO parallel editor+vfs setup
+// TODO refactor to use runtime and editor as actors
 export const machine = Machine<
   LifecycleContext,
   LifecycleStateSchema,
@@ -174,29 +178,12 @@ export const machine = Machine<
         },
       },
       lightRuntime: {
-        // entry: send(
-        //   (context, event) => {
-        //     const result: VfsEvent = {
-        //       type: 'VFS_GET_ALL',
-        //       id: Math.random(),
-        //     }
-        //     return result
-        //   },
-        //   { to: 'vfsActor' },
-        // ),
-        // on: {
-        //   VFS_GET_ALL_RESPONSE: null as any,
-        // },
-
-        // want to wait until shiftenter
-        // eventually, stop audiocontext
         invoke: {
           src: 'startLightRuntime',
           onDone: 'editing',
           onError: 'failure',
         },
       },
-
       parsingTokens: {
         invoke: {
           id: 'parsingTokensInvoke',
@@ -327,7 +314,6 @@ export const machine = Machine<
           return undefined
         },
       }),
-
       createAudioContext: assign({
         audioContext: (context, event) => makeAudioContext(),
       }),

@@ -8,7 +8,6 @@ import {
   LifecycleEvent,
   LifecycleStateSchema,
 } from '../../lifecycle/types'
-import { VfsActor } from '../../virtual-file-system/vfs-machine'
 import './Editor.css'
 
 interface Props {
@@ -21,10 +20,9 @@ interface Props {
       context: LifecycleContext
     }
   >
-  vfsActor: VfsActor
 }
 
-export const Editor: React.FC<Props> = ({ lifecycleService, vfsActor }) => {
+export const Editor: React.FC<Props> = ({ lifecycleService }) => {
   const [state, send] = useService(lifecycleService)
 
   const handleEditorDidMount = (_: any, editor: EditorT) => {
