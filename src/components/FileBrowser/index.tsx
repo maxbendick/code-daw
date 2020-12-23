@@ -24,10 +24,10 @@ const borderStyle = '1px solid #333'
 const FileItemContainer = styled.div<{ active: boolean }>`
   display: block;
   border: ${borderStyle};
-  border-bottom: none;
-  &:last-child {
-    border-bottom: ${borderStyle};
-  }
+  // border-bottom: none;
+  // &:last-child {
+  border-bottom: ${borderStyle};
+  // }
   height: 35px;
 
   display: flex;
@@ -46,6 +46,7 @@ const FileItemContainer = styled.div<{ active: boolean }>`
 `
 
 const FileItemLabel = styled.div<{ active: boolean }>`
+  font-size: 13px;
   color: ${(props: any) => (props.active ? '#bbb' : '#777')};
 `
 
@@ -94,7 +95,12 @@ export const FileBrowser: React.FC<{ vfsActor: VfsActor }> = ({ vfsActor }) => {
       ))}
       <button
         onClick={() => vfsSend('VFS_SAVE_ACTIVE')}
-        style={{ color: '#bbb', background: 'transparent' }}
+        style={{
+          color: '#aaa',
+          background: 'transparent',
+          marginTop: 10,
+          fontSize: 11,
+        }}
       >
         SAVE CURRENT
       </button>

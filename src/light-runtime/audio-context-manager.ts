@@ -13,6 +13,8 @@
 //   }
 // }
 
+const MASTER_GAIN = 0.2
+
 export class AudioContextManager {
   audioContext: AudioContext
   masterGain: GainNode
@@ -23,7 +25,7 @@ export class AudioContextManager {
 
     this.masterGain = this.audioContext.createGain()
     this.masterGain = this.masterGain
-    this.masterGain.gain.value = 0.5
+    this.masterGain.gain.value = MASTER_GAIN
     this.masterGain.connect(this.audioContext.destination)
   }
 
@@ -39,7 +41,7 @@ export class AudioContextManager {
   destroy = async (): Promise<void> => {
     // this seems to make it smoother
     this.masterGain.gain.linearRampToValueAtTime(
-      0.5,
+      MASTER_GAIN,
       this.audioContext.currentTime + 0.2,
     )
     await new Promise(resolve => setTimeout(resolve, 200))

@@ -26,10 +26,6 @@ const DIAL_MIN_VALUE = -75
 const DIAL_MAX_VALUE = 75
 
 const dialReducer = (state: DialState, movement: Movement): DialState => {
-  const {
-    movement: [, my],
-  } = movement
-
   const deltaY = (movement as any)?.event?.movementY ?? 0
 
   const currDown = movement.down
@@ -162,19 +158,19 @@ const normalize = (start: number, end: number, value: number) =>
   (value - start) / (end - start)
 
 export const Dial: React.FC<{
-  initialValue: number
-  start: number
-  end: number
-  send: (a: number) => void
+  initial: number
+  min: number
+  max: number
+  onChange: (a: number) => void
   radius: number
   sampleRate?: number // 100 by default
-}> = ({ send, start, end, initialValue, radius, sampleRate }) => {
+}> = ({ onChange, min, max, initial, radius, sampleRate }) => {
   const dialBaseElement = useRef(null)
 
   const [{ value, dragging }, registerMovement] = useObservableState(
-    movementsToDialValue(start, end, initialValue, sampleRate || 100),
+    movementsToDialValue(min, max, initial, sampleRate || 100),
     {
-      value: initialValue,
+      value: initial,
       dragging: false,
     },
   )
@@ -189,12 +185,10 @@ export const Dial: React.FC<{
   }, [dragging])
 
   useEffect(() => {
-    try {
-      send(value)
-    } catch (e) {
-      console.warn('sent with an error - send may be undefined')
+    if (onChange) {
+      onChange(value)
     }
-  }, [send, value])
+  }, [onChange, value])
 
   const bind = useDrag(registerMovement)
 
@@ -202,7 +196,7 @@ export const Dial: React.FC<{
   const span = 240
   const startDegrees = span / -2.0
   const endDegrees = span / 2.0
-  const degrees = normalize(start, end, value) * span + startDegrees
+  const degrees = normalize(min, max, value) * span + startDegrees
 
   const showThreshold = 50
   const showMin = dragging && degrees - startDegrees < showThreshold

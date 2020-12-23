@@ -1,5 +1,32 @@
+import * as React from 'react'
+import * as ReactDOM from 'react-dom'
 import { isObservable, Observable, Subscription } from 'rxjs'
 import { skip, take, throttleTime } from 'rxjs/operators'
+import { interactable } from './internal'
+
+export const reactInteractable = (value, Component) => {
+  const domNode = document.createElement('div')
+  ReactDOM.render(<Component />, domNode)
+
+  const parent = document.createElement('div')
+
+  parent.setAttribute(
+    'style',
+    'width: 500px; height: 71px; border: 1px solid black',
+  )
+
+  parent.appendChild(domNode)
+
+  console.log('reactInteractable parent', parent)
+
+  return interactable({
+    value,
+    domNode: parent,
+    onDestroy: () => {
+      ReactDOM.unmountComponentAtNode(domNode)
+    },
+  })
+}
 
 const SAFE_MODE_THROTTLE_TIME = 50
 const RAMP_TIME_SECONDS = 0.005
@@ -10,7 +37,7 @@ const isAudioNode = (o: any): o is AudioNode => {
 
 export const easyConnect = (
   audioContext: AudioContext,
-  input: AudioNode | Observable<number>, // must emit immediately!!
+  input: number | AudioNode | Observable<number>, // must emit immediately!!
   output: AudioParam,
 ): Subscription => {
   if (isObservable(input)) {
@@ -39,6 +66,8 @@ export const easyConnect = (
   } else if (isAudioNode(input)) {
     input.connect(output)
     return new Subscription()
+  } else if (typeof input === 'number') {
+    output.value = input
   } else {
     throw new Error('failed to connect node - not AudioNode or Observable')
   }
