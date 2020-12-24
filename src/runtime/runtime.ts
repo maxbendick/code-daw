@@ -38,7 +38,7 @@ Next:
 
 // TODO runtime should take in a master node facade
 // lifecycle will fade it out, then destroy it(?)
-export const startRuntime = (context: LifecycleContext) => {
+export const startRuntime = (context: any | LifecycleContext) => {
   const { signalGraph, audioContext: _audioContext } = context
   const audioContext = _audioContext!
 

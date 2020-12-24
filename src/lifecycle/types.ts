@@ -1,7 +1,5 @@
-import { CoolZone } from '../editor/cool-zone'
 import { TokenPlaces } from '../editor/parsing/ts-parser'
 import { EditorT, MonacoT } from '../editor/types'
-import { SignalGraph } from '../lib2/priv/signal-graph'
 import { VfsActor } from '../virtual-file-system/vfs-machine'
 
 export type LifecycleEvent =
@@ -32,12 +30,6 @@ export interface LifecycleStateSchema {
 export interface LifecycleContext {
   monaco?: MonacoT
   editor?: EditorT
-  compiledCode?: string
-  tokens?: TokenPlaces
-  codeDawVars?: any
-  coolZones?: CoolZone[]
-  signalGraph?: SignalGraph
-  audioContext?: AudioContext // TODO remove
   vfsActor?: VfsActor
   runtimeProcess?: { shutdown: () => Promise<any> }
 }

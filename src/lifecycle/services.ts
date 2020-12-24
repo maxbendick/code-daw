@@ -79,7 +79,7 @@ export const evalCompiledUserCode = async (code: string) => {
 export const lifecycleServices: LifecycleServices = {
   loadMonaco: () => monacoReact.init(),
   monacoSetup: context => {
-    return monacoSetup(context.monaco!, () => context.tokens!)
+    return monacoSetup(context.monaco!, () => undefined as any)
   },
   startLightRuntime: async context => {
     await startLightRuntime(context, waitForShiftEnter())
