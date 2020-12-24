@@ -232,9 +232,12 @@ const wrapRuntime = <A>(
     shutdown$.pipe(take(1)).toPromise(),
   )
 
+  console.warn('runtime startinngggg!')
+
   return {
     shutdown: async () => {
       shutdown$.next(true)
+      console.warn('runtime shut down!')
       await runtimePromise
     },
   }

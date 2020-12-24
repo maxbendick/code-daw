@@ -172,16 +172,47 @@ export const machine = Machine<
       editing: {
         invoke: {
           id: 'editingInvoke',
-          src: (context, event) => waitForShiftEnter(),
+          src: 'waitForShiftEnter',
           onDone: 'lightRuntime',
           onError: 'failure',
         },
       },
       lightRuntime: {
-        invoke: {
-          src: 'startLightRuntime',
-          onDone: 'editing',
-          onError: 'failure',
+        // invoke: {
+        //   src: 'startLightRuntime',
+        //   onDone: 'editing',
+        //   onError: 'failure',
+        // },
+        initial: 'running',
+        onDone: 'editing',
+        // wait for shift-enter here, then send RUNTIME_SHUTDOWN
+        states: {
+          running: {
+            entry: ['assignRuntime'],
+            invoke: {
+              src: 'waitForShiftEnter',
+              onDone: { actions: send({ type: 'RUNTIME_SHUTDOWN' }) },
+            },
+            on: {
+              RUNTIME_SHUTDOWN: {
+                target: 'shuttingDown',
+              },
+            },
+          },
+          shuttingDown: {
+            invoke: {
+              src: 'shutdownRuntime',
+              onDone: {
+                target: 'destroyed',
+                actions: assign({
+                  runtimeProcess: (context, event) => undefined,
+                }),
+              },
+            },
+          },
+          destroyed: {
+            type: 'final',
+          },
         },
       },
       parsingTokens: {
@@ -250,19 +281,45 @@ export const machine = Machine<
         },
       },
       runtime: {
-        entry: ['createAudioContext', 'setReadonly'],
-        invoke: {
-          id: 'doRuntimeInvoke',
-          src: 'doRuntime',
-          onDone: 'editing',
-          onError: 'failure',
-        },
-        exit: [
-          'destroyAudioContext',
-          'destroySignalGraph',
-          'destroyCoolZones',
-          'clearReadonly',
-        ],
+        // entry: ['createAudioContext', 'setReadonly'],
+        // // invoke: {
+        // //   id: 'doRuntimeInvoke',
+        // //   src: 'doRuntime',
+        // //   onDone: 'editing',
+        // //   onError: 'failure',
+        // // },
+        // exit: [
+        //   'destroyAudioContext',
+        //   'destroySignalGraph',
+        //   'destroyCoolZones',
+        //   'clearReadonly',
+        // ],
+        // initial: 'running' as any,
+        // onDone: 'editing',
+        // states: {
+        //   running: {
+        //     entry: ['assignRuntime'],
+        //     on: {
+        //       RUNTIME_SHUTDOWN: {
+        //         target: 'shuttingDown',
+        //       },
+        //     },
+        //   },
+        //   shuttingDown: {
+        //     invoke: {
+        //       src: 'shutdownRuntime',
+        //       onDone: {
+        //         target: 'destroyed',
+        //         actions: assign({
+        //           runtimeProcess: (context, event) => undefined,
+        //         }),
+        //       },
+        //     },
+        //   },
+        //   destroyed: {
+        //     type: 'final',
+        //   },
+        // },
       },
       failure: {
         entry: (context, event) => {
@@ -282,10 +339,14 @@ export const machine = Machine<
         await context.runtimeProcess?.shutdown()
         return
       },
+      waitForShiftEnter: (context, event) => waitForShiftEnter(),
     },
     actions: {
       assignRuntime: assign({
-        runtimeProcess: (context, event) => createLightRuntime(context),
+        runtimeProcess: (context, event) => {
+          console.warn('assigning runtime')
+          return createLightRuntime(context)
+        },
       }),
       setReadonly: (context, event) => {
         if (!context.editor) {

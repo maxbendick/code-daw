@@ -18,7 +18,9 @@ interface Context {
   runtimeProcess?: Runtime
 }
 
-export const lightRuntimeMachine = Machine<Context, StateSchema, Event>({
+export {}
+
+const lightRuntimeMachine = Machine<Context, StateSchema, Event>({
   initial: 'running',
   context: {},
   states: {
