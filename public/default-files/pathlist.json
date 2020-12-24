@@ -1,1 +1,7 @@
-["/index.tsx", "/dial.tsx", "/internal.tsx", "/react-interactable.tsx"]
+[
+  "/index.tsx",
+  "/dial.tsx",
+  "/internal.tsx",
+  "/react-interactable.tsx",
+  "/audio.tsx"
+]

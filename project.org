@@ -1,11 +1,36 @@
+* career
+** study auth, design systems, network layer, encoding/asset managment
+
+* github public prep
+** branding (logo, name, design elements)
+** erase history
+** editor actor
+** destroy editor in-between files
+** file saving - show asterisk, ctrl-s
+** run unsaved files
+* alpha launch prep
+** error messages
+** typings for blessed libraries
+** multiple interactables
+** a track
+** sampling?
+
 
 * Now/soon
 ** build up a library in user-land
 ** make library dev flow better
 ** fix bugs/semantics around resetting
 ** typings for blessed libraries
+** faust https://github.com/grame-cncm/faust2webaudio
+** tidal syntax
+
+* idea for promises
+** wait on all promise exports to start attach runtime?
+** onDone exportable? exportable with promise so runtime waits?
+** 
 
 * Eventually
+** will want to have param curves decided by source
 ** CUSTOM EDITOR IN VSCODE INSTEAD OF IDE ?????
 ** test public default sources?
 ** less dependence on index

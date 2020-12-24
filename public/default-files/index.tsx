@@ -1,10 +1,18 @@
+// prettier-ignore
 import * as React from 'react'
+// prettier-ignore
 import * as ReactDOM from 'react-dom'
+// prettier-ignore
 import { BehaviorSubject, Observable, of } from 'rxjs'
+// prettier-ignore
 import { concatMap, delay, repeat, startWith } from 'rxjs/operators'
+import { gain, oscillator } from './audio'
+// prettier-ignore
 import { Dial } from './dial'
+// prettier-ignore
 import { getAudioContext, interactable } from './internal'
-import { easyConnect, reactInteractable } from './react-interactable'
+// prettier-ignore
+import { reactInteractable } from './react-interactable'
 
 const audioContext: AudioContext = getAudioContext()
 
@@ -24,68 +32,57 @@ export const another = interactable({
   },
 })
 
-type ParamLike = number | Observable<number> | AudioNode
-
-const makeOsc = ({
-  type,
-  frequency,
-  detune,
+const makeDial = ({
+  min,
+  max,
+  initial,
 }: {
-  type: OscillatorType
-  frequency: ParamLike
-  detune?: ParamLike
-}): OscillatorNode => {
-  const result: OscillatorNode = audioContext.createOscillator()
-  result.type = type
-  easyConnect(audioContext, frequency, result.frequency)
-  if (detune) {
-    easyConnect(audioContext, detune, result.detune)
-  }
-  result.start()
+  min: number
+  max: number
+  initial: number
+}): BehaviorSubject<number> => {
+  const dialValues$ = new BehaviorSubject<number>(initial)
+
+  const result = reactInteractable(dialValues$, () => (
+    <div>
+      hello asdfasdfinteractable
+      <br />
+      <Dial
+        min={min}
+        max={max}
+        initial={initial}
+        onChange={value => {
+          dialValues$.next(value)
+        }}
+        radius={20}
+      />
+    </div>
+  ))
+
   return result
 }
 
-const makeGain = ({
-  gainValue,
-  source,
-}: {
-  gainValue: ParamLike
-  source: AudioNode
-}): AudioNode => {
-  const result = audioContext.createGain()
-  easyConnect(audioContext, gainValue, result.gain)
-  source.connect(result)
-  return result
+const frequency$ = sequence([300, 310, 280, 250], 1000)
+const detune$ = sequence([0, 10, -20, 20, 50, -74], 378)
+const gain$ = sequence([0.3, 0.6, 0.9], 1200)
+
+export const detuneDial = makeDial({ min: -200, max: 200, initial: 0 })
+
+function sequence<A>(vals: A[], msBetween: number): Observable<A> {
+  const [firstVal, ...restVals] = vals
+  return of(...restVals, firstVal).pipe(
+    concatMap(freq => of(freq).pipe(delay(msBetween))),
+    repeat(),
+    startWith(firstVal),
+  )
 }
 
-const makeDial = (): BehaviorSubject<number> => {
-  throw new Error('todo')
-}
-
-const frequency$ = of(300, 310, 280, 250).pipe(
-  concatMap(freq => of(freq).pipe(delay(1000))),
-  repeat(10),
-  startWith(301),
-)
-
-const detune$ = of(0, 10, -20, 20, 50, -74).pipe(
-  concatMap(freq => of(freq).pipe(delay(378))),
-  repeat(100),
-  startWith(301),
-)
-
-const gain$ = of(0.3, 0.6, 0.9).pipe(
-  concatMap(freq => of(freq).pipe(delay(1200))),
-  repeat(10),
-  startWith(0.2),
-)
-
-const theOsc = makeOsc({
+const theOsc = oscillator({
   type: 'triangle',
-  frequency: frequency$,
-  detune: detune$,
+  frequency: 440 ?? frequency$,
+  detune: sequence([1, 50, 100], 1000) ?? detuneDial ?? 0,
 })
-const theGain = makeGain({ gainValue: gain$, source: theOsc })
+const theGain = gain({ gainValue: 1 ?? gain$, source: theOsc })
 export default theGain
 
 export const aReactInteractable = reactInteractable({ some: 'value' }, () => (

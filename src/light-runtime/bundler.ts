@@ -34,7 +34,7 @@ export const _mapImports = (
       if (
         line.substring(line.indexOf('from') + 'from'.length).includes('from ')
       ) {
-        throw new Error(
+        console.warn(
           'Two froms in an import statement - looks like somethings wrong',
         )
       }
