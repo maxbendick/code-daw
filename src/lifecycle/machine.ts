@@ -123,7 +123,6 @@ export const machine = Machine<
             target: 'monacoSetup',
             actions: assign({
               monaco: (context, event) => {
-                console.log('monaco setup invoke doen', event)
                 return event.data as any
               },
             }),
