@@ -54,11 +54,11 @@ afterEach(() => {
 test('lifecycle', async () => {
   server.get('/default-files/pathlist.json', () => ['/index.tsx'])
 
-  const oldFetch = window.fetch
-  ;(window as any).fetch = (...args: any[]) => {
-    console.log('attempted to fetch', ...args)
-    return (oldFetch as any)(...args)
-  }
+  // const oldFetch = window.fetch
+  // ;(window as any).fetch = (...args: any[]) => {
+  //   console.log('attempted to fetch', ...args)
+  //   return (oldFetch as any)(...args)
+  // }
 
   const mockEditor = {
     setValue: () => {
@@ -81,7 +81,7 @@ test('lifecycle', async () => {
     }),
   ).start()
 
-  service.subscribe(state => console.log('state', state.value))
+  // service.subscribe(state => console.log('state', state.value))
 
   expect(service.state.matches('preMount')).toBeTruthy()
   await wait(1)

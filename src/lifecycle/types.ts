@@ -24,11 +24,6 @@ export interface LifecycleStateSchema {
         destroyed: {}
       }
     }
-    parsingTokens: {}
-    attachingCoolZones: {}
-    compilingCode: {}
-    evalingCode: {}
-    runtime: {}
     failure: {}
   }
 }
@@ -65,12 +60,4 @@ export type LifecycleServices = {
   loadMonaco: () => Promise<MonacoT>
   monacoSetup: (context: LifecycleContext) => Promise<void>
   startLightRuntime: (context: LifecycleContext) => Promise<void>
-
-  parseTokens: (context: LifecycleContext) => Promise<TokenPlaces>
-  compileCode: (context: LifecycleContext) => Promise<string>
-  evalCompiledUserCode: (
-    context: LifecycleContext,
-  ) => Promise<{ codeDawVars: any }>
-  attachCoolZones: (context: LifecycleContext) => Promise<CoolZone[]>
-  doRuntime: (context: LifecycleContext) => Promise<void>
 }
