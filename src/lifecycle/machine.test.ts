@@ -1,5 +1,6 @@
 import '@testing-library/jest-dom'
-import { interpret } from 'xstate'
+import { createServer, Server } from 'miragejs'
+import { assign, interpret } from 'xstate'
 import { machine } from './machine'
 import { lifecycleServices } from './services'
 
@@ -10,6 +11,12 @@ const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 const sendShiftEnter = () => {
   ;(window as any).onkeydown({ key: 'Enter', shiftKey: true } as any)
+}
+
+const mockRuntime = () => {
+  return {
+    shutdown: () => Promise.resolve(true),
+  }
 }
 
 const monacoMock = {
@@ -36,7 +43,23 @@ const monacoMock = {
   },
 }
 
+let server: Server
+beforeEach(() => {
+  server = createServer({})
+})
+afterEach(() => {
+  server.shutdown()
+})
+
 test('lifecycle', async () => {
+  server.get('/default-files/pathlist.json', () => ['/index.tsx'])
+
+  const oldFetch = window.fetch
+  ;(window as any).fetch = (...args: any[]) => {
+    console.log('attempted to fetch', ...args)
+    return (oldFetch as any)(...args)
+  }
+
   const mockEditor = {
     setValue: () => {
       throw new Error('not yet')
@@ -44,31 +67,41 @@ test('lifecycle', async () => {
   }
   const service = interpret(
     machine.withConfig({
+      actions: {
+        assignRuntime: assign<any, any>({
+          runtimeProcess: (context: any, event: any) => mockRuntime(),
+        }),
+      },
       services: {
         ...lifecycleServices,
         loadMonaco: async (context: any, event: any) => {
           return monacoMock
         },
-        lightRuntime: async (context: any, event: any) => {
-          await new Promise(resolve => {})
-        },
       },
     }),
   ).start()
 
-  // service.subscribe(state => console.log('state.value', state.value))
+  service.subscribe(state => console.log('state', state.value))
 
   expect(service.state.matches('preMount')).toBeTruthy()
-  await wait(2)
+  await wait(1)
   service.send({ type: 'REACT_MOUNTED' })
   expect(service.state.matches('loadingMonaco')).toBeTruthy()
-  await wait(2)
+  await wait(1)
   expect(service.state.matches('creatingEditor')).toBeTruthy()
   service.send({ type: 'EDITOR_CREATED', editor: mockEditor as any })
-  await wait(2)
+  await wait(1)
   expect(service.state.matches('editing')).toBeTruthy()
-
-  // sendShiftEnter()
-  // await wait(2)
-  // expect(service.state.matches('runtime')).toBeTruthy()
-}, 10000)
+  sendShiftEnter()
+  await wait(1)
+  expect(service.state.matches('lightRuntime')).toBeTruthy()
+  sendShiftEnter()
+  await wait(1)
+  expect(service.state.matches('editing')).toBeTruthy()
+  sendShiftEnter()
+  await wait(1)
+  expect(service.state.matches('lightRuntime')).toBeTruthy()
+  sendShiftEnter()
+  await wait(1)
+  expect(service.state.matches('editing')).toBeTruthy()
+})
