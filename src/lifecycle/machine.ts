@@ -191,12 +191,7 @@ export const machine = Machine<
             entry: ['assignRuntime'],
             invoke: {
               src: 'waitForShiftEnter',
-              onDone: { actions: send({ type: 'RUNTIME_SHUTDOWN' }) },
-            },
-            on: {
-              RUNTIME_SHUTDOWN: {
-                target: 'shuttingDown',
-              },
+              onDone: 'shuttingDown',
             },
           },
           shuttingDown: {

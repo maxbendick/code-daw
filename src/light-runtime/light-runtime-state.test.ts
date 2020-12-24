@@ -43,6 +43,8 @@ test.only('light-runtime machine', async () => {
     exit: undefined,
   }
 
+  const shiftEnterSignal$ = new Subject()
+
   const service = interpret(
     Machine(cleanedConfig)
       .withContext({})
@@ -59,6 +61,9 @@ test.only('light-runtime machine', async () => {
             shutdownFinished = true
             return
           },
+          waitForShiftEnter: (context, event) => {
+            return shiftEnterSignal$.pipe(take(1)).toPromise()
+          },
         },
       }),
   ).start()
@@ -68,12 +73,9 @@ test.only('light-runtime machine', async () => {
   // })
 
   expect(service.state.matches('running')).toBeTruthy()
-  service.send({ type: 'RUNTIME_SHUTDOWN' })
-  expect(shutdownFinished).toBeFalsy()
-  expect(service.state.matches('shuttingDown')).toBeTruthy()
+  shiftEnterSignal$.next(true)
   await wait(1)
   expect(service.state.matches('destroyed')).toBeTruthy()
   expect(service.state.done).toBeTruthy()
   expect(shutdownFinished).toBeTruthy()
-  await wait(1)
 })

@@ -90,8 +90,7 @@ const getTokensFromEditor = (editor: EditorT) => {
 
 export const lifecycleServices: LifecycleServices = {
   loadMonaco: () => monacoReact.init(),
-  monacoSetup: (context, ...args) => {
-    console.log('preeditor setup args', context, ...args)
+  monacoSetup: context => {
     return monacoSetup(context.monaco!, () => context.tokens!)
   },
   startLightRuntime: async context => {

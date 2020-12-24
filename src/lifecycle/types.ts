@@ -8,7 +8,6 @@ export type LifecycleEvent =
   | { type: 'REACT_MOUNTED' }
   | { type: 'EDITOR_CREATED'; editor: EditorT }
   | { type: 'RESET_CODE' }
-  | { type: 'RUNTIME_SHUTDOWN' }
   | { type: '__nil'; data: any }
 
 export interface LifecycleStateSchema {
