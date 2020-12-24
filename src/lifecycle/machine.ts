@@ -1,5 +1,6 @@
 import { assign, Machine, send, spawn } from 'xstate'
 import { SignalGraph } from '../lib2/priv/signal-graph'
+import { createLightRuntime } from '../light-runtime/light-runtime'
 import { makeVfsMachine } from '../virtual-file-system/vfs-machine'
 import {
   LifecycleContext,
@@ -275,8 +276,17 @@ export const machine = Machine<
     },
   },
   {
-    services: defaultServices,
+    services: {
+      ...defaultServices,
+      shutdownRuntime: async (context, event) => {
+        await context.runtimeProcess?.shutdown()
+        return
+      },
+    },
     actions: {
+      assignRuntime: assign({
+        runtimeProcess: (context, event) => createLightRuntime(context),
+      }),
       setReadonly: (context, event) => {
         if (!context.editor) {
           throw new Error('cant be in setReadonly without editor')

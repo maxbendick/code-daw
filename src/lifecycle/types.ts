@@ -39,6 +39,7 @@ export interface LifecycleContext {
   signalGraph?: SignalGraph
   audioContext?: AudioContext // TODO remove
   vfsActor?: VfsActor
+  runtimeProcess?: { shutdown: () => Promise<any> }
 }
 
 export interface LifecycleContextWithMonaco {

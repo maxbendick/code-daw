@@ -111,6 +111,7 @@ export const lifecycleServices: LifecycleServices = {
   parseTokens: async context => {
     return getTokensFromEditor(context.editor!)
   },
+  // can remove probably
   doRuntime: async context => {
     const { destroy } = startRuntime(context)
     await waitForShiftEnter()

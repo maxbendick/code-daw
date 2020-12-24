@@ -1,3 +1,5 @@
+import { Subject } from 'rxjs'
+import { take } from 'rxjs/operators'
 import { SourceMapConsumer } from 'source-map'
 import { JsxEmit, ModuleKind, ScriptTarget, transpile } from 'typescript'
 import { LifecycleContext } from '../lifecycle/types'
@@ -215,3 +217,28 @@ export const startLightRuntime = async (
 
   editor.updateOptions({ readOnly: false })
 }
+
+interface Runtime {
+  shutdown: () => Promise<any>
+}
+
+const wrapRuntime = <A>(
+  context: A,
+  runtimePromiseFn: (context: A, stopSignal: Promise<any>) => Promise<any>,
+): Runtime => {
+  const shutdown$ = new Subject()
+  const runtimePromise = runtimePromiseFn(
+    context,
+    shutdown$.pipe(take(1)).toPromise(),
+  )
+
+  return {
+    shutdown: async () => {
+      shutdown$.next(true)
+      await runtimePromise
+    },
+  }
+}
+
+export const createLightRuntime = (context: LifecycleContext) =>
+  wrapRuntime(context, startLightRuntime)

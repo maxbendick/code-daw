@@ -10,11 +10,15 @@ interface Runtime {
   shutdown: () => Promise<void>
 }
 
-const wrapRuntime = (
-  runtimePromiseFn: (stopSignal: Promise<any>) => Promise<any>,
+const wrapRuntime = <A>(
+  context: A,
+  runtimePromiseFn: (context: A, stopSignal: Promise<any>) => Promise<any>,
 ): Runtime => {
   const shutdown$ = new Subject()
-  const runtimePromise = runtimePromiseFn(shutdown$.pipe(take(1)).toPromise())
+  const runtimePromise = runtimePromiseFn(
+    context,
+    shutdown$.pipe(take(1)).toPromise(),
+  )
 
   return {
     shutdown: async () => {
@@ -33,7 +37,8 @@ test.only('light-runtime machine', async () => {
     lightRuntimeMachine.withConfig({
       actions: {
         assignRuntime: assign<any, any>({
-          runtimeProcess: wrapRuntime(mockRuntimeFn),
+          runtimeProcess: (context: any, event: any) =>
+            wrapRuntime(context, mockRuntimeFn),
         }),
       },
       services: {
