@@ -2,6 +2,7 @@ import { Observable, of } from 'rxjs'
 import { concatMap, delay, repeat, startWith } from 'rxjs/operators'
 import { gain, oscillator } from './audio'
 import { dial } from './dial'
+import { transport } from './transport'
 
 const frequency$ = sequence([300, 310, 280, 250], 1000)
 const gain$ = sequence([0.3, 0.6, 0.9], 1200)
@@ -16,6 +17,10 @@ function sequence<A>(vals: A[], msBetween: number): Observable<A> {
     startWith(firstVal),
   )
 }
+
+transport.beats$.subscribe(beat => {
+  console.log('beat!', beat)
+})
 
 const theOsc = oscillator({
   type: 'triangle',

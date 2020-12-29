@@ -4,5 +4,6 @@
   "/internal.tsx",
   "/react-interactable.tsx",
   "/audio.tsx",
-  "/use-observable-state.tsx"
+  "/use-observable-state.tsx",
+  "/transport.tsx"
 ]

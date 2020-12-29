@@ -1,5 +1,15 @@
+* todo rn, for big fun
+** transport, sequencers
+** make some techno
+
+* todos, for posterity
+** somehow test bundler
+** consider loading modules globally through <script type="module">
+** onDestroy exports for userland
+
 * career
 ** study auth, design systems, network layer, encoding/asset managment
+
 
 * github public prep
 ** branding (logo, name, design elements)
