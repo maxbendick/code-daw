@@ -285,6 +285,9 @@ test('skypack', () => {
   expect(_getSkypackModule('react-dom/whatever')).toEqual(
     `https://cdn.skypack.dev/react-dom/whatever`,
   )
+  expect(_getSkypackModule('rxjs/operators')).toEqual(
+    `https://cdn.skypack.dev/rxjs/operators`,
+  )
   expect(() => _getSkypackModule('not-a-supported-lib')).toThrow()
   expect(() => _getSkypackModule('react-but-not')).toThrow()
 })

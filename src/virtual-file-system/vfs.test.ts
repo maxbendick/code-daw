@@ -1,7 +1,8 @@
+import { defaultFilesPath } from '../config'
 import { makeLocalStorageVfs } from './index'
 
-const localStoragePrefix = 'code-daw/vfs/files'
-const defaultFilesDirectoryUrl = `${process.env.PUBLIC_URL}/default-files`
+// const localStoragePrefix = 'code-daw/vfs/files'
+// const defaultFilesDirectoryUrl = `${process.env.PUBLIC_URL}/default-files`
 
 const defaultIndexContent = 'default index content'
 const defaultDialContent = 'diefault dial content'
@@ -13,19 +14,19 @@ const pathToLocalStorageKey = (path: string) =>
 const paths = ['/index.tsx', '/dial.tsx']
 
 const makeFetchMock = () => async (path: string) => {
-  if (path === `${defaultFilesDirectoryUrl}/pathlist.json`) {
+  if (path === `${defaultFilesPath}/pathlist.json`) {
     return {
       json: async () => {
         return JSON.stringify(paths)
       },
     }
-  } else if (path === `${defaultFilesDirectoryUrl}/index.tsx`) {
+  } else if (path === `${defaultFilesPath}/index.tsx`) {
     return {
       text: async () => {
         return defaultIndexContent
       },
     }
-  } else if (path === `${defaultFilesDirectoryUrl}/dial.tsx`) {
+  } else if (path === `${defaultFilesPath}/dial.tsx`) {
     return {
       text: async () => {
         return defaultDialContent
@@ -71,8 +72,6 @@ const makeLocalStorageMock = () => {
 
   return mockObject
 }
-
-// const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 test('LocalStorageVfs general function', async () => {
   const storage = await makeLocalStorageMock()

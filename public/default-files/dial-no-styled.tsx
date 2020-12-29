@@ -1,9 +1,9 @@
+import { useObservableState } from 'observable-hooks'
 import * as React from 'react'
-import { forwardRef, useEffect, useRef } from 'react'
+import { forwardRef, useEffect, useMemo, useRef, useState } from 'react'
 import { useDrag } from 'react-use-gesture'
-import { Observable } from 'rxjs'
+import { Observable, Subject } from 'rxjs'
 import { map, sampleTime, scan } from 'rxjs/operators'
-import { useObservableState } from './use-observable-state'
 
 interface Movement {
   down: boolean
@@ -251,6 +251,30 @@ const DialTick: React.FC<TickProps> = ({
 
 const normalize = (start: number, end: number, value: number) =>
   (value - start) / (end - start)
+
+function useObservableState2<Event, Output>(
+  createOutput: (event$: Observable<Event>) => Observable<Output>,
+  initial: Output,
+): [currentValue: Output, next: (event: Event) => void] {
+  const [currentOutput, setCurrentOutput] = useState(initial)
+  const event$ = useMemo(() => new Subject<Event>(), [])
+  const output$ = useMemo(() => createOutput(event$), [])
+  const subscription = useMemo(
+    () =>
+      output$.subscribe(output => {
+        setCurrentOutput(output)
+      }),
+    [],
+  )
+
+  useEffect(() => {
+    return () => {
+      subscription.unsubscribe()
+    }
+  }, [])
+
+  return [currentOutput, e => event$.next(e)]
+}
 
 export const Dial: React.FC<{
   initial: number

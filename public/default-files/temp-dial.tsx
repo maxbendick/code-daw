@@ -1,9 +1,9 @@
+import { useObservableState } from 'observable-hooks'
 import * as React from 'react'
 import { forwardRef, useEffect, useRef } from 'react'
 import { useDrag } from 'react-use-gesture'
 import { Observable } from 'rxjs'
 import { map, sampleTime, scan } from 'rxjs/operators'
-import { useObservableState } from './use-observable-state'
 
 interface Movement {
   down: boolean
@@ -77,10 +77,7 @@ const movementsToDialValue = (
   initialValue: number,
   sampleRate: number,
 ) => (
-  event$: Observable<{
-    down: boolean
-    movement: [mx: number, my: number]
-  }>,
+  event$: Observable<{ down: boolean; movement: [mx: number, my: number] }>,
 ): Observable<{
   value: number
   dragging: boolean

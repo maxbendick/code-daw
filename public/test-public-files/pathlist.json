@@ -1,8 +1,7 @@
 [
   "/index.tsx",
-  "/dial.tsx",
   "/internal.tsx",
-  "/react-interactable.tsx",
   "/audio.tsx",
+  "/dial.tsx",
   "/use-observable-state.tsx"
 ]

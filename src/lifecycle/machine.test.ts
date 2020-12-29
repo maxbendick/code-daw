@@ -1,6 +1,7 @@
 import '@testing-library/jest-dom'
 import { createServer, Server } from 'miragejs'
 import { assign, interpret } from 'xstate'
+import { defaultFilesPath } from '../config'
 import { machine } from './machine'
 import { lifecycleServices } from './services'
 
@@ -52,13 +53,7 @@ afterEach(() => {
 })
 
 test('lifecycle', async () => {
-  server.get('/default-files/pathlist.json', () => ['/index.tsx'])
-
-  // const oldFetch = window.fetch
-  // ;(window as any).fetch = (...args: any[]) => {
-  //   console.log('attempted to fetch', ...args)
-  //   return (oldFetch as any)(...args)
-  // }
+  server.get(`${defaultFilesPath}/pathlist.json`, () => ['/index.tsx'])
 
   const mockEditor = {
     setValue: () => {
@@ -104,4 +99,10 @@ test('lifecycle', async () => {
   sendShiftEnter()
   await wait(1)
   expect(service.state.matches('editing')).toBeTruthy()
+
+  // TODO how to test loading stuff? how to test content loaded into editor?
+  expect(service.state.context?.vfsActor?.state?.context).toMatchObject({
+    activePath: '/index.tsx',
+    // pathToFile: { should have stuff here, but test doesnt fill it in },
+  })
 })

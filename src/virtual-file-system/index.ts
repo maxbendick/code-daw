@@ -3,6 +3,8 @@
 //   content: Promise<string>;
 // }
 
+import { defaultFilesPath } from "../config"
+
 // interface VirtualFileSystem {
 
 // }
@@ -11,8 +13,7 @@ const vfsFileLocalStoragePrefix = 'code-daw/vfs/files'
 const pathToLocalStorageKey = (path: string) =>
   `${vfsFileLocalStoragePrefix}${path}`
 
-const defaultFilesDirectoryUrl = `${process.env.PUBLIC_URL}/default-files`
-const pathlistUrl = `${defaultFilesDirectoryUrl}/pathlist.json`
+const pathlistUrl = `${defaultFilesPath}/pathlist.json`
 
 const getDefaultPathlist = async (
   fetchFn: typeof window.fetch,
@@ -29,7 +30,7 @@ const getDefaultFile = async (
   if (!path.startsWith('/')) {
     throw new Error(`path must start with / - ${path}`)
   }
-  const response = await fetchFn(`${defaultFilesDirectoryUrl}${path}`)
+  const response = await fetchFn(`${defaultFilesPath}${path}`)
   return await response.text()
 }
 

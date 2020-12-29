@@ -1,5 +1,7 @@
+import { defaultFilesPath } from "../config"
+
 const localStoragePrefix = 'code-daw/vfs/files'
-const defaultFilesDirectoryUrl = `${process.env.PUBLIC_URL}/default-files`
+// const defaultFilesDirectoryUrl = `${process.env.PUBLIC_URL}/default-files`
 
 export const defaultIndexContent = 'default index content'
 export const defaultDialContent = 'diefault dial content'
@@ -9,19 +11,19 @@ const pathToLocalStorageKey = (path: string) =>
   `${vfsFileLocalStoragePrefix}${path}`
 
 export const makeFetchMock = () => async (path: string) => {
-  if (path === `${defaultFilesDirectoryUrl}/pathlist.json`) {
+  if (path === `${defaultFilesPath}/pathlist.json`) {
     return {
       json: async () => {
         return JSON.stringify(['/index.tsx', '/dial.tsx'])
       },
     }
-  } else if (path === `${defaultFilesDirectoryUrl}/index.tsx`) {
+  } else if (path === `${defaultFilesPath}/index.tsx`) {
     return {
       text: async () => {
         return defaultIndexContent
       },
     }
-  } else if (path === `${defaultFilesDirectoryUrl}/dial.tsx`) {
+  } else if (path === `${defaultFilesPath}/dial.tsx`) {
     return {
       text: async () => {
         return defaultDialContent
