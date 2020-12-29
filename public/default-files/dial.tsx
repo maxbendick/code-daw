@@ -1,8 +1,9 @@
 import * as React from 'react'
 import { forwardRef, useEffect, useRef } from 'react'
 import { useDrag } from 'react-use-gesture'
-import { Observable } from 'rxjs'
+import { BehaviorSubject, Observable } from 'rxjs'
 import { map, sampleTime, scan } from 'rxjs/operators'
+import { reactInteractable } from './react-interactable'
 import { useObservableState } from './use-observable-state'
 
 interface Movement {
@@ -261,4 +262,34 @@ export const Dial: React.FC<{
       />
     </DialBase>
   )
+}
+
+export const dial = ({
+  min,
+  max,
+  initial = (min + max) / 2,
+}: {
+  min: number
+  max: number
+  initial?: number
+}): BehaviorSubject<number> => {
+  const dialValues$ = new BehaviorSubject<number>(initial)
+
+  const result = reactInteractable(dialValues$, () => (
+    <div>
+      hello asdfasdfinteractable
+      <br />
+      <Dial
+        min={min}
+        max={max}
+        initial={initial}
+        onChange={value => {
+          dialValues$.next(value)
+        }}
+        radius={20}
+      />
+    </div>
+  ))
+
+  return result
 }
