@@ -58,7 +58,7 @@ const GateSequencer: React.FC<{
 export const gateSequencer = (
   beats: number | boolean[],
   tick$: Observable<number> = transport.beat$,
-) => {
+): Observable<boolean> => {
   const initialBeatsActive = typeof beats === 'number' ? allTrue(beats) : beats
 
   const beatsActive$ = new BehaviorSubject<boolean[]>(initialBeatsActive)

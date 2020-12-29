@@ -32,7 +32,6 @@ export const easyConnect = (
     return input
       .pipe(skip(1), throttleTime(SAFE_MODE_THROTTLE_TIME))
       .subscribe(currentValue => {
-        console.log('setting target', currentValue)
         output.setTargetAtTime(
           currentValue,
           audioContext.currentTime + 0,
@@ -81,4 +80,16 @@ export const oscillator = ({
   }
   result.start()
   return result
+}
+
+export const combineAudio = (...nodes: AudioNode[]): AudioNode => {
+  // const output = getAudioContext().createChannelMerger(nodes.length)
+  const output = getAudioContext().createGain()
+  output.gain.value = 1
+
+  for (const node of nodes) {
+    node.connect(output)
+  }
+
+  return output
 }

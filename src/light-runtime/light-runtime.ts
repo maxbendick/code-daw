@@ -110,6 +110,7 @@ export const startLightRuntime = async (
   const audioContextManager = new AudioContextManager()
 
   ;(window as any).codeDaw.interactableSymbol = interactableSymbol
+  ;(window as any).codeDaw.publicUrl = process.env.PUBLIC_URL
 
   // let transpiled = transpileFile(source)
   let transpiled = runnableJs

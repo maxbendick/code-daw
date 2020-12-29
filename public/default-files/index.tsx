@@ -1,7 +1,8 @@
 import { Observable, of } from 'rxjs'
 import { concatMap, delay, map, repeat, scan, startWith } from 'rxjs/operators'
-import { gain, oscillator } from './audio'
+import { combineAudio, gain, oscillator } from './audio'
 import { dial } from './dial'
+import { SampleUrl, singleBufferSampler } from './sampler'
 import { gateSequencer as booleanSequencer } from './sequencer'
 import { transport } from './transport'
 
@@ -27,54 +28,66 @@ function sequenceBeats<A>(vals: A[]): Observable<A> {
   )
 }
 
-transport.beat$.subscribe(beat => {
-  console.log('beat!', beat)
-})
+const makeDrumAudio = () => {
+  const kickAudio = singleBufferSampler(SampleUrl.kick909, transport.beat$)
+  const openHatAudio = singleBufferSampler(
+    SampleUrl.chirpHhOpen,
+    transport.eigth$,
+  )
+  const closedHatAudio = singleBufferSampler(
+    SampleUrl.chirpHhClosed,
+    transport.eigth$.pipe(delay(120)),
+  )
+  const drumsAudio = gain({
+    gainValue: 1,
+    source: combineAudio(kickAudio, openHatAudio, closedHatAudio),
+  })
+  return drumsAudio
+}
 
 export const seq = booleanSequencer(
   5,
   transport.eigth$.pipe(delay(200), startWith(0)),
 )
-
-seq.subscribe(s => {
-  console.log('seqs!', s)
-})
-
-export const devilSeq = booleanSequencer(
+export const moveUpGate = booleanSequencer(
   [true, true, false, true, false, true],
-  transport.quarter$,
-) as Observable<boolean>
-
-// TODO make sure this can start with index 0
-const devilFreq$ = devilSeq.pipe(
-  scan(
-    (state, gateOpen, absIndex) => {
-      if (!gateOpen) {
-        return state
-      }
-      return {
-        frequency: 200 + (absIndex % 4) * 150,
-      }
-    },
-    { frequency: 200 },
-  ),
-  map(s => s.frequency),
+  transport.eigth$,
 )
+const makeSynthAudio = () => {
+  const crazyFreq$ = moveUpGate.pipe(
+    scan(
+      (state, gateOpen, index) => {
+        if (!gateOpen) {
+          return state
+        }
+        return {
+          frequency: 200 + (index % 4) * 150,
+        }
+      },
+      { frequency: 200 },
+    ),
+    map(s => s.frequency),
+  )
+  const theOsc = oscillator({
+    type: 'triangle',
+    frequency: crazyFreq$ ?? 440 ?? frequency$,
+    detune:
+      sequenceBeats([1, 50, 100, -100]) ??
+      detuneDial ??
+      sequenceMs([1, 50, 100], 1000) ??
+      0,
+  })
+  const theGain = gain({
+    gainValue:
+      (seq as Observable<boolean>).pipe(map(a => (a ? 0.3 : 0.21))) ??
+      0.3 ??
+      gain$,
+    source: theOsc,
+  })
+  return theGain
+}
 
-const theOsc = oscillator({
-  type: 'triangle',
-  frequency: devilFreq$ ?? 440 ?? frequency$,
-  detune:
-    sequenceBeats([1, 50, 100, -100]) ??
-    detuneDial ??
-    sequenceMs([1, 50, 100], 1000) ??
-    0,
-})
-const theGain = gain({
-  gainValue:
-    (seq as Observable<boolean>).pipe(map(a => (a ? 0.3 : 0.21))) ??
-    0.3 ??
-    gain$,
-  source: theOsc,
-})
-export default theGain
+export default combineAudio(
+  makeDrumAudio(),
+  gain({ source: makeSynthAudio(), gainValue: 0.5 }),
+)

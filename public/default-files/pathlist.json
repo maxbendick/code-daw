@@ -6,5 +6,6 @@
   "/audio.tsx",
   "/use-observable-state.tsx",
   "/transport.tsx",
-  "/sequencer.tsx"
+  "/sequencer.tsx",
+  "/sampler.tsx"
 ]
