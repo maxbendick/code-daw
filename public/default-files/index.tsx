@@ -80,9 +80,9 @@ function sequence<A>(vals: A[], msBetween: number): Observable<A> {
 const theOsc = oscillator({
   type: 'triangle',
   frequency: 440 ?? frequency$,
-  detune: sequence([1, 50, 100], 1000) ?? detuneDial ?? 0,
+  detune: detuneDial ?? sequence([1, 50, 100], 1000) ?? 0,
 })
-const theGain = gain({ gainValue: 1 ?? gain$, source: theOsc })
+const theGain = gain({ gainValue: 0.3 ?? gain$, source: theOsc })
 export default theGain
 
 export const aReactInteractable = reactInteractable({ some: 'value' }, () => (

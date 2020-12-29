@@ -97,26 +97,13 @@ const movementsToDialValue = (
   )
 }
 
-// const DialBase = styled.div<{ radius: number }>`
-//   height: ${props => props.radius * 2}px;
-//   width: ${props => props.radius * 2}px;
-//   border-radius: ${props => props.radius * 2}px;
-//   background-color: #000;
-//   user-select: none;
-// `
-// const dialBaseStyle = (radius: number) => ({
-//   height: radius * 2,
-//   width: radius * 2,
-//   borderRadius: radius * 2,
-//   backgroundColor: '#000',
-//   userSelect: 'none',
-// })
-// const DialBase: React.FC<{ radius: number }> = React.forwardRef(
 const DialBase: React.FC<{
   radius: number
   ref: any
-}> = forwardRef(({ radius, children }, ref) => (
+}> = forwardRef(({ radius, children, ...restProps }, ref) => (
   <div
+    ref={ref as any}
+    onClick={() => console.log('dial click')}
     style={{
       height: radius * 2,
       width: radius * 2,
@@ -124,42 +111,12 @@ const DialBase: React.FC<{
       backgroundColor: '#000',
       userSelect: 'none',
     }}
+    {...restProps}
   >
     {children}
   </div>
 ))
 
-// const DialTickContainer = styled.div<{
-//   transitions: boolean
-//   hide: boolean
-//   radius: number
-// }>`
-//   height: ${props => props.radius * 2}px;
-//   width: ${props => props.radius * 2}px;
-//   position: absolute;
-//   transition: transform 0.1s, filter 0.4s;
-//   display: flex;
-//   justify-content: center;
-//   filter: opacity(${props => (props.hide ? '0' : '1')});
-// `
-// const DialTickContainerStyle = ({
-//   radius,
-//   hide,
-// }: {
-//   radius: number
-//   hide: boolean
-// }) => {
-//   const diameter = radius * 2
-//   return {
-//     height: diameter,
-//     width: diameter,
-//     position: 'absolute',
-//     transition: 'transform 0.1s, filter 0.4s',
-//     display: 'flex',
-//     justifyContent: 'center',
-//     filter: hide ? 'opacity(0)' : undefined,
-//   }
-// }
 const DialTickContainer: React.FC<{
   radius: number
   transitions: boolean
@@ -185,30 +142,6 @@ const DialTickContainer: React.FC<{
   )
 }
 
-// const DialTickInner = styled.div<{
-//   thickness: string
-//   color: string
-//   length: string
-// }>`
-//   height: ${props => props.length};
-//   width: ${props => props.thickness};
-//   background-color: ${props => props.color};
-// `
-// const DialTickInnerStyle = ({
-//   length,
-//   thickness,
-//   color,
-// }: {
-//   length: string
-//   thickness: string
-//   color: string
-// }) => {
-//   return {
-//     height: length,
-//     width: thickness,
-//     backgroundColor: color,
-//   }
-// }
 const DialTickInner: React.FC<{
   thickness: string
   color: string
