@@ -1,5 +1,6 @@
 * todo rn, for big fun
-** transport, sequencers
+** DONE transport, sequencers
+** make a sampler
 ** make some techno
 
 * todos, for posterity
