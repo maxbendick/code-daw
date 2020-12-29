@@ -1,5 +1,6 @@
 import { assign, Machine, send, spawn } from 'xstate'
 import { createLightRuntime } from '../light-runtime/light-runtime'
+import { makeJsonStringifySafe } from '../utils'
 import { makeVfsMachine } from '../virtual-file-system/vfs-machine'
 import {
   LifecycleContext,
@@ -7,7 +8,7 @@ import {
   LifecycleServices,
   LifecycleStateSchema,
 } from './types'
-import { makeJsonStringifySafe, waitForShiftEnter } from './util'
+import { waitForShiftEnter } from './util'
 
 const defaultServices: LifecycleServices = {
   startLightRuntime: async context => {
@@ -68,15 +69,16 @@ export const machine = Machine<
       preMount: {
         entry: assign({
           vfsActor: (context, event) =>
-            spawn(
-              makeVfsMachine({
-                storage: vfsStorage,
-                fetchFn: fetch,
-              }),
-              {
-                name: 'vfsActor',
-                sync: true,
-              },
+            makeJsonStringifySafe(
+              spawn(
+                makeVfsMachine({
+                  storage: vfsStorage,
+                }),
+                {
+                  name: 'vfsActor',
+                  sync: true,
+                },
+              ),
             ),
         }),
         on: {
@@ -92,7 +94,7 @@ export const machine = Machine<
             target: 'monacoSetup',
             actions: assign({
               monaco: (context, event) => {
-                return event.data as any
+                return makeJsonStringifySafe(event.data) as any
               },
             }),
           },
@@ -116,14 +118,13 @@ export const machine = Machine<
             actions: [
               assign({
                 editor: (context, event) => {
-                  makeJsonStringifySafe(event.editor)
-                  return event.editor
+                  return makeJsonStringifySafe(event.editor)
                 },
               }),
               send(
                 (context, event) => ({
                   type: 'VFS_SET_EDITOR',
-                  editor: event.editor,
+                  editor: makeJsonStringifySafe(event.editor),
                 }),
                 { to: 'vfsActor' },
               ),
@@ -190,7 +191,7 @@ export const machine = Machine<
       assignRuntime: assign({
         runtimeProcess: (context, event) => {
           console.warn('assigning runtime')
-          return createLightRuntime(context)
+          return makeJsonStringifySafe(createLightRuntime(context))
         },
       }),
     },

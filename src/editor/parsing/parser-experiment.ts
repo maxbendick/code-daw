@@ -54,10 +54,6 @@ export const parserExperiment = (source: string) => {
   // console.log('source', source)
   const root = createSourceFile('test.ts', source, ScriptTarget.Latest, true)
   // console.log('ts-parser root node', root)
-
-  console.log('-/-/-/-/-/-/-/-/-/-/-/-/-/-/')
-  console.log('nameesss', getExportNames(root))
-  console.log('-/-/-/-/-/-/-/-/-/-/-/-/-/-/')
 }
 
 // for (const statement of root.statements) {

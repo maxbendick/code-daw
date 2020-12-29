@@ -79,7 +79,6 @@ test('LocalStorageVfs general function', async () => {
 
   const vfs = await makeLocalStorageVfs({
     storage,
-    fetchFn: makeFetchMock() as any,
   })
 
   // const allPaths = await vfs.getAllPaths()

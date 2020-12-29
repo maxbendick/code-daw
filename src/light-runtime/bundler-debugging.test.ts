@@ -1,7 +1,7 @@
 import '@testing-library/jest-dom'
 import { _urlEncodeJavaScript } from './bundler'
 
-test('debuggin', async () => {
+test.skip('debuggin', async () => {
   const source = `
     import { map } from 'https://cdn.skypack.dev/rxjs/operators'
 

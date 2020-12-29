@@ -1,14 +1,37 @@
+import { createServer, Response, Server } from 'miragejs'
 import { interpret } from 'xstate'
+import { defaultFilesPath } from '../config'
 import { EditorT } from '../editor/types'
-import { makeFetchMock, makeLocalStorageMock } from './test-utils'
+import { makeLocalStorageMock } from './test-utils'
 import { makeVfsMachine } from './vfs-machine'
+
+let server: Server
+beforeEach(() => {
+  server = createServer({})
+  server.get(`${defaultFilesPath}/pathlist.json`, () => [
+    '/index.tsx',
+    '/dial.tsx',
+  ])
+  server.get(
+    `${defaultFilesPath}/index.tsx`,
+    () =>
+      new Response(200, { 'content-type': 'text' }, 'diefault index content'),
+  )
+  server.get(
+    `${defaultFilesPath}/dial.tsx`,
+    () =>
+      new Response(200, { 'content-type': 'text' }, 'diefault dial content'),
+  )
+})
+afterEach(() => {
+  server.shutdown()
+})
 
 const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
 
 test('vfs machine general function', async () => {
   const config = {
     storage: makeLocalStorageMock(),
-    fetchFn: makeFetchMock() as any,
   }
 
   const machine = makeVfsMachine(config)
@@ -35,7 +58,9 @@ test('vfs machine general function', async () => {
 
   expect(service.state.matches('setup')).toBeTruthy()
 
-  await wait(10)
+  await wait(2000)
+
+  expect(service.state.value).toEqual('ready')
 
   expect(service.state.context).toMatchObject({
     editor: mockEditor,
@@ -46,7 +71,7 @@ test('vfs machine general function', async () => {
         path: '/dial.tsx',
       },
       '/index.tsx': {
-        content: 'default index content',
+        content: 'diefault index content',
         path: '/index.tsx',
       },
     },
@@ -63,7 +88,7 @@ test('vfs machine general function', async () => {
         path: '/dial.tsx',
       },
       '/index.tsx': {
-        content: 'default index content',
+        content: 'diefault index content',
         path: '/index.tsx',
       },
     },
@@ -82,7 +107,7 @@ test('vfs machine general function', async () => {
         path: '/dial.tsx',
       },
       '/index.tsx': {
-        content: 'default index content',
+        content: 'diefault index content',
         path: '/index.tsx',
       },
     },

@@ -3,7 +3,7 @@
 //   content: Promise<string>;
 // }
 
-import { defaultFilesPath } from "../config"
+import { defaultFilesPath } from '../config'
 
 // interface VirtualFileSystem {
 
@@ -15,22 +15,17 @@ const pathToLocalStorageKey = (path: string) =>
 
 const pathlistUrl = `${defaultFilesPath}/pathlist.json`
 
-const getDefaultPathlist = async (
-  fetchFn: typeof window.fetch,
-): Promise<string[]> => {
-  const response = await fetchFn(pathlistUrl)
+const getDefaultPathlist = async (): Promise<string[]> => {
+  const response = await fetch(pathlistUrl)
   const responseBody = await response.text()
   return JSON.parse(responseBody) as string[]
 }
 
-const getDefaultFile = async (
-  fetchFn: typeof window.fetch,
-  path: string,
-): Promise<string> => {
+const getDefaultFile = async (path: string): Promise<string> => {
   if (!path.startsWith('/')) {
     throw new Error(`path must start with / - ${path}`)
   }
-  const response = await fetchFn(`${defaultFilesPath}${path}`)
+  const response = await fetch(`${defaultFilesPath}${path}`)
   return await response.text()
 }
 
@@ -41,7 +36,6 @@ interface SimpleStorage {
 
 export interface LocalStorageVfsConfig {
   storage: SimpleStorage
-  fetchFn: typeof window.fetch
 }
 
 export const makeLocalStorageVfs = async (config: LocalStorageVfsConfig) => {
@@ -63,12 +57,10 @@ export interface VirtualFileSystem {
 
 class LocalStorageVfs implements VirtualFileSystem {
   _storage: LocalStorageVfsConfig['storage']
-  _fetchFn: LocalStorageVfsConfig['fetchFn']
   paths?: string[]
 
   constructor(config: LocalStorageVfsConfig) {
     this._storage = config.storage
-    this._fetchFn = config.fetchFn
   }
 
   init = async () => {
@@ -78,11 +70,11 @@ class LocalStorageVfs implements VirtualFileSystem {
       return
     }
 
-    const pathlist = await getDefaultPathlist(this._fetchFn)
+    const pathlist = await getDefaultPathlist()
     this.paths = pathlist
 
     for (const path of pathlist) {
-      const fileContent = await getDefaultFile(this._fetchFn, path)
+      const fileContent = await getDefaultFile(path)
       await this.setNoPropogate(path, fileContent)
     }
   }

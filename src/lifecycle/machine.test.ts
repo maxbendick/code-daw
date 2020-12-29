@@ -2,17 +2,17 @@ import '@testing-library/jest-dom'
 import { createServer, Server } from 'miragejs'
 import { assign, interpret } from 'xstate'
 import { defaultFilesPath } from '../config'
+import { wait } from '../utils'
+import { makeLocalStorageMock } from '../virtual-file-system/test-utils'
 import { machine } from './machine'
 import { lifecycleServices } from './services'
-
-const wait = (ms: number) => new Promise(resolve => setTimeout(resolve, ms))
-
-;(process.env as any).PUBLIC_URL =
-  'file://wsl%24/Ubuntu/home/max/projects/daw/code-daw/public'
 
 const sendShiftEnter = () => {
   ;(window as any).onkeydown({ key: 'Enter', shiftKey: true } as any)
 }
+
+;(process.env as any).PUBLIC_URL =
+  'file://wsl%24/Ubuntu/home/max/projects/daw/code-daw/public'
 
 const mockRuntime = () => {
   return {
@@ -54,6 +54,9 @@ afterEach(() => {
 
 test('lifecycle', async () => {
   server.get(`${defaultFilesPath}/pathlist.json`, () => ['/index.tsx'])
+
+  const storageMock = makeLocalStorageMock()
+  global.sessionStorage = storageMock
 
   const mockEditor = {
     setValue: () => {
@@ -105,4 +108,12 @@ test('lifecycle', async () => {
     activePath: '/index.tsx',
     // pathToFile: { should have stuff here, but test doesnt fill it in },
   })
+
+  // expect(storageMock.setItem).toHaveBeenCalledWith('fuck')
+
+  // const vfsActor = service.state.context?.vfsActor!
+  // const vfsContext = vfsActor.state.context as VfsContext
+
+  // expect(vfsContext).toEqual({ fuck: 'me' })
+  // expect(vfsActor.state.value).toEqual(null)
 })

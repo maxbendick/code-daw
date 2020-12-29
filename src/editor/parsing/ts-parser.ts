@@ -125,8 +125,6 @@ export const getAllTokens = (lines: string[]): TokenPlaces => {
   // }
   // doImport2()
 
-  console.log('-------doin---import-------')
-
   for (let lineIndex = 0; lineIndex < lines.length; lineIndex++) {
     const line = lines[lineIndex]
 

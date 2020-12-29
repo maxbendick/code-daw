@@ -1,4 +1,4 @@
-import { defaultFilesPath } from "../config"
+import { defaultFilesPath } from '../config'
 
 const localStoragePrefix = 'code-daw/vfs/files'
 // const defaultFilesDirectoryUrl = `${process.env.PUBLIC_URL}/default-files`
@@ -64,8 +64,8 @@ export const makeLocalStorageMock = () => {
     },
   })
 
-  mockObject[pathToLocalStorageKey('/index.tsx')] = defaultIndexContent
-  mockObject[pathToLocalStorageKey('/dial.tsx')] = defaultDialContent
+  // mockObject[pathToLocalStorageKey('/index.tsx')] = defaultIndexContent
+  // mockObject[pathToLocalStorageKey('/dial.tsx')] = defaultDialContent
 
   return mockObject
 }

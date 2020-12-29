@@ -6,6 +6,7 @@ import {
   VirtualFileSystem,
 } from '.'
 import { EditorT } from '../editor/types'
+import { makeJsonStringifySafe } from '../utils'
 
 export type VfsActor = Actor<
   State<
@@ -71,7 +72,7 @@ export type VfsService = Interpreter<
   }
 >
 
-export const makeVfsMachine = ({ storage, fetchFn }: LocalStorageVfsConfig) => {
+export const makeVfsMachine = ({ storage }: LocalStorageVfsConfig) => {
   const machine = Machine<VfsContext, VfsStateSchema, VfsEvent>({
     id: 'vfs',
     initial: 'preSetup',
@@ -82,7 +83,7 @@ export const makeVfsMachine = ({ storage, fetchFn }: LocalStorageVfsConfig) => {
           VFS_SET_EDITOR: {
             target: 'setup',
             actions: assign({
-              editor: (context, event) => event.editor,
+              editor: (context, event) => makeJsonStringifySafe(event.editor),
             }),
           },
         },
@@ -90,8 +91,10 @@ export const makeVfsMachine = ({ storage, fetchFn }: LocalStorageVfsConfig) => {
       setup: {
         invoke: {
           src: async (context, event) => {
-            const vfs = await makeLocalStorageVfs({ storage, fetchFn })
+            const vfs = await makeLocalStorageVfs({ storage })
             const pathToFile: { [path: string]: VfsFile } = {}
+            console.error('middle', vfs.paths)
+
             for (const path of vfs.paths!) {
               pathToFile[path] = await vfs.get(path)
             }
@@ -102,7 +105,8 @@ export const makeVfsMachine = ({ storage, fetchFn }: LocalStorageVfsConfig) => {
             target: 'ready' as const,
             actions: [
               assign({
-                vfs: (context, event) => event.data.vfs as VirtualFileSystem,
+                vfs: (context, event) =>
+                  makeJsonStringifySafe(event.data.vfs as VirtualFileSystem),
                 pathToFile: (context, event) => event.data.pathToFile,
               }),
               (context, event) => {
