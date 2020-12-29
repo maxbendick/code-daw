@@ -33,10 +33,10 @@ const Beat: React.FC<{ active: boolean; setActive: (a: boolean) => void }> = ({
 }
 
 const GateSequencer: React.FC<{
-  numBeats: number
+  initialBeatsActive: boolean[]
   onChange: (beatsActive: boolean[]) => void
-}> = ({ numBeats, onChange }) => {
-  const [beatsActive, setBeatsActive] = useState(allTrue(numBeats))
+}> = ({ initialBeatsActive, onChange }) => {
+  const [beatsActive, setBeatsActive] = useState(initialBeatsActive)
 
   const setBeat = (beat: number, active: boolean) => {
     const nextBeatsActive = [...beatsActive]
@@ -55,19 +55,27 @@ const GateSequencer: React.FC<{
   )
 }
 
-export const gateSequencer = (numBeats: number) => {
-  const beatsActive$ = new BehaviorSubject<boolean[]>(allTrue(numBeats))
+export const gateSequencer = (
+  beats: number | boolean[],
+  tick$: Observable<number> = transport.beat$,
+) => {
+  const initialBeatsActive = typeof beats === 'number' ? allTrue(beats) : beats
+
+  const beatsActive$ = new BehaviorSubject<boolean[]>(initialBeatsActive)
 
   const onBeatsChange = (beatsActive: boolean[]) => {
     beatsActive$.next(beatsActive)
   }
 
-  const result$: Observable<boolean> = transport.beats$.pipe(
+  const result$: Observable<boolean> = tick$.pipe(
     withLatestFrom(beatsActive$),
     map(([beat, beatsActive]) => beatsActive[beat % beatsActive.length]),
   )
 
   return reactInteractable(result$, () => (
-    <GateSequencer numBeats={numBeats} onChange={onBeatsChange} />
+    <GateSequencer
+      initialBeatsActive={beatsActive$.value}
+      onChange={onBeatsChange}
+    />
   ))
 }

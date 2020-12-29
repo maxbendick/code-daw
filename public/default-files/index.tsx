@@ -1,8 +1,8 @@
 import { Observable, of } from 'rxjs'
-import { concatMap, delay, map, repeat, startWith } from 'rxjs/operators'
+import { concatMap, delay, map, repeat, scan, startWith } from 'rxjs/operators'
 import { gain, oscillator } from './audio'
 import { dial } from './dial'
-import { gateSequencer } from './sequencer'
+import { gateSequencer as booleanSequencer } from './sequencer'
 import { transport } from './transport'
 
 const frequency$ = sequenceMs([300, 310, 280, 250], 1000)
@@ -20,26 +20,50 @@ function sequenceMs<A>(vals: A[], msBetween: number): Observable<A> {
 }
 
 function sequenceBeats<A>(vals: A[]): Observable<A> {
-  return transport.beats$.pipe(
+  return transport.beat$.pipe(
     map(beat => {
       return vals[beat % vals.length]
     }),
   )
 }
 
-transport.beats$.subscribe(beat => {
+transport.beat$.subscribe(beat => {
   console.log('beat!', beat)
 })
 
-export const seq = gateSequencer(5)
+export const seq = booleanSequencer(
+  5,
+  transport.eigth$.pipe(delay(200), startWith(0)),
+)
 
 seq.subscribe(s => {
   console.log('seqs!', s)
 })
 
+export const devilSeq = booleanSequencer(
+  [true, true, false, true, false, true],
+  transport.quarter$,
+) as Observable<boolean>
+
+// TODO make sure this can start with index 0
+const devilFreq$ = devilSeq.pipe(
+  scan(
+    (state, gateOpen, absIndex) => {
+      if (!gateOpen) {
+        return state
+      }
+      return {
+        frequency: 200 + (absIndex % 4) * 150,
+      }
+    },
+    { frequency: 200 },
+  ),
+  map(s => s.frequency),
+)
+
 const theOsc = oscillator({
   type: 'triangle',
-  frequency: 440 ?? frequency$,
+  frequency: devilFreq$ ?? 440 ?? frequency$,
   detune:
     sequenceBeats([1, 50, 100, -100]) ??
     detuneDial ??
