@@ -1,5 +1,5 @@
 import '@testing-library/jest-dom'
-import { createServer, Server } from 'miragejs'
+import { createServer, Response, Server } from 'miragejs'
 import { assign, interpret } from 'xstate'
 import { defaultFilesPath } from '../config'
 import { wait } from '../utils'
@@ -53,15 +53,27 @@ afterEach(() => {
 })
 
 test('lifecycle', async () => {
-  server.get(`${defaultFilesPath}/pathlist.json`, () => ['/index.tsx'])
+  server.get(`${defaultFilesPath}/pathlist.json`, () => [
+    '/index.tsx',
+    '/dial.tsx',
+  ])
+  server.get(
+    `${defaultFilesPath}/index.tsx`,
+    () =>
+      new Response(200, { 'content-type': 'text' }, 'diefault index content'),
+  )
+  server.get(
+    `${defaultFilesPath}/dial.tsx`,
+    () =>
+      new Response(200, { 'content-type': 'text' }, 'diefault dial content'),
+  )
 
   const storageMock = makeLocalStorageMock()
   global.sessionStorage = storageMock
 
   const mockEditor = {
-    setValue: () => {
-      throw new Error('not yet')
-    },
+    setValue: jest.fn(() => {}),
+    getValue: jest.fn(() => 'editor value'),
   }
   const service = interpret(
     machine.withConfig({
@@ -79,8 +91,6 @@ test('lifecycle', async () => {
     }),
   ).start()
 
-  // service.subscribe(state => console.log('state', state.value))
-
   expect(service.state.matches('preMount')).toBeTruthy()
   await wait(1)
   service.send({ type: 'REACT_MOUNTED' })
@@ -88,30 +98,60 @@ test('lifecycle', async () => {
   await wait(1)
   expect(service.state.matches('creatingEditor')).toBeTruthy()
   service.send({ type: 'EDITOR_CREATED', editor: mockEditor as any })
-  await wait(1)
-  expect(service.state.matches('editing')).toBeTruthy()
-  sendShiftEnter()
-  await wait(1)
-  expect(service.state.matches('lightRuntime')).toBeTruthy()
-  sendShiftEnter()
-  await wait(1)
-  expect(service.state.matches('editing')).toBeTruthy()
-  sendShiftEnter()
-  await wait(1)
-  expect(service.state.matches('lightRuntime')).toBeTruthy()
-  sendShiftEnter()
-  await wait(1)
-  expect(service.state.matches('editing')).toBeTruthy()
+
+  await wait(2000) // TODO figure a better way than waiting this long
 
   // TODO how to test loading stuff? how to test content loaded into editor?
   expect(service.state.context?.vfsActor?.state?.context).toMatchObject({
     activePath: '/index.tsx',
-    // pathToFile: { should have stuff here, but test doesnt fill it in },
+    pathToFile: {
+      '/index.tsx': {
+        content: 'diefault index content',
+        path: '/index.tsx',
+      },
+      '/dial.tsx': {
+        content: 'diefault dial content',
+        path: '/dial.tsx',
+      },
+    },
   })
 
-  // expect(storageMock.setItem).toHaveBeenCalledWith('fuck')
+  expect(mockEditor.setValue).toHaveBeenCalledWith('diefault index content')
 
-  // const vfsActor = service.state.context?.vfsActor!
+  expect(service.state.matches('editing')).toBeTruthy()
+  sendShiftEnter()
+  await wait(1)
+  expect(service.state.matches('lightRuntime')).toBeTruthy()
+  sendShiftEnter()
+  await wait(1)
+  expect(service.state.matches('editing')).toBeTruthy()
+  sendShiftEnter()
+  await wait(1)
+  expect(service.state.matches('lightRuntime')).toBeTruthy()
+  sendShiftEnter()
+  await wait(1)
+  expect(service.state.matches('editing')).toBeTruthy()
+
+  service.state.context?.vfsActor?.send({
+    type: 'VFS_SET_ACTIVE',
+    path: '/dial.tsx',
+  })
+
+  await wait(1)
+  expect(service.state.context?.vfsActor?.state?.context).toMatchObject({
+    activePath: '/dial.tsx',
+    pathToFile: {
+      '/index.tsx': {
+        content: 'diefault index content',
+        path: '/index.tsx',
+      },
+      '/dial.tsx': {
+        content: 'diefault dial content',
+        path: '/dial.tsx',
+      },
+    },
+  })
+
   // const vfsContext = vfsActor.state.context as VfsContext
 
   // expect(vfsContext).toEqual({ fuck: 'me' })
