@@ -1,10 +1,20 @@
 import { interval } from 'rxjs'
-import { shareReplay } from 'rxjs/operators'
+import {
+  distinctUntilChanged,
+  map,
+  shareReplay,
+  startWith,
+} from 'rxjs/operators'
 
 const msPerBeat = 500
 
 export const transport = {
-  beats$: interval(msPerBeat).pipe(shareReplay()),
+  beats$: interval(msPerBeat).pipe(
+    map(tick => tick + 1),
+    startWith(0),
+    distinctUntilChanged(),
+    shareReplay(),
+  ),
 }
 
 const subscription = transport.beats$.subscribe()
