@@ -1,4 +1,3 @@
-import { defaultFilesPath } from '../config'
 import { makeLocalStorageVfs } from './index'
 
 // const localStoragePrefix = 'code-daw/vfs/files'
@@ -12,30 +11,6 @@ const pathToLocalStorageKey = (path: string) =>
   `${vfsFileLocalStoragePrefix}${path}`
 
 const paths = ['/index.tsx', '/dial.tsx']
-
-const makeFetchMock = () => async (path: string) => {
-  if (path === `${defaultFilesPath}/pathlist.json`) {
-    return {
-      json: async () => {
-        return JSON.stringify(paths)
-      },
-    }
-  } else if (path === `${defaultFilesPath}/index.tsx`) {
-    return {
-      text: async () => {
-        return defaultIndexContent
-      },
-    }
-  } else if (path === `${defaultFilesPath}/dial.tsx`) {
-    return {
-      text: async () => {
-        return defaultDialContent
-      },
-    }
-  }
-
-  throw new Error(`no accepted return - ${path}`)
-}
 
 const makeLocalStorageMock = () => {
   const mockObject = {} as any

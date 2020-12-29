@@ -93,7 +93,6 @@ export const makeVfsMachine = ({ storage }: LocalStorageVfsConfig) => {
           src: async (context, event) => {
             const vfs = await makeLocalStorageVfs({ storage })
             const pathToFile: { [path: string]: VfsFile } = {}
-            console.error('middle', vfs.paths)
 
             for (const path of vfs.paths!) {
               pathToFile[path] = await vfs.get(path)
