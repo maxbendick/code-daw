@@ -7,6 +7,10 @@ import { SampleUrl, singleBufferSampler } from './sampler'
 import { gateSequencer as booleanSequencer } from './sequencer'
 import { transport } from './transport'
 
+export const masterVolume = dial({ min: 0, max: 3 })
+
+export const drumMachineAudio = drumMachine()
+
 const frequency$ = sequenceMs([300, 310, 280, 250], 1000)
 const gain$ = sequenceMs([0.3, 0.6, 0.9], 1200)
 
@@ -88,10 +92,11 @@ const makeSynthAudio = () => {
   return theGain
 }
 
-export const drumMachineAudio = drumMachine()
-
-export default combineAudio(
-  // makeDrumAudio(),
-  gain({ source: makeSynthAudio(), gainValue: 0.5 }),
-  gain({ source: drumMachineAudio, gainValue: 0.5 }),
-)
+export default gain({
+  gainValue: masterVolume,
+  source: combineAudio(
+    // makeDrumAudio(),
+    gain({ source: makeSynthAudio(), gainValue: 0.5 }),
+    gain({ source: drumMachineAudio, gainValue: 0.5 }),
+  ),
+})
