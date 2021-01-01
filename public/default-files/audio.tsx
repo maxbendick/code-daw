@@ -87,6 +87,38 @@ export const combineAudio = (...nodes: AudioNode[]): AudioNode => {
   const output = getAudioContext().createGain()
   output.gain.value = 1
 
+  const numChannels = nodes.reduce(
+    (count, node) => count + node.numberOfOutputs,
+    0,
+  )
+
+  console.log({
+    nodes: nodes.map(node => ({
+      numberOfInputs: node.numberOfInputs,
+      numberOfOutputs: node.numberOfOutputs,
+    })),
+    rawNodes: nodes,
+    mixNumInChannels: numChannels,
+    acNumInputs: getAudioContext().destination.numberOfInputs,
+    acNumOutputs: getAudioContext().destination.numberOfOutputs,
+  })
+
+  const merger = getAudioContext().createChannelMerger(numChannels)
+
+  // let channelIndex = 0
+  // for (const node of nodes) {
+  //   node.connect(merger, 0, channelIndex++)
+  //   // for (
+  //   //   let outputIndex = 0;
+  //   //   outputIndex < node.numberOfOutputs;
+  //   //   outputIndex++
+  //   // ) {
+  //   //   node.connect(merger, outputIndex, channelIndex++)
+  //   // }
+  // }
+
+  // return merger
+
   for (const node of nodes) {
     node.connect(output)
   }

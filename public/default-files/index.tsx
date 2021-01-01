@@ -2,6 +2,7 @@ import { Observable, of } from 'rxjs'
 import { concatMap, delay, map, repeat, scan, startWith } from 'rxjs/operators'
 import { combineAudio, gain, oscillator } from './audio'
 import { dial } from './dial'
+import { drumMachine } from './drum-machine'
 import { SampleUrl, singleBufferSampler } from './sampler'
 import { gateSequencer as booleanSequencer } from './sequencer'
 import { transport } from './transport'
@@ -87,7 +88,10 @@ const makeSynthAudio = () => {
   return theGain
 }
 
+export const drumMachineAudio = drumMachine()
+
 export default combineAudio(
-  makeDrumAudio(),
+  // makeDrumAudio(),
   gain({ source: makeSynthAudio(), gainValue: 0.5 }),
+  gain({ source: drumMachineAudio, gainValue: 0.5 }),
 )

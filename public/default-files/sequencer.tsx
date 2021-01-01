@@ -32,7 +32,7 @@ const Beat: React.FC<{ active: boolean; setActive: (a: boolean) => void }> = ({
   )
 }
 
-const GateSequencer: React.FC<{
+export const _GateSequencer: React.FC<{
   initialBeatsActive: boolean[]
   onChange: (beatsActive: boolean[]) => void
 }> = ({ initialBeatsActive, onChange }) => {
@@ -55,10 +55,10 @@ const GateSequencer: React.FC<{
   )
 }
 
-export const gateSequencer = (
+export const _gateSequencerUnwrapped = (
   beats: number | boolean[],
   tick$: Observable<number> = transport.beat$,
-): Observable<boolean> => {
+): { value: Observable<boolean>; Component: React.FC } => {
   const initialBeatsActive = typeof beats === 'number' ? allTrue(beats) : beats
 
   const beatsActive$ = new BehaviorSubject<boolean[]>(initialBeatsActive)
@@ -72,10 +72,21 @@ export const gateSequencer = (
     map(([beat, beatsActive]) => beatsActive[beat % beatsActive.length]),
   )
 
-  return reactInteractable(result$, () => (
-    <GateSequencer
-      initialBeatsActive={beatsActive$.value}
-      onChange={onBeatsChange}
-    />
-  ))
+  return {
+    value: result$,
+    Component: () => (
+      <_GateSequencer
+        initialBeatsActive={beatsActive$.value}
+        onChange={onBeatsChange}
+      />
+    ),
+  }
+}
+
+export const gateSequencer = (
+  beats: number | boolean[],
+  tick$: Observable<number> = transport.beat$,
+): Observable<boolean> => {
+  const { value, Component: component } = _gateSequencerUnwrapped(beats, tick$)
+  return reactInteractable(value, component)
 }
