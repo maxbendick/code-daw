@@ -111,6 +111,7 @@ const DialBase: React.FC<{
       borderRadius: radius * 2,
       backgroundColor: '#000',
       userSelect: 'none',
+      // border: '1px solid rgba(255, 255, 255, 0.3)',
     }}
     {...restProps}
   >
@@ -277,8 +278,6 @@ export const dial = ({
 
   const result = reactInteractable(dialValues$, () => (
     <div>
-      hello asdfasdfinteractable
-      <br />
       <Dial
         min={min}
         max={max}

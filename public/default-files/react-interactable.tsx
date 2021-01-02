@@ -10,7 +10,7 @@ export const reactInteractable = (value, Component) => {
 
   parent.setAttribute(
     'style',
-    'width: 500px; height: 71px; border: 1px solid black',
+    'width: 500px; height: 71px; padding-top: 2px;', //border: 1px solid black',
   )
 
   parent.appendChild(domNode)

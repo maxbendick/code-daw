@@ -82,6 +82,8 @@ const mapValues = <A, B>(
   }, {} as { [k: string]: B })
 }
 
+let firstTimeInRuntime = true
+
 export const startLightRuntime = async (
   context: LifecycleContext,
   stopSignal: Promise<void>,
@@ -120,11 +122,14 @@ export const startLightRuntime = async (
     transpiled.indexOf(sourceMapPreceding) + sourceMapPreceding.length
 
   const sourceMapUrl = transpiled.substring(sourceMapStart)
-
   const sourceMapJson = await (await fetch(sourceMapUrl)).json()
-  ;(SourceMapConsumer as any).initialize({
-    'lib/mappings.wasm': process.env.PUBLIC_URL + '/mappings.wasm',
-  })
+
+  if (firstTimeInRuntime) {
+    ;(SourceMapConsumer as any).initialize({
+      'lib/mappings.wasm': process.env.PUBLIC_URL + '/mappings.wasm',
+    })
+    firstTimeInRuntime = false
+  }
 
   const transpiledExportLines = await SourceMapConsumer.with(
     sourceMapJson,
