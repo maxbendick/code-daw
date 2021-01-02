@@ -1,7 +1,5 @@
 import { Observable } from 'rxjs'
-import { getAudioContext, getPublicUrl } from './internal'
-
-const audioContext = getAudioContext()
+import { cleanupOnDestroy, getAudioContext, getPublicUrl } from './internal'
 
 export const SampleUrl = {
   kick909: `${getPublicUrl()}/samples/909-kick.wav`,
@@ -12,7 +10,7 @@ export const SampleUrl = {
 const getSample = async (url: string): Promise<AudioBuffer> => {
   const response = await fetch(url)
   const arrayBuffer = await response.arrayBuffer()
-  const audioBuffer = await audioContext.decodeAudioData(arrayBuffer)
+  const audioBuffer = await getAudioContext().decodeAudioData(arrayBuffer)
   return audioBuffer
 }
 
@@ -39,9 +37,9 @@ export const playSample = (url: string) => {
     console.error('sample must be loaded to play', url)
   }
 
-  const sampleSource = audioContext.createBufferSource()
+  const sampleSource = getAudioContext().createBufferSource()
   sampleSource.buffer = audioBuffer
-  sampleSource.connect(audioContext.destination)
+  sampleSource.connect(getAudioContext().destination)
   sampleSource.start()
   return sampleSource
 }
@@ -50,7 +48,7 @@ export const singleBufferSampler = (
   sampleUrl: string,
   trigger$: Observable<any>,
 ) => {
-  const resultNode = audioContext.createGain()
+  const resultNode = getAudioContext().createGain()
   resultNode.gain.value = 1
 
   samplesLoaded.then(() => {
@@ -59,12 +57,14 @@ export const singleBufferSampler = (
       console.error('sample must be loaded to play', sampleUrl)
     }
 
-    trigger$.subscribe(() => {
-      const sampleSource = audioContext.createBufferSource()
-      sampleSource.buffer = audioBuffer
-      sampleSource.connect(resultNode)
-      sampleSource.start()
-    })
+    cleanupOnDestroy(
+      trigger$.subscribe(() => {
+        const sampleSource = getAudioContext().createBufferSource()
+        sampleSource.buffer = audioBuffer
+        sampleSource.connect(resultNode)
+        sampleSource.start()
+      }),
+    )
   })
 
   return resultNode

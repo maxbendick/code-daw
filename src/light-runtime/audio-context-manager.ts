@@ -21,8 +21,7 @@ export class AudioContextManager {
   userOutput?: AudioNode
 
   constructor() {
-    ;(window as any).codeDaw.audioContext = this.audioContext = new AudioContext()
-
+    this.audioContext = new AudioContext()
     this.masterGain = this.audioContext.createGain()
     this.masterGain.gain.value = MASTER_GAIN
     this.masterGain.connect(this.audioContext.destination)

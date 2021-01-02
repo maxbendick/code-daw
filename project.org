@@ -1,7 +1,29 @@
+* TODOs before monday
+** silent launch
+** save files in localstorage, with reset button
+** 1-3 nice tracks (multiple workspaces required for 2+)
+** better filebrowser style
+** autosaving
+** cant change file in runtime
+** more building blocks
+*** dial bank?
+*** audio effects (including creative ones)
+** TODO bug where replaying makes the first bit of audio increasingly louder
+
+
+* TODOs later
+** Live coding
+*** based on exports. need to have a purely functional graph.
+*** re-evaluating whole modules?
+*** prevent re-evaluating effects?
+*** allow new nodes in user-land? can have an interface with a function to do work
+*** re-evaluate based only on changed lines?
+*** recognize the limits of static analysis
+
 * todo rn, for big fun
 ** DONE transport, sequencers
-** make a sampler
-** make some techno
+** DONE make a sampler
+** DONE make some techno
 
 * todos, for posterity
 ** somehow test bundler

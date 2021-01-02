@@ -1,6 +1,6 @@
-import { isObservable, Observable, Subscription } from 'rxjs'
+import { isObservable, Observable } from 'rxjs'
 import { skip, take, throttleTime } from 'rxjs/operators'
-import { getAudioContext } from './internal'
+import { cleanupOnDestroy, getAudioContext } from './internal'
 
 type ParamLike = number | Observable<number> | AudioNode
 
@@ -13,9 +13,9 @@ const isAudioNode = (o: any): o is AudioNode => {
 
 export const easyConnect = (
   audioContext: AudioContext,
-  input: number | AudioNode | Observable<number>, // must emit immediately!!
+  input: ParamLike, // must emit immediately!!
   output: AudioParam,
-): Subscription => {
+): void => {
   if (isObservable(input)) {
     let initialValue = (null as any) as number
     input.pipe(take(1)).subscribe(val => {
@@ -29,7 +29,7 @@ export const easyConnect = (
 
     output.setValueAtTime(initialValue, audioContext.currentTime)
 
-    return input
+    const subscription = input
       .pipe(skip(1), throttleTime(SAFE_MODE_THROTTLE_TIME))
       .subscribe(currentValue => {
         output.setTargetAtTime(
@@ -38,9 +38,10 @@ export const easyConnect = (
           RAMP_TIME_SECONDS,
         )
       })
+    cleanupOnDestroy(subscription)
   } else if (isAudioNode(input)) {
     input.connect(output)
-    return new Subscription()
+    return
   } else if (typeof input === 'number') {
     output.value = input
   } else {

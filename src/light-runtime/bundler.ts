@@ -151,6 +151,12 @@ const translateImports = (files: BundlerFile[]): string => {
   return result
 }
 
+export const addCacheBreaker = (code: string) => {
+  return `${code}\n\nexport const randommmmm = ${Math.random()}; console.log('import.meta', import.meta);`
+}
+
 export const importEsmFile = (esmCode: string) => {
-  return import(/* webpackIgnore: true */ _urlEncodeJavaScript(esmCode))
+  return import(
+    /* webpackIgnore: true */ addCacheBreaker(_urlEncodeJavaScript(esmCode))
+  )
 }

@@ -6,6 +6,7 @@ import {
   shareReplay,
   startWith,
 } from 'rxjs/operators'
+import { cleanupOnDestroy } from './internal'
 
 const msPerBeat = 500
 const msPer16th = msPerBeat / 4
@@ -32,9 +33,9 @@ export const transport = {
   ),
 }
 
-const subscription = transport.beat$.subscribe()
+cleanupOnDestroy(transport.beat$.subscribe())
 
-// TODO make this do something
-export const onDestroy = () => {
-  subscription.unsubscribe()
-}
+// // TODO make this do something
+// export const onDestroy = () => {
+//   subscription.unsubscribe()
+// }

@@ -1,6 +1,8 @@
 // This file interacts with some window variables to make everything work.
 // It's not recommended to change this file
 
+import { Subscription } from 'rxjs'
+
 export const getAudioContext = (): AudioContext =>
   (window as any).codeDaw.audioContext
 
@@ -24,4 +26,8 @@ export const interactable = ({
     onDestroy,
   }
   return value
+}
+
+export const cleanupOnDestroy = (f: (() => void) | Subscription) => {
+  ;(window as any).codeDaw.onDestroySubscription.add(f)
 }

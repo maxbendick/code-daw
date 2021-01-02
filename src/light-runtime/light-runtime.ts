@@ -1,11 +1,11 @@
-import { Subject } from 'rxjs'
+import { Subject, Subscription } from 'rxjs'
 import { take } from 'rxjs/operators'
 import { SourceMapConsumer } from 'source-map'
 import { JsxEmit, ModuleKind, ScriptTarget, transpile } from 'typescript'
 import { LifecycleContext } from '../lifecycle/types'
 import { VfsContext } from '../virtual-file-system/vfs-machine'
 import { AudioContextManager } from './audio-context-manager'
-import { bundle } from './bundler'
+import { addCacheBreaker, bundle } from './bundler'
 import { Zone } from './zone'
 
 const encodeToUrl = (code: string) => {
@@ -111,8 +111,10 @@ export const startLightRuntime = async (
 
   const audioContextManager = new AudioContextManager()
 
+  ;(window as any).codeDaw.audioContext = audioContextManager.audioContext
   ;(window as any).codeDaw.interactableSymbol = interactableSymbol
   ;(window as any).codeDaw.publicUrl = process.env.PUBLIC_URL
+  ;(window as any).codeDaw.onDestroySubscription = new Subscription()
 
   // let transpiled = transpileFile(source)
   let transpiled = runnableJs
@@ -146,7 +148,8 @@ export const startLightRuntime = async (
   )
 
   const userMadeModule = await extremelyDangerousImport(
-    encodeToUrl(transpiled + `\nconst randommmmm = ${Math.random()}`),
+    encodeToUrl(addCacheBreaker(transpiled)),
+    // encodeToUrl(transpiled + `\nconst randommmmm = ${Math.random()}`),
   )
 
   let processedExports: {
@@ -214,7 +217,7 @@ export const startLightRuntime = async (
   ;(window as any).userMadeModule = userMadeModule
 
   await stopSignal
-
+  ;(window as any).codeDaw.onDestroySubscription.unsubscribe()
   await audioContextManager.destroy()
 
   zones.forEach(zone => {
