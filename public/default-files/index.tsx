@@ -7,7 +7,7 @@ import { SampleUrl, singleBufferSampler } from './sampler'
 import { gateSequencer as booleanSequencer } from './sequencer'
 import { transport } from './transport'
 
-export const masterVolume = dial({ min: 0, max: 3 })
+export const masterVolume = dial({ min: 0, max: 1 })
 
 export const drumMachineAudio = drumMachine()
 

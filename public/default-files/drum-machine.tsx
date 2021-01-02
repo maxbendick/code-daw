@@ -12,19 +12,23 @@ export interface DrumMachineConfig {
   tick$?: Observable<number>
 }
 
-const cellHoverStyleId = 'drum-machine/cell-hover-style'
-const cellHoverCss = `
-  .drum-machine-cell:hover:not(.active) {
-    background-color: yellow;
+const addStaticCss = (id: string, css: string) => {
+  if (!document.getElementById(id)) {
+    const style = document.createElement('style')
+    style.id = 'drum-machine/cell-hover-style'
+    style.appendChild(document.createTextNode(css))
+    document.getElementsByTagName('head')[0].appendChild(style)
   }
-`
-
-if (!document.getElementById(cellHoverStyleId)) {
-  const cellHoverStyle = document.createElement('style')
-  cellHoverStyle.id = 'drum-machine/cell-hover-style'
-  cellHoverStyle.appendChild(document.createTextNode(cellHoverCss))
-  document.getElementsByTagName('head')[0].appendChild(cellHoverStyle)
 }
+
+addStaticCss(
+  'drum-machine/cell-hover-style',
+  `
+    .drum-machine-cell:hover:not(.active) {
+      background-color: rgba(255, 255, 2555, 0.2);
+    }
+  `,
+)
 
 const Cell: React.FC<{
   active: boolean

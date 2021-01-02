@@ -1,3 +1,6 @@
+// This file interacts with some window variables to make everything work.
+// It's not recommended to change this file
+
 export const getAudioContext = (): AudioContext =>
   (window as any).codeDaw.audioContext
 
