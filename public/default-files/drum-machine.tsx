@@ -1,6 +1,6 @@
 import * as React from 'react'
 import { BehaviorSubject, Observable } from 'rxjs'
-import { filter, withLatestFrom } from 'rxjs/operators'
+import { debounceTime, filter, withLatestFrom } from 'rxjs/operators'
 import { combineAudio } from './audio'
 import { reactInteractable } from './react-interactable'
 import { SampleUrl, singleBufferSampler } from './sampler'
@@ -131,6 +131,7 @@ export const drumMachine = (config?: DrumMachineConfig) => {
         filter(([tick, rows]) => {
           return rows[sampleIndex][tick % numCycles]
         }),
+        debounceTime(1), // TODO maybe cleanup - without this debounce, the source emits twice after restarting runtime
       ),
     ),
   )

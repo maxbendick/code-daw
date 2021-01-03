@@ -104,22 +104,6 @@ export const combineAudio = (...nodes: AudioNode[]): AudioNode => {
     acNumOutputs: getAudioContext().destination.numberOfOutputs,
   })
 
-  const merger = getAudioContext().createChannelMerger(numChannels)
-
-  // let channelIndex = 0
-  // for (const node of nodes) {
-  //   node.connect(merger, 0, channelIndex++)
-  //   // for (
-  //   //   let outputIndex = 0;
-  //   //   outputIndex < node.numberOfOutputs;
-  //   //   outputIndex++
-  //   // ) {
-  //   //   node.connect(merger, outputIndex, channelIndex++)
-  //   // }
-  // }
-
-  // return merger
-
   for (const node of nodes) {
     node.connect(output)
   }

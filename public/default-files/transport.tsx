@@ -31,6 +31,7 @@ export const transport = {
     filter(tick => tick % 2 === 0),
     map(tick => tick / 2),
   ),
+  ms$: (ms: number) => interval(ms),
 }
 
 cleanupOnDestroy(transport.beat$.subscribe())
