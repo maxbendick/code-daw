@@ -11,6 +11,7 @@ import { cleanupOnDestroy } from './internal'
 const msPerBeat = 500
 const msPer16th = msPerBeat / 4
 
+// TODO use hybrid webaudio+timer based transport for sample accuracy
 const sixteenth$ = interval(msPer16th).pipe(
   map(tick => tick + 1),
   startWith(0),
