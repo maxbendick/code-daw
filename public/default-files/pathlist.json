@@ -1,0 +1,13 @@
+[
+  "/index.tsx",
+  "/dial.tsx",
+  "/internal.tsx",
+  "/react-interactable.tsx",
+  "/audio.tsx",
+  "/use-observable-state.tsx",
+  "/transport.tsx",
+  "/sequencer.tsx",
+  "/sampler.tsx",
+  "/drum-machine.tsx",
+  "/demo.tsx"
+]
